@@ -1,5 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
+import Sidebar from "@/components/sidebar/Sidebar";
+// import { useRouter } from "next/navigation";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -9,9 +11,16 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  // const router = useRouter();
+  // Check if the current page is the login page
+  // const isLoginPage = router.pathname === "/login";
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        {/* {!isLoginPage && <Sidebar />} */}
+
+        {children}
+      </body>
     </html>
   );
 }
