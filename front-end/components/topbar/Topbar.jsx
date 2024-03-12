@@ -13,6 +13,7 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
+import { useSelectedPage } from "../../app/home/layout";
 
 const pages = [
   "Sản xuất",
@@ -23,7 +24,7 @@ const pages = [
   "Kế toán",
   "Nhân sự",
 ];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+const settings = ["Thông tin", "Đổi mật khẩu", "Đăng xuất"];
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -44,10 +45,17 @@ function ResponsiveAppBar() {
     setAnchorElUser(null);
   };
 
+  const { setSelectedPage } = useSelectedPage();
+
+  const handleCateClick = (event, key) => {
+    console.log(event.currentTarget.getAttribute("button-key"));
+  };
+
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
+          <div style={{ width: 40 }}></div>
           <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
           <Typography
             variant="h6"
@@ -64,7 +72,7 @@ function ResponsiveAppBar() {
               textDecoration: "none",
             }}
           >
-            LOGO
+            NEWSKY
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -120,13 +128,13 @@ function ResponsiveAppBar() {
               textDecoration: "none",
             }}
           >
-            LOGO
+            NEWSKY
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
               <Button
                 key={page}
-                onClick={handleCloseNavMenu}
+                onClick={handleCateClick}
                 sx={{
                   my: 2,
                   color: "white",
