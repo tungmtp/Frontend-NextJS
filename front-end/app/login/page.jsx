@@ -15,7 +15,6 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { verifyToken } from "@/hook/Hook";
 
 function Copyright(props) {
   return (

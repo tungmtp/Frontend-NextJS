@@ -49,7 +49,7 @@ const category = {
   "Nhân sự": "humanResources",
 };
 const settings = ["Thông tin", "Đổi mật khẩu", "Đăng xuất"];
-const drawerWidth = 270;
+const drawerWidth = 350;
 
 const getCategory = async () => {
   try {
@@ -223,6 +223,7 @@ export default function regularLayout({ children }) {
   let pathname1 = pathname.split("/");
   let pathSplit = pathname1[1];
   console.log(pathSplit);
+  console.log(34);
   function getKeyByValue(object, value) {
     return Object.keys(object).find((key) => object[key] === value);
   }
@@ -387,7 +388,7 @@ export default function regularLayout({ children }) {
               ))}
             </List>
             <Divider />
-            <List>
+            {/* <List>
               {["All mail", "Trash", "Spam"].map((text, index) => (
                 <ListItem key={text} disablePadding sx={{ display: "block" }}>
                   <ListItemButton
@@ -413,7 +414,7 @@ export default function regularLayout({ children }) {
                   </ListItemButton>
                 </ListItem>
               ))}
-            </List>
+            </List> */}
           </Drawer>
           <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
             <DrawerHeader />

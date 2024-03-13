@@ -387,7 +387,7 @@ export default function regularLayout({ children }) {
               ))}
             </List>
             <Divider />
-            <List>
+            {/* <List>
               {["All mail", "Trash", "Spam"].map((text, index) => (
                 <ListItem key={text} disablePadding sx={{ display: "block" }}>
                   <ListItemButton
@@ -413,7 +413,7 @@ export default function regularLayout({ children }) {
                   </ListItemButton>
                 </ListItem>
               ))}
-            </List>
+            </List> */}
           </Drawer>
           <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
             <DrawerHeader />
