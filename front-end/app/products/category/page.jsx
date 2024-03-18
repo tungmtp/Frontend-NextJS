@@ -98,7 +98,7 @@ export default function Category() {
     });
   };
   const CategoryTree = buildCategoryTree(categories);
-  console.log(CategoryTree);
+
   const renderTree = (nodes) => {
     const isLeafNode =
       !Array.isArray(nodes.children) || nodes.children.length === 0;
@@ -142,19 +142,7 @@ export default function Category() {
     <div>
       <Grid container spacing={4}>
         <Grid item xs={3}>
-          <Box sx={{ minHeight: 110, flexGrow: 1, maxWidth: 300 }}>
-            <TreeView
-              aria-label="rich object"
-              defaultCollapseIcon={<ExpandMoreIcon />}
-              defaultExpanded={["root"]}
-              defaultExpandIcon={<ChevronRightIcon />}
-              multiSelect
-              selected={selectedNode}
-            >
-              {CategoryTree.map((object) => renderTree(object))}
-            </TreeView>
-            <TreeViewComponent data={categories} />
-          </Box>
+          <TreeViewComponent data={"/product-service/category"} />
         </Grid>
       </Grid>
     </div>
