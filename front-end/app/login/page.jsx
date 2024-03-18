@@ -1,5 +1,5 @@
 "use client";
-import * as React from "react";
+import React, { useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -15,6 +15,7 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { FormHelperText, LinearProgress } from "@mui/material";
 
 function Copyright(props) {
   return (
@@ -38,37 +39,41 @@ function Copyright(props) {
 
 const defaultTheme = createTheme();
 
-const handleSubmit = async (event) => {
-  event.preventDefault();
-  const data = new FormData(event.currentTarget);
-  const username = data.get("username");
-  const password = data.get("password");
+export default function Login() {
+  const [loginFail, setLoginFail] = useState(false);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const username = data.get("username");
+    const password = data.get("password");
+    try {
+      const response = await fetch(
+        process.env.NEXT_PUBLIC_DB_HOST + "/auth/generateToken",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, password }),
+        }
+      );
 
-  try {
-    // Make API request to authenticate user and retrieve token
-    const response = await axios
-      .post(process.env.NEXT_PUBLIC_DB_HOST + "/auth/generateToken", {
-        username,
-        password,
-      })
-      .then((response) => {
-        const token = response.data;
-        // Store token in cookies
+      if (response.ok) {
+        const token = await response.text();
         Cookies.set("token", token);
         window.location.href = "/home";
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-
-    //window.location.href = "/home";
-    // You can redirect to dashboard or any other page here
-  } catch (error) {
-    console.error("Login failed:", error);
-    // Handle login failure, e.g., display an error message to the user
-  }
-};
-export default function Login() {
+      } else {
+        setLoginFail(true);
+        console.error("Lỗi đăng nhập");
+      }
+    } catch (err) {
+      setLoginFail(true);
+      console.error("Error occurred during authentication:", err);
+    }
+  };
+  const handleFieldFocus = () => {
+    setLoginFail(false);
+  };
   return (
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
@@ -102,6 +107,8 @@ export default function Login() {
               name="username"
               autoComplete="username"
               autoFocus
+              error={loginFail}
+              onFocus={handleFieldFocus}
             />
             <TextField
               margin="normal"
@@ -111,8 +118,15 @@ export default function Login() {
               label="Mật khẩu"
               type="password"
               id="password"
+              error={loginFail}
               autoComplete="current-password"
+              onFocus={handleFieldFocus}
             />
+            {loginFail && (
+              <FormHelperText style={{ color: "red" }}>
+                Kiểm tra lại tài khoản và mật khẩu
+              </FormHelperText>
+            )}
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
               label="Nhớ mật khẩu"

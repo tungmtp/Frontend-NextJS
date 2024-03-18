@@ -33,6 +33,7 @@ const SelectedPageContext = createContext();
 const inter = Inter({ subsets: ["latin"] });
 import Cookies from "js-cookie";
 import { usePathname } from "next/navigation";
+import { getData } from "@/hook/Hook";
 
 // export const metadata = {
 //   title: "Create Next App",
@@ -50,25 +51,6 @@ const category = {
 };
 const settings = ["Thông tin", "Đổi mật khẩu", "Đăng xuất"];
 const drawerWidth = 350;
-
-const getCategory = async () => {
-  try {
-    const token = Cookies.get("token");
-    const config = {
-      Headers: { Authorization: `Bearer ${token}` },
-    }; // Add your axios configuration here if needed
-    const verifyToken = await axios.get(
-      process.env.NEXT_PUBLIC_DB_HOST + "/product-service/category",
-      config
-    );
-    // Handle successful token verification
-    return verifyToken.data; // Return data if needed
-  } catch (error) {
-    console.error("Get productCategory failed:", error);
-    throw error; // Rethrow the error for handling elsewhere if needed
-  }
-};
-
 const openedMixin = (theme) => ({
   width: drawerWidth,
   transition: theme.transitions.create("width", {
@@ -135,7 +117,7 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 export default function regularLayout({ children }) {
-  const [categoriesChild, setcategoriesChild] = useState(null);
+  const [categoriesChild, setCategoriesChild] = useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
@@ -159,71 +141,24 @@ export default function regularLayout({ children }) {
     setAnchorElUser(null);
   };
   useEffect(() => {
-    //setcategoriesChild(getCategory());
-    setcategoriesChild([
-      {
-        catName: "Vật tư",
-        isChildOf: null,
-        id: "7420d961-1f30-4087-8507-1133e3a79766",
-      },
-      {
-        catName: "Danh mục tạm nhập",
-        isChildOf: "44343f7f-7a6a-49b0-9787-87d2217ed289",
-        id: "cf19698b-d6fd-4271-8150-25d3d280354a",
-      },
-      {
-        catName: "Phân loại sản phẩm",
-        isChildOf: "7420d961-1f30-4087-8507-1133e3a79766",
-        id: "9cf6a000-4aa9-48f1-95ff-2d3fad910f4b",
-      },
-      {
-        catName: "Danh mục đơn vị tính",
-        isChildOf: "7420d961-1f30-4087-8507-1133e3a79766",
-        id: "16135804-40a0-4f80-b5cd-48157f5b9a5c",
-      },
-      {
-        catName: "Tồn 01 sản phẩm ở 01 kho",
-        isChildOf: "44343f7f-7a6a-49b0-9787-87d2217ed289",
-        id: "acdb4085-2568-49f2-9fe9-6a2e96157490",
-      },
-      {
-        catName: "Danh mục xuất kho hàng hóa",
-        isChildOf: "44343f7f-7a6a-49b0-9787-87d2217ed289",
-        id: "2698403c-de40-43c1-a905-746c008edba0",
-      },
-      {
-        catName: "Kho",
-        isChildOf: null,
-        id: "44343f7f-7a6a-49b0-9787-87d2217ed289",
-      },
-      {
-        catName: "Thuộc tính sản phẩm",
-        isChildOf: "7420d961-1f30-4087-8507-1133e3a79766",
-        id: "0b1b85ea-de67-48ee-893b-b44a6370de58",
-      },
-      {
-        catName: "Danh mục nhập kho hàng hóa",
-        isChildOf: "44343f7f-7a6a-49b0-9787-87d2217ed289",
-        id: "53257929-964c-407b-a6ff-cc34ca6a56fb",
-      },
-      {
-        catName: "Danh mục Class",
-        isChildOf: "7420d961-1f30-4087-8507-1133e3a79766",
-        id: "854ee90b-b7e2-4b45-85c3-ce9f39e05c9f",
-      },
-      {
-        catName: "Giá hạch toán",
-        isChildOf: "7420d961-1f30-4087-8507-1133e3a79766",
-        id: "63a09977-3ccf-4916-ba70-e8a585f91c77",
-      },
-    ]);
+    const fetchData = async () => {
+      try {
+        // Adjust "/your-service-url" to the specific endpoint you need to hit
+        const serviceURL = "/product-service/category";
+        const result = await getData(serviceURL);
+        setCategoriesChild(result); // Update your state with the fetched data
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      }
+    };
+
+    fetchData(); // Call the async function
   }, []); // Empty dependency array ensures this effect runs only once
   //Xây dựng sidebar category
   const pathname = usePathname();
   let pathname1 = pathname.split("/");
   let pathSplit = pathname1[1];
   console.log(pathSplit);
-  console.log(34);
   function getKeyByValue(object, value) {
     return Object.keys(object).find((key) => object[key] === value);
   }
