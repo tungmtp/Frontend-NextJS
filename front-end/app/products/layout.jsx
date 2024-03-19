@@ -136,20 +136,20 @@ export default function regularLayout({ children }) {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Adjust "/your-service-url" to the specific endpoint you need to hit
-        const serviceURL = "/product-service/category";
-        const result = await getData(serviceURL);
-        setCategoriesChild(result); // Update your state with the fetched data
-      } catch (err) {
-        console.error("Error fetching data:", err);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       // Adjust "/your-service-url" to the specific endpoint you need to hit
+  //       const serviceURL = "/product-service/category";
+  //       const result = await getData(serviceURL);
+  //       setCategoriesChild(result); // Update your state with the fetched data
+  //     } catch (err) {
+  //       console.error("Error fetching data:", err);
+  //     }
+  //   };
 
-    fetchData(); // Call the async function
-  }, []); // Empty dependency array ensures this effect runs only once
+  //   fetchData(); // Call the async function
+  // }, []); // Empty dependency array ensures this effect runs only once
   //Xây dựng sidebar category
   const pathname = usePathname();
   let pathname1 = pathname.split("/");
@@ -187,7 +187,7 @@ export default function regularLayout({ children }) {
 
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body>
         <Box sx={{ display: "flex" }}>
           <CssBaseline />
           <AppBar position="fixed" open={open}>

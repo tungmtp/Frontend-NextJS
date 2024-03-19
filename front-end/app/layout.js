@@ -16,7 +16,7 @@ export default function RootLayout({ children }) {
   // const isLoginPage = router.pathname === "/login";
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body>
         {/* {!isLoginPage && <Sidebar />} */}
 
         {children}

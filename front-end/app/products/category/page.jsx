@@ -10,7 +10,7 @@ import { Label, NotificationsOutlined } from "@mui/icons-material";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
-import TreeViewComponent from "@/components/treeview/TreeViewComponent";
+import TreeViewComp from "@/components/treeview/TreeViewComp";
 
 export default function Category() {
   const [selectedNode, setSelectedNode] = useState(null);
@@ -142,7 +142,7 @@ export default function Category() {
     <div>
       <Grid container spacing={4}>
         <Grid item xs={3}>
-          <TreeViewComponent data={"/product-service/category"} />
+          <TreeViewComp data={"/product-service/category"} />
         </Grid>
       </Grid>
     </div>

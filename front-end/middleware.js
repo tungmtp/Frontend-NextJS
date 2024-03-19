@@ -14,7 +14,7 @@ export async function middleware(req) {
   }
 
   // Validate the token by making a request to your validation endpoint
-  const isValid = verifyToken(token);
+  const isValid = verifyToken(token, "/auth/testToken");
   // Implement this function to make the HTTP request
 
   // Redirect to login if the token is invalid
