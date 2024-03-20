@@ -11,7 +11,7 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import TreeViewComp from "@/components/treeview/TreeViewComp";
-import ChildTreeView from "@/components/treeview/childtreeview/childTreeView";
+import ChildCategory from "@/components/childcategory/ChildCategory";
 
 export default function Category() {
   const [selectedNode, setSelectedNode] = useState(null);
@@ -145,7 +145,9 @@ export default function Category() {
         <Grid item xs={3}>
           <TreeViewComp data={"/product-service/category"} />
         </Grid>
-        <Grid item xs={9}></Grid>
+        <Grid item xs={9}>
+          <ChildCategory />
+        </Grid>
       </Grid>
     </div>
   );
