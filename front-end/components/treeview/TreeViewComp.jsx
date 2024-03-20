@@ -19,6 +19,9 @@ import TextField from "@mui/material/TextField";
 import "./treeViewComp.css";
 import BorderColorTwoToneIcon from "@mui/icons-material/BorderColorTwoTone";
 import FiberManualRecordOutlinedIcon from "@mui/icons-material/FiberManualRecordOutlined";
+import { useDispatch, useSelector } from "react-redux";
+import { getCategoryProducts } from "@/redux/apiCalls";
+import { setSelectedCategory } from "@/redux/categoryProductRedux";
 
 export default function TreeViewComp(serviceURL) {
   const [selectedNodes, setSelectedNodes] = useState([]);
@@ -31,19 +34,27 @@ export default function TreeViewComp(serviceURL) {
     catName: "",
     isChildOf: "",
   });
+  const dispatch = useDispatch();
+  const products = useSelector(
+    (state) => state.categoryProduct.categoryProducts
+  );
+  // console.log(products);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const result = await getData(serviceURL.data);
-        setCategoryData(result);
-      } catch (err) {
-        console.error("Error fetching data:", err);
-      }
-    };
+    // const fetchData = async () => {
+    //   try {
+    //     const result = await getData(serviceURL.data);
+    //     setCategoryData(result);
+    //   } catch (err) {
+    //     console.error("Error fetching data:", err);
+    //   }
+    // };
 
-    fetchData();
-  }, []);
+    // fetchData();
+
+    getCategoryProducts(dispatch);
+    setCategoryData(products);
+  }, [dispatch]);
 
   const buildCategoryTree = (categoryData, parentId = null) => {
     const filteredCategories = categoryData?.filter(
@@ -82,9 +93,10 @@ export default function TreeViewComp(serviceURL) {
     } else {
       setSelectedNodes([...selectedNodes, nodeId]);
       setSelectedSingleNodes(nodeId);
+      dispatch(setSelectedCategory(nodeId));
     }
   };
-  console.log("Selected Node ID:", selectedSingleNode);
+  // console.log("Selected Node ID:", selectedSingleNode);
   // console.log("data sẽ gửi:", addCategory);
 
   const CategoryTree = buildCategoryTree(categoryData);
@@ -154,14 +166,26 @@ export default function TreeViewComp(serviceURL) {
                 catName: catName,
                 isChildOf: selectedSingleNode,
               };
-              const addCategory2 = {
-                catName: catName,
-                isChildOf: selectedSingleNode,
-                id: Math.random() * 100000,
-              };
-              setCategoryData((prevState) => [...prevState, addCategory2]);
+
               console.log(addCategory);
-              postData("/product-service/category", addCategory);
+
+              const postCategoryProduct = async () => {
+                try {
+                  const result = await postData(
+                    "/product-service/category",
+                    addCategory
+                  );
+                  const addCategory2 = {
+                    catName: catName,
+                    isChildOf: selectedSingleNode,
+                    id: result.id,
+                  };
+                  setCategoryData((prevState) => [...prevState, addCategory2]);
+                } catch (err) {
+                  console.error("Error fetching data:", err);
+                }
+              };
+              postCategoryProduct();
               alert("Thêm thành công !!!");
               handleClose();
               //window.location.reload(false);
@@ -317,16 +341,6 @@ export default function TreeViewComp(serviceURL) {
     );
   }
 
-  const handleAddNode = () => {
-    // Example implementation to add a new node
-    const newNode = {
-      id: "newNodeId", // Provide a unique ID for the new node
-      name: "New Node",
-      children: [], // Assuming the new node has no children initially
-    };
-
-    setCategoryData([...categoryData, newNode]);
-  };
   return (
     <div>
       <Box sx={{ minHeight: 110, flexGrow: 1, maxWidth: 300 }}>

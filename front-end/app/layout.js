@@ -1,5 +1,6 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
+import ReduxProvider from "@/redux/ReduxProvider";
 // import Sidebar from "@/components/sidebar/Sidebar";
 // import { useRouter } from "next/navigation";
 
@@ -18,8 +19,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         {/* {!isLoginPage && <Sidebar />} */}
-
-        {children}
+        <ReduxProvider>{children}</ReduxProvider>
       </body>
     </html>
   );
