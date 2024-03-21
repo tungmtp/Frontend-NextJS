@@ -186,148 +186,138 @@ export default function regularLayout({ children }) {
   const titleCategoryList = titleCategory(mnu, pathSplit);
 
   return (
-    <html lang="en">
-      <body>
-        <Box sx={{ display: "flex" }}>
-          <CssBaseline />
-          <AppBar position="fixed" open={open}>
-            <Toolbar>
-              <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                onClick={handleDrawerOpen}
-                edge="start"
-                sx={{
-                  marginRight: 5,
-                  ...(open && { display: "none" }),
-                }}
-              >
-                <MenuIcon />
-              </IconButton>
-              <Button
-                key={"home"}
-                onClick={() => handleCateClick("NEWSKY")}
-                sx={{
-                  fontSize: 24,
-                  color: "white",
-                  display: "block",
-                  fontWeight: 700,
-                }}
-              >
-                NEWSKY
-              </Button>
-              <Box
-                sx={{
-                  flexGrow: 1,
-                  display: { xs: "none", md: "flex" },
-                  mx: 4,
-                }}
-              >
-                {Object.keys(category)
-                  .slice(1)
-                  .map((key) => (
-                    <Button
-                      key={key}
-                      onClick={() => handleCateClick(key)}
-                      sx={{
-                        my: 2,
-                        color: "white",
-                        display: "block",
-                        fontWeight: 700,
-                        letterSpacing: -0.5,
-                        mx: 1,
-                      }}
-                    >
-                      {key}
-                    </Button>
-                  ))}
-              </Box>
-              <Badge
-                badgeContent={4}
-                color="success"
-                style={{ marginRight: 20 }}
-              >
-                <NotificationsIcon style={{ color: "white" }} />
-              </Badge>
-              <Box sx={{ flexGrow: 0 }}>
-                <Tooltip title="Open settings">
-                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    <Avatar alt="Remy Sharp" src="" />
-                  </IconButton>
-                </Tooltip>
-                <Menu
-                  sx={{ mt: "45px" }}
-                  id="menu-appbar"
-                  anchorEl={anchorElUser}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
+    <Box sx={{ display: "flex" }}>
+      <CssBaseline />
+      <AppBar position="fixed" open={open}>
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleDrawerOpen}
+            edge="start"
+            sx={{
+              marginRight: 5,
+              ...(open && { display: "none" }),
+            }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Button
+            key={"home"}
+            onClick={() => handleCateClick("NEWSKY")}
+            sx={{
+              fontSize: 24,
+              color: "white",
+              display: "block",
+              fontWeight: 700,
+            }}
+          >
+            NEWSKY
+          </Button>
+          <Box
+            sx={{
+              flexGrow: 1,
+              display: { xs: "none", md: "flex" },
+              mx: 4,
+            }}
+          >
+            {Object.keys(category)
+              .slice(1)
+              .map((key) => (
+                <Button
+                  key={key}
+                  onClick={() => handleCateClick(key)}
+                  sx={{
+                    my: 2,
+                    color: "white",
+                    display: "block",
+                    fontWeight: 700,
+                    letterSpacing: -0.5,
+                    mx: 1,
                   }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  open={Boolean(anchorElUser)}
-                  onClose={handleCloseUserMenu}
                 >
-                  {settings.map((setting) => (
-                    <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                      <Typography textAlign="center">{setting}</Typography>
-                    </MenuItem>
-                  ))}
-                </Menu>
-              </Box>
-            </Toolbar>
-          </AppBar>
-          <Drawer variant="permanent" open={open}>
-            <DrawerHeader>
-              <IconButton onClick={handleDrawerClose}>
-                {theme.direction === "rtl" ? (
-                  <ChevronRightIcon />
-                ) : (
-                  <ChevronLeftIcon />
-                )}
-              </IconButton>
-            </DrawerHeader>
-            <Divider />
-            <List>
-              {titleCategoryList.map((cate, index) => (
-                <ListItem
-                  key={cate.link}
-                  disablePadding
-                  sx={{ display: "block" }}
-                >
-                  <Link href={cate.link}>
-                    <ListItemButton
-                      sx={{
-                        minHeight: 48,
-                        justifyContent: open ? "initial" : "center",
-                        px: 2.5,
-                      }}
-                    >
-                      <Tooltip title={cate.title} placement="right-start">
-                        <ListItemIcon
-                          sx={{
-                            minWidth: 0,
-                            mr: open ? 3 : "auto",
-                            justifyContent: "center",
-                          }}
-                        >
-                          {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                        </ListItemIcon>
-                      </Tooltip>
-                      <ListItemText
-                        primary={cate.title}
-                        sx={{ opacity: open ? 1 : 0 }}
-                      />
-                    </ListItemButton>
-                  </Link>
-                </ListItem>
+                  {key}
+                </Button>
               ))}
-            </List>
-            <Divider />
-            {/* <List>
+          </Box>
+          <Badge badgeContent={4} color="success" style={{ marginRight: 20 }}>
+            <NotificationsIcon style={{ color: "white" }} />
+          </Badge>
+          <Box sx={{ flexGrow: 0 }}>
+            <Tooltip title="Open settings">
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                <Avatar alt="Remy Sharp" src="" />
+              </IconButton>
+            </Tooltip>
+            <Menu
+              sx={{ mt: "45px" }}
+              id="menu-appbar"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
+            >
+              {settings.map((setting) => (
+                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                  <Typography textAlign="center">{setting}</Typography>
+                </MenuItem>
+              ))}
+            </Menu>
+          </Box>
+        </Toolbar>
+      </AppBar>
+      <Drawer variant="permanent" open={open}>
+        <DrawerHeader>
+          <IconButton onClick={handleDrawerClose}>
+            {theme.direction === "rtl" ? (
+              <ChevronRightIcon />
+            ) : (
+              <ChevronLeftIcon />
+            )}
+          </IconButton>
+        </DrawerHeader>
+        <Divider />
+        <List>
+          {titleCategoryList.map((cate, index) => (
+            <ListItem key={cate.link} disablePadding sx={{ display: "block" }}>
+              <Link href={cate.link}>
+                <ListItemButton
+                  sx={{
+                    minHeight: 48,
+                    justifyContent: open ? "initial" : "center",
+                    px: 2.5,
+                  }}
+                >
+                  <Tooltip title={cate.title} placement="right-start">
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        mr: open ? 3 : "auto",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                    </ListItemIcon>
+                  </Tooltip>
+                  <ListItemText
+                    primary={cate.title}
+                    sx={{ opacity: open ? 1 : 0 }}
+                  />
+                </ListItemButton>
+              </Link>
+            </ListItem>
+          ))}
+        </List>
+        <Divider />
+        {/* <List>
               {["All mail", "Trash", "Spam"].map((text, index) => (
                 <ListItem key={text} disablePadding sx={{ display: "block" }}>
                   <ListItemButton
@@ -354,13 +344,11 @@ export default function regularLayout({ children }) {
                 </ListItem>
               ))}
             </List> */}
-          </Drawer>
-          <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-            <DrawerHeader />
-            {children}
-          </Box>
-        </Box>
-      </body>
-    </html>
+      </Drawer>
+      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <DrawerHeader />
+        {children}
+      </Box>
+    </Box>
   );
 }
