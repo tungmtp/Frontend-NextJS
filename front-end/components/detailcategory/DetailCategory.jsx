@@ -5,6 +5,7 @@ import {
   Grid,
   Link,
   Paper,
+  TextField,
   Typography,
 } from "@mui/material";
 import React from "react";
@@ -39,7 +40,7 @@ export default function DetailCategory(selectedCategory) {
     </Typography>,
   ];
   return (
-    <Paper elevation={1} sx={{ paddingLeft: 4 }}>
+    <Paper elevation={1} sx={{ paddingLeft: 4, py: 2 }}>
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Typography variant="h6">Category</Typography>
@@ -53,15 +54,15 @@ export default function DetailCategory(selectedCategory) {
 
         <Grid item xs={12}>
           <Typography variant="h6">Tên sản phẩm</Typography>
-          <Typography>CL.C23.TRANG.08770-6.R7.2000</Typography>
+          <TextField id="standard-basic" variant="outlined" />
         </Grid>
         <Grid item xs={12}>
           <Typography variant="h6">Đơn vị tính quy chuẩn</Typography>
-          <Typography>Cây 2.0m</Typography>
+          <TextField id="standard-basic" variant="outlined" />
         </Grid>
         <Grid item xs={12}>
           <Typography variant="h6">Tồn kho tối thiểu</Typography>
-          <Typography>0</Typography>
+          <TextField id="standard-basic" variant="outlined" />
         </Grid>
         <Grid item xs={12}>
           <Typography variant="h6">Actions</Typography>
@@ -79,15 +80,15 @@ export default function DetailCategory(selectedCategory) {
         </Grid>
         <Grid item xs={12}>
           <Typography variant="h6">Class giá hạch toán</Typography>
-          <Typography>Phào trắng 10</Typography>
+          <TextField id="standard-basic" variant="outlined" />
         </Grid>
         <Grid item xs={12}>
           <Typography variant="h6">Công đoạn sản xuất</Typography>
-          <Typography>Cưa 2 đầu lỗi phào</Typography>
+          <TextField id="standard-basic" variant="outlined" />
         </Grid>
         <Grid item xs={12}>
           <Typography variant="h6">Comment</Typography>
-          <Typography>{/* Add comment here */}</Typography>
+          <TextField id="standard-basic" variant="outlined" multiline />
         </Grid>
       </Grid>
     </Paper>

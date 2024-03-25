@@ -1,24 +1,28 @@
 import { deleteData, getData, postData, putData } from "@/hook/Hook";
 import React, { useEffect, useState } from "react";
+import clsx from "clsx";
 import Box from "@mui/material/Box";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { TreeView } from "@mui/x-tree-view/TreeView";
-import { TreeItem } from "@mui/x-tree-view/TreeItem";
-import { Button, Checkbox, Dialog, IconButton, Stack } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { TreeItem, useTreeItem } from "@mui/x-tree-view/TreeItem";
+import {
+  Button,
+  Checkbox,
+  Dialog,
+  IconButton,
+  Stack,
+  Typography,
+} from "@mui/material";
 import AddBoxTwoToneIcon from "@mui/icons-material/AddBoxTwoTone";
 import AccountTreeTwoToneIcon from "@mui/icons-material/AccountTreeTwoTone";
-import BuildTwoToneIcon from "@mui/icons-material/BuildTwoTone";
 import DeleteForeverTwoToneIcon from "@mui/icons-material/DeleteForeverTwoTone";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
 import "./treeViewComp.css";
 import BorderColorTwoToneIcon from "@mui/icons-material/BorderColorTwoTone";
-import FiberManualRecordOutlinedIcon from "@mui/icons-material/FiberManualRecordOutlined";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addCategoryProduct,
@@ -40,6 +44,9 @@ export default function TreeViewComp(serviceURL) {
     isChildOf: "",
   });
   const dispatch = useDispatch();
+  const selectedCategory = useSelector(
+    (state) => state.categoryProduct.selectedCategory
+  );
   const products = useSelector(
     (state) => state.categoryProduct.categoryProducts
   );
@@ -49,6 +56,85 @@ export default function TreeViewComp(serviceURL) {
     getCategoryProducts(dispatch);
     setCategoryData(products);
   }, [dispatch]);
+
+  const CustomContent = React.forwardRef(function CustomContent(props, ref) {
+    const {
+      classes,
+      className,
+      label,
+      nodeId,
+      icon: iconProp,
+      expansionIcon,
+      displayIcon,
+    } = props;
+
+    const {
+      disabled,
+      expanded,
+      selected,
+      focused,
+      handleExpansion,
+      handleSelection,
+      preventSelection,
+    } = useTreeItem(nodeId);
+
+    const icon = iconProp || expansionIcon || displayIcon;
+
+    const handleMouseDown = (event) => {
+      preventSelection(event);
+    };
+
+    const handleExpansionClick = (event) => {
+      handleExpansion(event);
+    };
+
+    const handleSelectionClick = (event, nodeId) => {
+      //handleSelection(event);
+      console.log(nodeId);
+      // const isSelected = selectedNodes.includes(nodeId);
+      dispatch(setSelectedCategory(nodeId));
+      setSelectedSingleNodes(nodeId);
+      // if (isSelected) {
+      //   setSelectedNodes(selectedNodes.filter((id) => id !== nodeId));
+      //   setSelectedSingleNodes(null);
+      // } else {
+      //   setSelectedNodes([...selectedNodes, nodeId]);
+      //   setSelectedSingleNodes(nodeId);
+      //   dispatch(setSelectedCategory(nodeId));
+      // }
+    };
+
+    return (
+      // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+      <div
+        className={clsx(className, classes.root, {
+          [classes.expanded]: expanded,
+          [classes.selected]: selected,
+          [classes.focused]: focused,
+          [classes.disabled]: disabled,
+        })}
+        // onMouseDown={handleMouseDown}
+        ref={ref}
+      >
+        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
+        <div onClick={handleExpansionClick} className={classes.iconContainer}>
+          {icon}
+        </div>
+        <Typography
+          onClick={(event) => {
+            handleSelectionClick(event, nodeId);
+          }}
+          component="div"
+          className={classes.label}
+        >
+          {label}
+        </Typography>
+      </div>
+    );
+  });
+  const CustomTreeItem = React.forwardRef(function CustomTreeItem(props, ref) {
+    return <TreeItem ContentComponent={CustomContent} {...props} ref={ref} />;
+  });
 
   const buildCategoryTree = (categoryData, parentId = null) => {
     const filteredCategories = categoryData?.filter(
@@ -99,7 +185,7 @@ export default function TreeViewComp(serviceURL) {
     const isLeafNode = nodes.children.length === 0;
 
     return (
-      <TreeItem
+      <CustomTreeItem
         key={nodes.id}
         nodeId={nodes.id}
         label={
@@ -114,19 +200,28 @@ export default function TreeViewComp(serviceURL) {
           </div>
         }
         //onClick={(event) => isLeafNode && handleNodeSelect(event, nodes.id)}
-        onClick={(event) => {
-          handleNodeSelect(event, nodes.id);
-        }}
+        // onClick={(event) => {
+        //   handleNodeSelect(event, nodes.id);
+        // }}
         selected={selectedNodes.includes(nodes.id)}
       >
         {nodes.children.map((node) => renderTree(node))}
-      </TreeItem>
+      </CustomTreeItem>
     );
   };
 
   const handleOpenAdd = () => {
     setOpenAddDialog(true);
-    setAddCategory({ isChildOf: selectedSingleNode });
+    setAddCategory({ isChildOf: null });
+  };
+  const handleOpenAddChild = (event) => {
+    if (selectedSingleNode === null) {
+      event.preventDefault();
+      alert("Bạn chưa chọn vị trí thư mục");
+    } else {
+      setOpenAddDialog(true);
+      setAddCategory({ isChildOf: selectedSingleNode });
+    }
   };
   const handleClose = () => {
     setOpenAddDialog(false);
@@ -156,9 +251,10 @@ export default function TreeViewComp(serviceURL) {
               const formData = new FormData(event.currentTarget);
               const formJson = Object.fromEntries(formData.entries());
               const catName = formJson.catName;
-              const addCategory = {
+
+              const addCategory1 = {
                 catName: catName,
-                isChildOf: selectedSingleNode,
+                isChildOf: addCategory.isChildOf,
               };
 
               console.log(addCategory);
@@ -188,7 +284,10 @@ export default function TreeViewComp(serviceURL) {
           }}
         >
           <DialogTitle>
-            Thêm thư mục vào: {seltecedCatName?.catName}{" "}
+            {addCategory.isChildOf
+              ? `Thêm thư mục vào: ${seltecedCatName?.catName}`
+              : "Thêm thư mục gốc"}
+            {/* Thêm thư mục vào: {seltecedCatName?.catName}*/}
           </DialogTitle>
           <DialogContent>
             <TextField
@@ -218,7 +317,6 @@ export default function TreeViewComp(serviceURL) {
       alert("Bạn chưa chọn vị trí thư mục");
     } else {
       setOpenFixDialog(true);
-      // setAddCategory({ isChildOf: selectedSingleNode });
     }
   };
   const handleCloseFix = () => {
@@ -346,6 +444,9 @@ export default function TreeViewComp(serviceURL) {
           <IconButton aria-label="add" onClick={handleOpenAdd}>
             <AddBoxTwoToneIcon />
           </IconButton>
+          <IconButton aria-label="addChild" onClick={handleOpenAddChild}>
+            <AccountTreeTwoToneIcon />
+          </IconButton>
           <FormAddDialog open={openAddDialog} />
           <IconButton aria-label="fix" onClick={handleOpenFix}>
             <BorderColorTwoToneIcon />
@@ -359,7 +460,6 @@ export default function TreeViewComp(serviceURL) {
         <TreeView
           aria-label="rich object"
           defaultCollapseIcon={<ExpandMoreIcon />}
-          defaultExpanded={["root"]}
           defaultExpandIcon={<ChevronRightIcon />}
           selected={selectedSingleNode}
         >

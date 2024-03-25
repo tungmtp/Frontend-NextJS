@@ -34,22 +34,22 @@ const rows = [
     col2: "Cây 2.0",
   },
   {
-    id: 145645645,
+    id: 145645665745,
     col1: "CL.C23.TRANG.08770-6.R7.2000  Phào trắng 10",
     col2: "Cây 2.0",
   },
   {
-    id: 145645645,
+    id: 145645567645,
     col1: "CL.C23.TRANG.08770-6.R7.2000  Phào trắng 10",
     col2: "Cây 2.0",
   },
   {
-    id: 145645645,
+    id: 145644565645,
     col1: "CL.C23.TRANG.08770-6.R7.2000  Phào trắng 10",
     col2: "Cây 2.0",
   },
   {
-    id: 145645645,
+    id: 14564456465645,
     col1: "CL.C23.TRANG.08770-6.R7.2000  Phào trắng 10",
     col2: "Cây 2.0",
   },
@@ -80,63 +80,102 @@ export default function ChildCategory() {
   };
   const columns = [
     { field: "id", headerName: "id", width: 150 },
-    { field: "col1", headerName: "Tên thành phẩm", width: 400 },
-    { field: "col2", headerName: "Đơn vị tính", width: 150 },
+
     {
-      field: "action",
-      headerName: "Thao tác",
-      width: 150,
+      field: "col1",
+      headerName: "Tên thành phẩm",
+      width: 450,
+
       renderCell: (params) => {
         return (
-          <div>
-            <Button
-              variant="contained"
-              size="small"
-              onClick={() => {
-                dispatch(setSelectedCategory(params.row.id));
-                console.log(params.row);
-              }}
-            >
-              Detail
-            </Button>
-
-            {/* <DeleteOutline
-              className="productListDelete"
-              onClick={() => handleDelete(params.row._id)}
-            /> */}
-          </div>
+          <Link
+            underline="hover"
+            key={params.row.id}
+            color="inherit"
+            variant="body1"
+            onClick={() => {
+              dispatch(setSelectedCategory(params.row.id));
+              console.log(params.row);
+            }}
+          >
+            {params.row.col1}
+          </Link>
         );
       },
     },
+    { field: "col2", headerName: "Đơn vị tính", width: 150 },
   ];
 
-  function handleClick(event) {
-    event.preventDefault();
-    console.info("You clicked a breadcrumb.");
-  }
-  const breadcrumbs = [
-    <Link
-      underline="hover"
-      key="1"
-      variant="body2"
-      href="/"
-      onClick={handleClick}
-    >
-      Nguyên liệu chính
-    </Link>,
-    <Link
-      underline="hover"
-      key="2"
-      variant="body2"
-      href="/material-ui/getting-started/installation/"
-      onClick={handleClick}
-    >
-      Sản phẩm A
-    </Link>,
-    <Typography key="3" color="text.primary">
-      Bán thành phẩm A-1
-    </Typography>,
-  ];
+  const handleClick = (id) => {
+    dispatch(setSelectedCategory(id));
+  };
+  // const breadcrumbs = [
+  //   <Link
+  //     underline="hover"
+  //     key="1"
+  //     variant="body2"
+  //     href="/"
+  //     onClick={handleClick}
+  //   >
+  //     Nguyên liệu chính
+  //   </Link>,
+  //   <Link
+  //     underline="hover"
+  //     key="2"
+  //     variant="body2"
+  //     href="/material-ui/getting-started/installation/"
+  //     onClick={handleClick}
+  //   >
+  //     Sản phẩm A
+  //   </Link>,
+  //   <Typography key="3" color="text.primary">
+  //     Bán thành phẩm A-1
+  //   </Typography>,
+  // ];
+  const generateBreadcrumbs = (categories, selectedCategoryId, handleClick) => {
+    const breadcrumbs = [];
+
+    // Hàm đệ quy để tìm kiếm parent của selectedCategoryId
+    const findParent = (categoryId, isLastChild = false) => {
+      const category = categories.find((cat) => cat.id === categoryId);
+      if (category) {
+        if (category.isChildOf) {
+          findParent(category.isChildOf, false);
+        }
+        if (!isLastChild) {
+          breadcrumbs.push(
+            <Link
+              underline="hover"
+              key={category.id}
+              variant="body2"
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                handleClick(category.id);
+              }}
+            >
+              {category.catName}
+            </Link>
+          );
+        } else {
+          breadcrumbs.push(
+            <Link underline="none" key={category.id} variant="body1" href="#">
+              {category.catName}
+            </Link>
+          );
+        }
+      }
+    };
+
+    findParent(selectedCategoryId, true);
+
+    return breadcrumbs;
+  };
+  const breadcrumbs = generateBreadcrumbs(
+    categoryProducts,
+    selectedCategory,
+    handleClick
+  );
   return (
     <Paper elevation={1} sx={{ paddingTop: 1, height: "84vh" }}>
       {hasChildren(selectedCategory) ? (
@@ -155,9 +194,16 @@ export default function ChildCategory() {
           >
             {breadcrumbs}
           </Breadcrumbs>
-          <Box sx={{ display: "flex", flexWrap: "wrap", flexGrow: 1 }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              flexGrow: 1,
+              rowGap: "4px",
+            }}
+          >
             {childCategories.map((category) => (
-              <Box sx={{ padding: 1 }} key={category.id}>
+              <Box sx={{ paddingRight: "8px" }} key={category.id}>
                 <Paper
                   elevation={2}
                   key={category.id}

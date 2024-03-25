@@ -1,7 +1,12 @@
+"use client";
+import PositionedMenu from "@/components/treeview2/CustomTreeView";
 import React from "react";
-
 function Products() {
-  return <div>Products</div>;
+  return (
+    <div>
+      <PositionedMenu />
+    </div>
+  );
 }
 
 export default Products;
