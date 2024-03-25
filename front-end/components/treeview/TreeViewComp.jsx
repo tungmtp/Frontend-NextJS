@@ -20,7 +20,12 @@ import "./treeViewComp.css";
 import BorderColorTwoToneIcon from "@mui/icons-material/BorderColorTwoTone";
 import FiberManualRecordOutlinedIcon from "@mui/icons-material/FiberManualRecordOutlined";
 import { useDispatch, useSelector } from "react-redux";
-import { getCategoryProducts } from "@/redux/apiCalls";
+import {
+  addCategoryProduct,
+  deleteCategoryProduct,
+  getCategoryProducts,
+  updateCategoryProduct,
+} from "@/redux/apiCalls";
 import { setSelectedCategory } from "@/redux/categoryProductRedux";
 
 export default function TreeViewComp(serviceURL) {
@@ -41,17 +46,6 @@ export default function TreeViewComp(serviceURL) {
   // console.log(products);
 
   useEffect(() => {
-    // const fetchData = async () => {
-    //   try {
-    //     const result = await getData(serviceURL.data);
-    //     setCategoryData(result);
-    //   } catch (err) {
-    //     console.error("Error fetching data:", err);
-    //   }
-    // };
-
-    // fetchData();
-
     getCategoryProducts(dispatch);
     setCategoryData(products);
   }, [dispatch]);
@@ -63,7 +57,7 @@ export default function TreeViewComp(serviceURL) {
     return filteredCategories?.map((category) => {
       const hasChildren = categoryData.some((c) => c.isChildOf === category.id);
       return {
-        id: category.id.toString(), // Convert ID to string
+        id: category.id?.toString(), // Convert ID to string
         name: category.catName,
         children: hasChildren
           ? buildCategoryTree(categoryData, category.id)
@@ -99,7 +93,7 @@ export default function TreeViewComp(serviceURL) {
   // console.log("Selected Node ID:", selectedSingleNode);
   // console.log("data sẽ gửi:", addCategory);
 
-  const CategoryTree = buildCategoryTree(categoryData);
+  const CategoryTree = buildCategoryTree(products);
 
   const renderTree = (nodes) => {
     const isLeafNode = nodes.children.length === 0;
@@ -169,23 +163,24 @@ export default function TreeViewComp(serviceURL) {
 
               console.log(addCategory);
 
-              const postCategoryProduct = async () => {
-                try {
-                  const result = await postData(
-                    "/product-service/category",
-                    addCategory
-                  );
-                  const addCategory2 = {
-                    catName: catName,
-                    isChildOf: selectedSingleNode,
-                    id: result.id,
-                  };
-                  setCategoryData((prevState) => [...prevState, addCategory2]);
-                } catch (err) {
-                  console.error("Error fetching data:", err);
-                }
-              };
-              postCategoryProduct();
+              // const postCategoryProduct = async () => {
+              //   try {
+              //     const result = await postData(
+              //       "/product-service/category",
+              //       addCategory
+              //     );
+              //     const addCategory2 = {
+              //       catName: catName,
+              //       isChildOf: selectedSingleNode,
+              //       id: result.id,
+              //     };
+              //     setCategoryData((prevState) => [...prevState, addCategory2]);
+              //   } catch (err) {
+              //     console.error("Error fetching data:", err);
+              //   }
+              // };
+              // postCategoryProduct();
+              addCategoryProduct(addCategory, dispatch);
               alert("Thêm thành công !!!");
               handleClose();
               //window.location.reload(false);
@@ -231,7 +226,7 @@ export default function TreeViewComp(serviceURL) {
   };
 
   function FormFixdDialog(open) {
-    const seltecedCatName = categoryData?.find(
+    const seltecedCatName = products?.find(
       (item) => item.id === selectedSingleNode
     );
     return (
@@ -250,18 +245,20 @@ export default function TreeViewComp(serviceURL) {
                 catName: catNewName,
                 isChildOf: seltecedCatName.isChildOf,
               };
-              const respone = putData(
-                "/product-service/category",
-                selectedSingleNode,
-                fixCategory
-              );
-              const updatedCategoryData = categoryData.map((item) => {
-                if (item.id === selectedSingleNode) {
-                  return { ...item, catName: catNewName };
-                }
-                return item;
-              });
-              setCategoryData(updatedCategoryData);
+              // const respone = putData(
+              //   "/product-service/category",
+              //   selectedSingleNode,
+              //   fixCategory
+              // );
+              updateCategoryProduct(selectedSingleNode, fixCategory, dispatch);
+
+              // const updatedCategoryData = categoryData.map((item) => {
+              //   if (item.id === selectedSingleNode) {
+              //     return { ...item, catName: catNewName };
+              //   }
+              //   return item;
+              // });
+              // setCategoryData(updatedCategoryData);
               handleCloseFix();
             },
           }}
@@ -316,15 +313,16 @@ export default function TreeViewComp(serviceURL) {
             component: "form",
             onSubmit: (event) => {
               event.preventDefault();
-              const respone = deleteData(
-                "/product-service/category",
-                selectedSingleNode
-              );
-              console.log(respone);
-              const updatedCategoryData = categoryData.filter(
-                (item) => item.id !== selectedSingleNode
-              );
-              setCategoryData(updatedCategoryData);
+              // const respone = deleteData(
+              //   "/product-service/category",
+              //   selectedSingleNode
+              // );
+              // console.log(respone);
+              // const updatedCategoryData = categoryData.filter(
+              //   (item) => item.id !== selectedSingleNode
+              // );
+              // setCategoryData(updatedCategoryData);
+              deleteCategoryProduct(selectedSingleNode, dispatch);
               handleCloseDelete();
               alert("Xóa thành công");
             },

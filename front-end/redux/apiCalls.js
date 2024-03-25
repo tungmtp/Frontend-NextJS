@@ -1,11 +1,17 @@
-import { getData } from "@/hook/Hook";
+import { deleteData, getData, postData, putData } from "@/hook/Hook";
 import {
+  addCategoryProductFailure,
+  addCategoryProductStart,
+  addCategoryProductSuccess,
   deleteCategoryProductFailure,
   deleteCategoryProductStart,
   deleteCategoryProductSuccess,
   getCategoryProductFailure,
   getCategoryProductStart,
   getCategoryProductSuccess,
+  updateCategoryProductFailure,
+  updateCategoryProductStart,
+  updateCategoryProductSuccess,
 } from "./categoryProductRedux";
 
 // export const login = async (dispatch, user) => {
@@ -45,35 +51,36 @@ export const getCategoryProducts = async (dispatch) => {
   }
 };
 
-// export const deleteCategoryProduct = async (id, dispatch) => {
-//   dispatch(deleteCategoryProductStart());
-//   try {
-//     // const res = await userRequest.delete(`/products/${id}`);
-//     dispatch(deleteCategoryProductSuccess(id));
-//   } catch (err) {
-//     dispatch(deleteCategoryProductFailure());
-//   }
-// };
+export const deleteCategoryProduct = async (id, dispatch) => {
+  dispatch(deleteCategoryProductStart());
+  try {
+    const res = await deleteData("/product-service/category", id);
+    dispatch(deleteCategoryProductSuccess(id));
+  } catch (err) {
+    dispatch(deleteCategoryProductFailure());
+  }
+};
 
-// export const updateProduct = async (id, product, dispatch) => {
-//   // dispatch(updateProductStart());
-//   try {
-//     // update
-//     const res = await userRequest.put(`/products/${id}`, product);
-//     //  dispatch(updateProductSuccess({ id, product }));
-//   } catch (err) {
-//     // dispatch(updateProductFailure());
-//   }
-// };
-// export const addProduct = async (product, dispatch) => {
-//   dispatch(addProductStart());
-//   try {
-//     const res = await userRequest.post(`/products`, product);
-//     dispatch(addProductSuccess(res.data));
-//   } catch (err) {
-//     dispatch(addProductFailure());
-//   }
-// };
+export const updateCategoryProduct = async (id, categoryProduct, dispatch) => {
+  dispatch(updateCategoryProductStart());
+  try {
+    // update
+    const res = await putData(`/product-service/category`, id, categoryProduct);
+    dispatch(updateCategoryProductSuccess({ id, categoryProduct }));
+  } catch (err) {
+    dispatch(updateCategoryProductFailure());
+  }
+};
+export const addCategoryProduct = async (categoryProduct, dispatch) => {
+  dispatch(addCategoryProductStart());
+  try {
+    const res = await postData(`/product-service/category`, categoryProduct);
+
+    dispatch(addCategoryProductSuccess(res));
+  } catch (err) {
+    dispatch(addCategoryProductFailure());
+  }
+};
 
 //ORDER
 // export const getOrders = async (dispatch) => {
