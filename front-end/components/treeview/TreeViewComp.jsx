@@ -32,7 +32,7 @@ import {
 } from "@/redux/apiCalls";
 import { setSelectedCategory } from "@/redux/categoryProductRedux";
 
-export default function TreeViewComp(serviceURL) {
+export default function TreeViewComp(PropData) {
   const [selectedNodes, setSelectedNodes] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
   const [openAddDialog, setOpenAddDialog] = React.useState(false);
@@ -40,7 +40,7 @@ export default function TreeViewComp(serviceURL) {
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
   const [selectedSingleNode, setSelectedSingleNodes] = useState("");
   const [addCategory, setAddCategory] = useState({
-    catName: "",
+    [PropData.title.toString()]: "",
     isChildOf: "",
   });
   const dispatch = useDispatch();
@@ -53,7 +53,7 @@ export default function TreeViewComp(serviceURL) {
   // console.log(products);
 
   useEffect(() => {
-    getCategoryProducts(dispatch);
+    getCategoryProducts(dispatch, PropData.serviceURL);
     setCategoryData(products);
   }, [dispatch]);
 
@@ -135,16 +135,17 @@ export default function TreeViewComp(serviceURL) {
   const CustomTreeItem = React.forwardRef(function CustomTreeItem(props, ref) {
     return <TreeItem ContentComponent={CustomContent} {...props} ref={ref} />;
   });
-
   const buildCategoryTree = (categoryData, parentId = null) => {
     const filteredCategories = categoryData?.filter(
-      (category) => category.isChildOf === parentId
+      (category) => category?.isChildOf === parentId
     );
     return filteredCategories?.map((category) => {
-      const hasChildren = categoryData.some((c) => c.isChildOf === category.id);
+      const hasChildren = categoryData.some(
+        (c) => c?.isChildOf === category.id
+      );
       return {
         id: category.id?.toString(), // Convert ID to string
-        name: category.catName,
+        name: category[PropData.title],
         children: hasChildren
           ? buildCategoryTree(categoryData, category.id)
           : [],
@@ -152,30 +153,30 @@ export default function TreeViewComp(serviceURL) {
     });
   };
 
-  const handleCheckboxChange = (event, nodeId) => {
-    const isChecked = event.target.checked;
+  // const handleCheckboxChange = (event, nodeId) => {
+  //   const isChecked = event.target.checked;
 
-    if (isChecked) {
-      setSelectedNodes([...selectedNodes, nodeId]);
-      setSelectedSingleNodes(nodeId);
-    } else {
-      setSelectedNodes(selectedNodes.filter((id) => id !== nodeId));
-      setSelectedSingleNodes(null);
-    }
-  };
+  //   if (isChecked) {
+  //     setSelectedNodes([...selectedNodes, nodeId]);
+  //     setSelectedSingleNodes(nodeId);
+  //   } else {
+  //     setSelectedNodes(selectedNodes.filter((id) => id !== nodeId));
+  //     setSelectedSingleNodes(null);
+  //   }
+  // };
 
-  const handleNodeSelect = (event, nodeId) => {
-    const isSelected = selectedNodes.includes(nodeId);
+  // const handleNodeSelect = (event, nodeId) => {
+  //   const isSelected = selectedNodes.includes(nodeId);
 
-    if (isSelected) {
-      setSelectedNodes(selectedNodes.filter((id) => id !== nodeId));
-      setSelectedSingleNodes(null);
-    } else {
-      setSelectedNodes([...selectedNodes, nodeId]);
-      setSelectedSingleNodes(nodeId);
-      dispatch(setSelectedCategory(nodeId));
-    }
-  };
+  //   if (isSelected) {
+  //     setSelectedNodes(selectedNodes.filter((id) => id !== nodeId));
+  //     setSelectedSingleNodes(null);
+  //   } else {
+  //     setSelectedNodes([...selectedNodes, nodeId]);
+  //     setSelectedSingleNodes(nodeId);
+  //     dispatch(setSelectedCategory(nodeId));
+  //   }
+  // };
   // console.log("Selected Node ID:", selectedSingleNode);
   // console.log("data sẽ gửi:", addCategory);
 
@@ -215,7 +216,7 @@ export default function TreeViewComp(serviceURL) {
     setAddCategory({ isChildOf: null });
   };
   const handleOpenAddChild = (event) => {
-    if (selectedSingleNode === null) {
+    if (!selectedSingleNode) {
       event.preventDefault();
       alert("Bạn chưa chọn vị trí thư mục");
     } else {
@@ -237,9 +238,10 @@ export default function TreeViewComp(serviceURL) {
   };
 
   function FormAddDialog(open) {
-    const seltecedCatName = categoryData?.find(
-      (item) => item.id === selectedSingleNode
+    const seltecedCatName = products.find(
+      (item) => item?.id === selectedSingleNode
     );
+
     return (
       <React.Fragment>
         <Dialog
@@ -253,7 +255,7 @@ export default function TreeViewComp(serviceURL) {
               const catName = formJson.catName;
 
               const addCategory1 = {
-                catName: catName,
+                [PropData.title.toString()]: catName,
                 isChildOf: addCategory.isChildOf,
               };
 
@@ -276,7 +278,7 @@ export default function TreeViewComp(serviceURL) {
               //   }
               // };
               // postCategoryProduct();
-              addCategoryProduct(addCategory, dispatch);
+              addCategoryProduct(addCategory1, dispatch, PropData.serviceURL);
               alert("Thêm thành công !!!");
               handleClose();
               //window.location.reload(false);
@@ -285,7 +287,7 @@ export default function TreeViewComp(serviceURL) {
         >
           <DialogTitle>
             {addCategory.isChildOf
-              ? `Thêm thư mục vào: ${seltecedCatName?.catName}`
+              ? `Thêm thư mục vào: ${seltecedCatName?.[PropData.title]}`
               : "Thêm thư mục gốc"}
             {/* Thêm thư mục vào: {seltecedCatName?.catName}*/}
           </DialogTitle>
@@ -312,7 +314,7 @@ export default function TreeViewComp(serviceURL) {
   }
 
   const handleOpenFix = (event) => {
-    if (selectedSingleNode === null) {
+    if (!selectedSingleNode) {
       event.preventDefault();
       alert("Bạn chưa chọn vị trí thư mục");
     } else {
@@ -325,7 +327,7 @@ export default function TreeViewComp(serviceURL) {
 
   function FormFixdDialog(open) {
     const seltecedCatName = products?.find(
-      (item) => item.id === selectedSingleNode
+      (item) => item?.id === selectedSingleNode
     );
     return (
       <React.Fragment>
@@ -338,9 +340,9 @@ export default function TreeViewComp(serviceURL) {
               event.preventDefault();
               const formData = new FormData(event.currentTarget);
               const formJson = Object.fromEntries(formData.entries());
-              const catNewName = formJson.catName;
+              const newName = formJson.newName;
               const fixCategory = {
-                catName: catNewName,
+                [PropData.title.toString()]: newName,
                 isChildOf: seltecedCatName.isChildOf,
               };
               // const respone = putData(
@@ -348,7 +350,12 @@ export default function TreeViewComp(serviceURL) {
               //   selectedSingleNode,
               //   fixCategory
               // );
-              updateCategoryProduct(selectedSingleNode, fixCategory, dispatch);
+              updateCategoryProduct(
+                selectedSingleNode,
+                fixCategory,
+                dispatch,
+                PropData.serviceURL
+              );
 
               // const updatedCategoryData = categoryData.map((item) => {
               //   if (item.id === selectedSingleNode) {
@@ -362,7 +369,7 @@ export default function TreeViewComp(serviceURL) {
           }}
         >
           <DialogTitle>
-            Đổi tên thư mục: {seltecedCatName?.catName}{" "}
+            Đổi tên thư mục: {seltecedCatName?.[PropData.title]}
           </DialogTitle>
 
           <DialogContent>
@@ -370,7 +377,7 @@ export default function TreeViewComp(serviceURL) {
               required
               margin="dense"
               id="name"
-              name="catName"
+              name="newName"
               label="Tên mới:"
               type="text"
               fullWidth
@@ -387,7 +394,7 @@ export default function TreeViewComp(serviceURL) {
     );
   }
   const handleOpenDelete = (event) => {
-    if (selectedSingleNode === null) {
+    if (!selectedSingleNode) {
       event.preventDefault();
       alert("Bạn chưa chọn vị trí thư mục");
     } else {
@@ -399,8 +406,8 @@ export default function TreeViewComp(serviceURL) {
     setOpenDeleteDialog(false);
   };
   function FormDeleteDialog(open) {
-    const seltecedCatName = categoryData?.find(
-      (item) => item.id === selectedSingleNode
+    const seltecedCatName = products?.find(
+      (item) => item?.id === selectedSingleNode
     );
     return (
       <React.Fragment>
@@ -420,13 +427,19 @@ export default function TreeViewComp(serviceURL) {
               //   (item) => item.id !== selectedSingleNode
               // );
               // setCategoryData(updatedCategoryData);
-              deleteCategoryProduct(selectedSingleNode, dispatch);
+              deleteCategoryProduct(
+                selectedSingleNode,
+                dispatch,
+                PropData.serviceURL
+              );
               handleCloseDelete();
               alert("Xóa thành công");
             },
           }}
         >
-          <DialogTitle>Xóa thư mục: {seltecedCatName?.catName} </DialogTitle>
+          <DialogTitle>
+            Xóa thư mục: {seltecedCatName?.[PropData.title]}{" "}
+          </DialogTitle>
           <DialogContent>Bạn chắc chắn muốn xóa thư mục này?</DialogContent>
           <DialogActions>
             <Button onClick={handleCloseDelete}>Cancel</Button>
@@ -439,7 +452,7 @@ export default function TreeViewComp(serviceURL) {
 
   return (
     <div>
-      <Box sx={{ minHeight: 110, flexGrow: 1, maxWidth: 300 }}>
+      <Box sx={{ minHeight: 110 }}>
         <Stack direction="row" spacing={1}>
           <IconButton aria-label="add" onClick={handleOpenAdd}>
             <AddBoxTwoToneIcon />
@@ -457,14 +470,16 @@ export default function TreeViewComp(serviceURL) {
           </IconButton>
           <FormDeleteDialog open={openDeleteDialog} />
         </Stack>
-        <TreeView
-          aria-label="rich object"
-          defaultCollapseIcon={<ExpandMoreIcon />}
-          defaultExpandIcon={<ChevronRightIcon />}
-          selected={selectedSingleNode}
-        >
-          {CategoryTree?.map((object) => renderTree(object))}
-        </TreeView>
+        <div style={{ overflow: "auto", height: "79vh" }}>
+          <TreeView
+            aria-label="rich object"
+            defaultCollapseIcon={<ExpandMoreIcon />}
+            defaultExpandIcon={<ChevronRightIcon />}
+            selected={selectedSingleNode}
+          >
+            {CategoryTree?.map((object) => renderTree(object))}
+          </TreeView>
+        </div>
       </Box>
     </div>
   );

@@ -7,7 +7,8 @@ export const mnu = {
     { title: "Phân loại sản phẩm", link: "/products/category" },
     { title: "Thêm sản phẩm", link: "/products/addproduct" },
     { title: "Danh mục đơn vị tính", link: "/products/measurement" },
-    { title: "Thuộc tính sản phẩm", link: "/products/productPropoty" },
+    { title: "Thuộc tính sản phẩm", link: "/products/attribute" },
+    { title: "Danh mục Class", link: "/products/Classes" },
   ],
   storage: [
     { title: "Danh mục tạm nhập", link: "/storage/" },

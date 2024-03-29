@@ -6,7 +6,14 @@ import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Box, Breadcrumbs, Button, Link, Typography } from "@mui/material";
+import {
+  Box,
+  Breadcrumbs,
+  Button,
+  Link,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import FolderOpenTwoToneIcon from "@mui/icons-material/FolderOpenTwoTone";
 import DetailCategory from "../detailcategory/DetailCategory";
 import { DataGrid } from "@mui/x-data-grid";
@@ -55,7 +62,7 @@ const rows = [
   },
 ];
 
-export default function ChildCategory() {
+export default function ChildCategory(parentProp) {
   const dispatch = useDispatch();
   const selectedCategory = useSelector(
     (state) => state.categoryProduct.selectedCategory
@@ -66,11 +73,12 @@ export default function ChildCategory() {
 
   // Lọc tất cả các mục con của selectedCategory
   const childCategories = categoryProducts.filter(
-    (category) => category.isChildOf === selectedCategory
+    (category) => category?.isChildOf === selectedCategory
   );
+
   const hasChildren = (categoryId) => {
     const child = categoryProducts.filter(
-      (category1) => category1.isChildOf === categoryId
+      (category1) => category1?.isChildOf === categoryId
     );
     if (child.length > 0) {
       return true;
@@ -95,7 +103,6 @@ export default function ChildCategory() {
             variant="body1"
             onClick={() => {
               dispatch(setSelectedCategory(params.row.id));
-              console.log(params.row);
             }}
           >
             {params.row.col1}
@@ -137,7 +144,7 @@ export default function ChildCategory() {
 
     // Hàm đệ quy để tìm kiếm parent của selectedCategoryId
     const findParent = (categoryId, isLastChild = false) => {
-      const category = categories.find((cat) => cat.id === categoryId);
+      const category = categories.find((cat) => cat?.id === categoryId);
       if (category) {
         if (category.isChildOf) {
           findParent(category.isChildOf, false);
@@ -154,13 +161,13 @@ export default function ChildCategory() {
                 handleClick(category.id);
               }}
             >
-              {category.catName}
+              {category[parentProp.title]}
             </Link>
           );
         } else {
           breadcrumbs.push(
             <Link underline="none" key={category.id} variant="body1" href="#">
-              {category.catName}
+              {category[parentProp.title]}
             </Link>
           );
         }
@@ -177,65 +184,84 @@ export default function ChildCategory() {
     handleClick
   );
   return (
-    <Paper elevation={1} sx={{ paddingTop: 1, height: "84vh" }}>
-      {hasChildren(selectedCategory) ? (
-        <div
-          style={{
+    <Paper elevation={6} sx={{ paddingTop: 1, height: "84vh" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <Breadcrumbs
+          separator={<NavigateNextIcon fontSize="small" />}
+          aria-label="breadcrumb"
+          sx={{ paddingBottom: 2, marginLeft: "15px" }}
+        >
+          {breadcrumbs}
+        </Breadcrumbs>
+
+        <Box
+          sx={{
             height: "100%",
+            width: "100%",
             display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
+            flexWrap: "wrap",
+            rowGap: "16px",
+            paddingLeft: "30px",
+            justifyContent: "flex-start",
           }}
         >
-          <Breadcrumbs
-            separator={<NavigateNextIcon fontSize="small" />}
-            aria-label="breadcrumb"
-            sx={{ paddingBottom: 2 }}
-          >
-            {breadcrumbs}
-          </Breadcrumbs>
-          <Box
-            sx={{
-              display: "flex",
-              flexWrap: "wrap",
-              flexGrow: 1,
-              rowGap: "4px",
-            }}
-          >
-            {childCategories.map((category) => (
-              <Box sx={{ paddingRight: "8px" }} key={category.id}>
-                <Paper
-                  elevation={2}
-                  key={category.id}
-                  sx={{
-                    minWidth: 150,
-                    height: 45,
-                    textAlign: "center",
-                    lineHeight: "45px",
-                    cursor: "pointer",
-                    paddingX: "15px",
-                  }}
-                  onClick={() => {
-                    dispatch(setSelectedCategory(category.id));
-                  }}
-                >
+          {childCategories.map((category) => (
+            <Box
+              sx={{
+                paddingRight: "8px",
+              }}
+              key={category.id}
+            >
+              <Paper
+                elevation={4}
+                key={category.id}
+                sx={{
+                  textAlign: "center",
+                  minHeight: "45px",
+                  lineHeight: "45px",
+                  cursor: "pointer",
+                  fontSize: "16px",
+                  width: "250px",
+                }}
+                onClick={() => {
+                  dispatch(setSelectedCategory(category.id));
+                }}
+              >
+                <Tooltip title={category[parentProp.title]} arrow>
                   <Box
                     sx={{
                       display: "flex",
                       alignItems: "center",
-                      justifyContent: "space-around",
+                      paddingLeft: "8px",
                     }}
                   >
                     {hasChildren(category.id) && (
                       <FolderOpenTwoToneIcon fontSize="medium" />
                     )}
-                    <div style={{ paddingLeft: 6 }}>{category.catName}</div>
+                    <div
+                      style={{
+                        paddingLeft: 6,
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        display: "inline-block",
+                      }}
+                    >
+                      {category[parentProp.title]}
+                    </div>
                   </Box>
-                </Paper>
-              </Box>
-            ))}
-          </Box>
-          <div style={{ height: 300, width: "100%", flexGrow: 1 }}>
+                </Tooltip>
+              </Paper>
+            </Box>
+          ))}
+        </Box>
+        {!hasChildren(selectedCategory) ? (
+          <div style={{ height: "100%" }}>
             <DataGrid
               rows={rows}
               columns={columns}
@@ -244,10 +270,10 @@ export default function ChildCategory() {
               disableRowSelectionOnClick
             />
           </div>
-        </div>
-      ) : (
-        <DetailCategory data={selectedCategory} />
-      )}
+        ) : (
+          <></>
+        )}
+      </div>
     </Paper>
   );
 }

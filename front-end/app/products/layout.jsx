@@ -288,7 +288,7 @@ export default function regularLayout({ children }) {
         <List>
           {titleCategoryList.map((cate, index) => (
             <ListItem key={cate.link} disablePadding sx={{ display: "block" }}>
-              <Link href={cate.link}>
+              <Link href={cate.link} style={{ textDecoration: "none" }}>
                 <ListItemButton
                   sx={{
                     minHeight: 48,
@@ -345,7 +345,7 @@ export default function regularLayout({ children }) {
               ))}
             </List> */}
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <Box component="main" sx={{ flexGrow: 1, p: 3, height: "664px" }}>
         <DrawerHeader />
         {children}
       </Box>

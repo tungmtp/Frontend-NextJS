@@ -41,40 +41,51 @@ import {
 //   }
 // };
 
-export const getCategoryProducts = async (dispatch) => {
+//DATA TREEVIEW
+export const getCategoryProducts = async (dispatch, serviceURL) => {
   dispatch(getCategoryProductStart());
   try {
-    const res = await getData("/product-service/category");
+    const res = await getData(serviceURL);
     dispatch(getCategoryProductSuccess(res));
   } catch (err) {
     dispatch(getCategoryProductFailure());
   }
 };
 
-export const deleteCategoryProduct = async (id, dispatch) => {
+export const deleteCategoryProduct = async (id, dispatch, serviceURL) => {
   dispatch(deleteCategoryProductStart());
   try {
-    const res = await deleteData("/product-service/category", id);
+    const res = await deleteData(serviceURL, id);
     dispatch(deleteCategoryProductSuccess(id));
   } catch (err) {
     dispatch(deleteCategoryProductFailure());
   }
 };
 
-export const updateCategoryProduct = async (id, categoryProduct, dispatch) => {
+export const updateCategoryProduct = async (
+  id,
+  categoryProduct,
+  dispatch,
+  serviceURL
+) => {
   dispatch(updateCategoryProductStart());
   try {
     // update
-    const res = await putData(`/product-service/category`, id, categoryProduct);
-    dispatch(updateCategoryProductSuccess({ id, categoryProduct }));
+    const res = await putData(serviceURL, id, categoryProduct);
+    console.log(res);
+    dispatch(updateCategoryProductSuccess({ res }));
   } catch (err) {
     dispatch(updateCategoryProductFailure());
   }
 };
-export const addCategoryProduct = async (categoryProduct, dispatch) => {
+export const addCategoryProduct = async (
+  categoryProduct,
+  dispatch,
+  serviceURL
+) => {
   dispatch(addCategoryProductStart());
   try {
-    const res = await postData(`/product-service/category`, categoryProduct);
+    const res = await postData(serviceURL, categoryProduct);
 
     dispatch(addCategoryProductSuccess(res));
   } catch (err) {

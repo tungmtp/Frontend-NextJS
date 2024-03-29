@@ -141,12 +141,15 @@ export default function Category() {
 
   return (
     <div>
-      <Grid container spacing={4}>
-        <Grid item xs={3}>
-          <TreeViewComp data={"/product-service/category"} />
+      <Grid container spacing={4} sx={{ minWidth: "1200px" }}>
+        <Grid item xs={2.5} sx={{ minWidth: "200px" }}>
+          <TreeViewComp
+            serviceURL={"/product-service/category"}
+            title={"catName"}
+          />
         </Grid>
-        <Grid item xs={9}>
-          <ChildCategory />
+        <Grid item xs={9.5}>
+          <ChildCategory title={"catName"} />
         </Grid>
       </Grid>
     </div>
