@@ -11,6 +11,7 @@ export const mnu = {
     { title: "Danh mục Class", link: "/products/classes" },
     { title: "Giá hạch toán", link: "/products/classPrice" },
   ],
+  produce: [{ title: "Các công đoạn sản xuất", link: "/produce/segment" }],
   storage: [
     { title: "Danh mục tạm nhập", link: "/storage/" },
     { title: "Tồn 01 sản phẩm ở 1 kho", link: "/storage/abc" },

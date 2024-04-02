@@ -67,6 +67,7 @@ export default function ChildCategory(parentProp) {
   const selectedCategory = useSelector(
     (state) => state.categoryProduct.selectedCategory
   );
+
   const categoryProducts = useSelector(
     (state) => state.categoryProduct.categoryProducts
   );
@@ -75,7 +76,7 @@ export default function ChildCategory(parentProp) {
   const childCategories = categoryProducts.filter(
     (category) => category?.isChildOf === selectedCategory
   );
-
+  console.log(childCategories);
   const hasChildren = (categoryId) => {
     const child = categoryProducts.filter(
       (category1) => category1?.isChildOf === categoryId
