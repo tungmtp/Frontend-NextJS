@@ -34,6 +34,11 @@ import { usePathname } from "next/navigation";
 import { getData } from "@/hook/Hook";
 import { mnu } from "@/components/menu";
 import Link from "next/link";
+import { useDispatch } from "react-redux";
+import {
+  setSelectedCategory,
+  setSelectedProduct,
+} from "@/redux/categoryProductRedux";
 
 const category = {
   NEWSKY: "home",
@@ -117,7 +122,7 @@ export default function regularLayout({ children }) {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
-
+  const dispatch = useDispatch();
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -152,6 +157,7 @@ export default function regularLayout({ children }) {
   // }, []); // Empty dependency array ensures this effect runs only once
   //Xây dựng sidebar category
   const pathname = usePathname();
+
   let pathname1 = pathname.split("/");
   let pathSplit = pathname1[1];
   function getKeyByValue(object, value) {
@@ -287,7 +293,16 @@ export default function regularLayout({ children }) {
         <Divider />
         <List>
           {titleCategoryList.map((cate, index) => (
-            <ListItem key={cate.link} disablePadding sx={{ display: "block" }}>
+            <ListItem
+              selected={cate.link === pathname}
+              key={cate.link}
+              disablePadding
+              sx={{ display: "block" }}
+              onClick={() => {
+                dispatch(setSelectedProduct(null));
+                dispatch(setSelectedCategory(null));
+              }}
+            >
               <Link href={cate.link} style={{ textDecoration: "none" }}>
                 <ListItemButton
                   sx={{

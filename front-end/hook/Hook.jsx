@@ -54,6 +54,37 @@ export async function getData(serviceURL) {
   }
 }
 
+export async function getDataById(serviceURL, id) {
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    const url = `${process.env.NEXT_PUBLIC_DB_HOST}${serviceURL}/${id}`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: config.headers,
+    });
+
+    if (!response.ok) {
+      // Xử lý các trường hợp lỗi
+      const errorMessage = await response.text();
+      throw new Error(`Error: ${errorMessage}`);
+    }
+
+    // Parse JSON response và trả về dữ liệu
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    // Xử lý lỗi
+    console.error("Put data failed:", error);
+    throw error; // Ném lỗi để xử lý ở nơi gọi hàm nếu cần
+  }
+}
+
 export async function postData(serviceURL, data) {
   try {
     const config = {

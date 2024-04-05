@@ -30,7 +30,10 @@ import {
   getCategoryProducts,
   updateCategoryProduct,
 } from "@/redux/apiCalls";
-import { setSelectedCategory } from "@/redux/categoryProductRedux";
+import {
+  setSelectedCategory,
+  setSelectedProduct,
+} from "@/redux/categoryProductRedux";
 
 export default function TreeViewComp(PropData) {
   const [selectedNodes, setSelectedNodes] = useState([]);
@@ -93,6 +96,7 @@ export default function TreeViewComp(PropData) {
       console.log(nodeId);
       // const isSelected = selectedNodes.includes(nodeId);
       dispatch(setSelectedCategory(nodeId));
+      dispatch(setSelectedProduct(null));
       setSelectedSingleNodes(nodeId);
       // if (isSelected) {
       //   setSelectedNodes(selectedNodes.filter((id) => id !== nodeId));

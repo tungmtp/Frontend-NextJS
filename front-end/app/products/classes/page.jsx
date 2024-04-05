@@ -282,7 +282,17 @@ export default function Classes() {
     );
   }
   return (
-    <Paper elevation={6} sx={{ paddingTop: 1, paddingLeft: 1, height: "84vh" }}>
+    <Paper
+      elevation={6}
+      sx={{
+        paddingTop: 1,
+        paddingLeft: 1,
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+      }}
+    >
       {/* <ButtonGroup
         variant="outlined"
         aria-label="Basic button group"
@@ -325,7 +335,7 @@ export default function Classes() {
         aria-label="add"
         onClick={handleOpenAdd}
         variant="contained"
-        sx={{ marginY: "8px" }}
+        sx={{ marginY: "8px", width: "120px" }}
       >
         <AddIcon /> Add New
       </Button>
@@ -334,9 +344,10 @@ export default function Classes() {
         style={{
           display: "flex",
           flexDirection: "row",
+          height: "73vh",
         }}
       >
-        <div style={{ height: "73vh", flexGrow: 2 }}>
+        <div style={{ height: "100%", flexGrow: 2 }}>
           <DataGrid
             rows={classesData}
             columns={columns}

@@ -5,6 +5,7 @@ export const categoryProductSlice = createSlice({
   initialState: {
     categoryProducts: [],
     selectedCategory: "",
+    selectedProduct: "",
     isFetching: false,
     error: false,
   },
@@ -75,6 +76,9 @@ export const categoryProductSlice = createSlice({
     setSelectedCategory: (state, action) => {
       state.selectedCategory = action.payload;
     },
+    setSelectedProduct: (state, action) => {
+      state.selectedProduct = action.payload;
+    },
   },
 });
 export const selectCategoryProducts = (state) => {
@@ -101,6 +105,7 @@ export const {
   addCategoryProductSuccess,
   addCategoryProductFailure,
   setSelectedCategory,
+  setSelectedProduct,
 } = categoryProductSlice.actions;
 
 export default categoryProductSlice.reducer;
