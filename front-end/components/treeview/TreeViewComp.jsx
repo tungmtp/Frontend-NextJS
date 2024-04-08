@@ -128,7 +128,8 @@ export default function TreeViewComp(PropData) {
         <Typography
           onClick={(event) => {
             handleSelectionClick(event, nodeId);
-            PropData.handleCloseAddproduct();
+            if (PropData.handleCloseAddproduct)
+              PropData?.handleCloseAddproduct();
           }}
           component="div"
           className={classes.label}

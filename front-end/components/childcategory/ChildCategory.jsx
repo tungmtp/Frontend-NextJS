@@ -65,7 +65,6 @@ export default function ChildCategory(parentProp) {
   // const [openAddProduct, setOpenAddProduct] = useState(false);
 
   const dispatch = useDispatch();
-  console.log(productData);
   const selectedCategory = useSelector(
     (state) => state.categoryProduct.selectedCategory
   );
@@ -234,6 +233,7 @@ export default function ChildCategory(parentProp) {
     selectedCategory,
     handleClick
   );
+
   return (
     <Paper elevation={6} sx={{ paddingTop: 1, height: "84vh" }}>
       <div

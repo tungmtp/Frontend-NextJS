@@ -35,6 +35,7 @@ import dayjs from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import ProductAttribute from "../productAttribute/ProductAttribute";
 export default function DetailProduct() {
   const selectedProduct = useSelector(
     (state) => state.categoryProduct.selectedProduct
@@ -50,7 +51,7 @@ export default function DetailProduct() {
 
   const dispatch = useDispatch();
 
-  console.log(selectedDataGrid);
+  // console.log(selectedDataGrid);
   // console.log(measurementData);
   useEffect(() => {
     const getClassPriceData = async () => {
@@ -62,8 +63,7 @@ export default function DetailProduct() {
         const changeFieldName = result.map((item) => {
           const classesName = result2.find(
             (classes) => classes.id === item.classId
-          ).nameStr;
-          console.log(classesName); // Tạo trường label từ trường nameStr
+          ).nameStr; // Tạo trường label từ trường nameStr
           return {
             ...item,
             label: classesName,
@@ -459,6 +459,7 @@ export default function DetailProduct() {
         <Autocomplete
           id=""
           options={["None", ...segmmentData]}
+          isOptionEqualToValue={(option, value) => option.id === value?.id}
           sx={{ marginTop: 2, marginX: 5, width: "91%" }}
           renderInput={(params) => (
             <TextField {...params} label="Công đoạn sản xuất" />
@@ -611,7 +612,10 @@ export default function DetailProduct() {
             setSelectedDataGrid(updatedSelectedDataGrid);
           }}
         />
-
+        <ProductAttribute
+          title={"attName"}
+          serviceURL={"/product-service/ProductAttribute"}
+        />
         <div
           style={{
             display: "flex",
