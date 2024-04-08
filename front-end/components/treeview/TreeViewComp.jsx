@@ -98,6 +98,7 @@ export default function TreeViewComp(PropData) {
       dispatch(setSelectedCategory(nodeId));
       dispatch(setSelectedProduct(null));
       setSelectedSingleNodes(nodeId);
+
       // if (isSelected) {
       //   setSelectedNodes(selectedNodes.filter((id) => id !== nodeId));
       //   setSelectedSingleNodes(null);
@@ -127,6 +128,7 @@ export default function TreeViewComp(PropData) {
         <Typography
           onClick={(event) => {
             handleSelectionClick(event, nodeId);
+            PropData.handleCloseAddproduct();
           }}
           component="div"
           className={classes.label}

@@ -62,7 +62,7 @@ const rows = [
 export default function ChildCategory(parentProp) {
   const [productData, setProductData] = useState([]);
   const [selectedDataGrid, setSelectedDataGrid] = useState();
-  const [openAddProduct, setOpenAddProduct] = useState(false);
+  // const [openAddProduct, setOpenAddProduct] = useState(false);
 
   const dispatch = useDispatch();
   console.log(productData);
@@ -117,13 +117,14 @@ export default function ChildCategory(parentProp) {
     }
 
     console.log("rendering again");
-  }, [selectedCategory, selectedProduct, openAddProduct]);
-  const handleOpenAddproduct = () => {
-    setOpenAddProduct(true);
-  };
-  const handleCloseAddproduct = () => {
-    setOpenAddProduct(false);
-  };
+  }, [selectedCategory, selectedProduct, parentProp.openAddProduct]);
+  //xu ly mo component add product
+  // const handleOpenAddproduct = () => {
+  //   setOpenAddProduct(true);
+  // };
+  // const handleCloseAddproduct = () => {
+  //   setOpenAddProduct(false);
+  // };
   const columns = [
     { field: "id", headerName: "id", width: 1 },
     { field: "index", headerName: "STT", width: 100 },
@@ -263,15 +264,17 @@ export default function ChildCategory(parentProp) {
                 size="small"
                 color="primary"
                 aria-label="add"
-                onClick={handleOpenAddproduct}
+                onClick={parentProp.handleOpenAddproduct}
               >
                 <AddIcon />
               </Fab>
             </Tooltip>
           )}
         </div>
-        {openAddProduct ? (
-          <AddProduct handleCloseAddproduct={handleCloseAddproduct} />
+        {parentProp.openAddProduct ? (
+          <AddProduct
+            handleCloseAddproduct={parentProp.handleCloseAddproduct}
+          />
         ) : selectedProduct != null ? (
           <DetailProduct />
         ) : !hasChildren(selectedCategory) ? (
