@@ -156,6 +156,7 @@ export default function ChildCategory(parentProp) {
   const handleClick = (id) => {
     dispatch(setSelectedCategory(id));
     dispatch(setSelectedProduct(null));
+    parentProp.handleCloseAddproduct();
   };
   // const breadcrumbs = [
   //   <Link

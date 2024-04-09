@@ -17,11 +17,12 @@ import FolderOpenTwoToneIcon from "@mui/icons-material/FolderOpenTwoTone";
 import DetailProduct from "../detailProduct/DetailProduct";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import { getData, getDataById } from "@/hook/Hook";
+import { deleteData, getData, getDataById, postData } from "@/hook/Hook";
 import AddIcon from "@mui/icons-material/Add";
 import Tooltip from "@mui/material/Tooltip";
 import AddProduct from "../addProduct/AddProduct";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import IconButton from "@mui/material/IconButton";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -36,11 +37,12 @@ import clsx from "clsx";
 
 export default function ProductAttribute(parentProp) {
   const [categoryAttribute, setCategoryAttribute] = useState([]);
+  const [selectedAttribute, setSelectedAttribute] = useState();
   const [productRelation, setProductRelation] = useState([]);
   const [openAddDialog, setOpenAddDialog] = React.useState(false);
-  const [attributeRelId, setAttributeRelId] = React.useState();
+  const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
   // const [openAddProduct, setOpenAddProduct] = useState(false);
-  console.log(attributeRelId);
+  let arrayLenght = productRelation.length;
   const dispatch = useDispatch();
 
   const selectedCategory = useSelector(
@@ -72,20 +74,31 @@ export default function ProductAttribute(parentProp) {
   //   console.log(productRelation);
   useEffect(() => {
     if (parentProp.serviceURL) {
-      const getProductData = async () => {
+      const getCategoryAttribute = async () => {
         try {
           const result = await getData(parentProp.serviceURL);
           setCategoryAttribute(result);
-          const result2 = await getDataById(
-            "/product-service/productRelation/byProductID",
-            selectedProduct.id
-          );
-          setProductRelation(result2);
         } catch (err) {
           console.error("Error fetching data:", err);
         }
       };
-      getProductData();
+      if (parentProp.status == "add") {
+        setProductRelation([]);
+      } else {
+        const getProductRelation = async () => {
+          try {
+            const result2 = await getDataById(
+              "/product-service/productRelation/byProductID",
+              selectedProduct.id
+            );
+            setProductRelation(result2);
+          } catch (err) {
+            console.error("Error fetching data:", err);
+          }
+        };
+        getProductRelation();
+      }
+      getCategoryAttribute();
     }
 
     console.log("rendering again");
@@ -102,8 +115,150 @@ export default function ProductAttribute(parentProp) {
     // dispatch(setSelectedCategory(id));
     // dispatch(setSelectedProduct(null));
   };
+  console.log(parentProp.getProductRelationList);
+  if (parentProp.getProductRelationList != undefined) {
+    parentProp.getProductRelationList(productRelation);
+  }
+  const handleOpenAdd = (event) => {
+    event.preventDefault();
+    setOpenAddDialog(true);
+  };
+  const handleClose = (event) => {
+    event.preventDefault();
+    setOpenAddDialog(false);
+  };
+  function FormAddDialog(open) {
+    const [attributeRelId, setAttributeRelId] = React.useState();
+    let attributeRelId1 = attributeRelId;
 
-  const generateBreadcrumbs = (categories, selectedCategoryId, handleClick) => {
+    let relTable = "productAttribute";
+    let addAttribute = null;
+    if (parentProp.status == "add") {
+      addAttribute = {
+        id: arrayLenght + 1,
+        productId: null,
+        relId: attributeRelId1,
+        relTable: relTable,
+      };
+    } else {
+      addAttribute = {
+        productId: selectedProduct.id,
+        relId: attributeRelId1,
+        relTable: relTable,
+      };
+    }
+
+    return (
+      <React.Fragment>
+        <Dialog
+          open={open.open}
+          onClose={handleClose}
+          PaperProps={{
+            component: "form",
+            onSubmit: (event) => {
+              event.preventDefault();
+
+              console.log(addAttribute);
+              if (parentProp.status == "add") {
+                setProductRelation((prevState) => [...prevState, addAttribute]);
+              } else {
+                const postAttribute = async () => {
+                  try {
+                    const result = await postData(
+                      "/product-service/productRelation",
+                      addAttribute
+                    );
+                    const addAttribute1 = result;
+                    setProductRelation((prevState) => [
+                      ...prevState,
+                      addAttribute1,
+                    ]);
+                  } catch (err) {
+                    console.error("Error fetching data:", err);
+                  }
+                };
+                postAttribute();
+              }
+
+              alert("Thêm thành công !!!");
+              handleClose(event);
+            },
+          }}
+        >
+          <DialogTitle>Thêm thuộc tính</DialogTitle>
+          <DialogContent>
+            <Box sx={{ width: "300px" }}></Box>
+            <TreeViewComp
+              data={categoryAttribute}
+              title={"attName"}
+              setAttributeRelId={setAttributeRelId}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button type="submit">Add</Button>
+          </DialogActions>
+        </Dialog>
+      </React.Fragment>
+    );
+  }
+  console.log(selectedAttribute);
+  const handleOpenDelete = (item) => {
+    setOpenDeleteDialog(true);
+    setSelectedAttribute(item);
+    // setAddCategory({ isChildOf: selectedSingleNode });
+  };
+  const handleCloseDelete = () => {
+    setOpenDeleteDialog(false);
+    setSelectedAttribute(null);
+  };
+  function FormDeleteDialog(open) {
+    return (
+      <React.Fragment>
+        <Dialog
+          open={open.open}
+          onClose={handleCloseDelete}
+          PaperProps={{
+            component: "form",
+            onSubmit: (event) => {
+              event.preventDefault();
+              if (parentProp.status == "add") {
+                const updatedData = productRelation.filter(
+                  (item) => item.id !== selectedAttribute.id
+                );
+                setProductRelation(updatedData);
+              } else {
+                const respone = deleteData(
+                  "/product-service/productRelation",
+                  selectedAttribute.id
+                );
+                console.log(respone);
+                const updatedData = productRelation.filter(
+                  (item) => item.id !== selectedAttribute.id
+                );
+                setProductRelation(updatedData);
+              }
+              handleCloseDelete();
+              alert("Xóa thành công");
+            },
+          }}
+        >
+          <DialogTitle>Xóa thuộc tính</DialogTitle>
+          <DialogContent>Bạn chắc chắn muốn xóa thuộc tính này?</DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDelete}>Cancel</Button>
+            <Button type="submit">Confirm</Button>
+          </DialogActions>
+        </Dialog>
+      </React.Fragment>
+    );
+  }
+  const generateBreadcrumbs = (
+    categories,
+    selectedCategoryId,
+    selectedAttribute,
+    handleClick
+  ) => {
     const breadcrumbs = [];
 
     // Hàm đệ quy để tìm kiếm parent của selectedCategoryId
@@ -117,8 +272,8 @@ export default function ProductAttribute(parentProp) {
           breadcrumbs.push(
             <Link
               underline="hover"
+              sx={{ color: "black", fontSize: "1rem" }}
               key={category.id}
-              variant="body2"
               href="#"
               onClick={(e) => {
                 e.preventDefault();
@@ -143,7 +298,12 @@ export default function ProductAttribute(parentProp) {
               >
                 {category[parentProp.title]}
               </Link>
-              <IconButton aria-label="delete" sx={{ marginLeft: 4 }}>
+
+              <IconButton
+                aria-label="delete"
+                sx={{ marginLeft: 4 }}
+                onClick={() => handleOpenDelete(selectedAttribute)}
+              >
                 <DeleteIcon color="warning" />
               </IconButton>
             </div>
@@ -159,6 +319,7 @@ export default function ProductAttribute(parentProp) {
     const breadcrumb = generateBreadcrumbs(
       categoryAttribute,
       item.relId,
+      item,
       handleClick
     );
 
@@ -170,83 +331,6 @@ export default function ProductAttribute(parentProp) {
     selectedCategory,
     handleClick
   );
-  console.log("bị sao vậy");
-  const handleOpenAdd = (event) => {
-    event.preventDefault();
-    setOpenAddDialog(true);
-  };
-  const handleClose = (event) => {
-    event.preventDefault();
-    setOpenAddDialog(false);
-  };
-  function FormAddDialog(open) {
-    let relId = "";
-    let selectedProductId = selectedProduct.id;
-    let relTable = "productAttribute";
-    return (
-      <React.Fragment>
-        <Dialog
-          open={open.open}
-          onClose={handleClose}
-          PaperProps={{
-            component: "form",
-            onSubmit: (event) => {
-              event.preventDefault();
-              const formData = new FormData(event.currentTarget);
-              const formJson = Object.fromEntries(formData.entries());
-
-              const dateEffected = selectedDateEffected;
-              const classId = selectedClassId;
-              const DefaultMeas = selectedDefaultMeas;
-              const price = formJson.price;
-
-              const addClassPrice = {
-                classId: classId,
-                defaultMeas: DefaultMeas,
-                dateEffected: dateEffected,
-                price: Number(price),
-              };
-              console.log(addClassPrice);
-
-              const postMeasurement = async () => {
-                try {
-                  const result = await postData(
-                    "/product-service/classPrice",
-                    addClassPrice
-                  );
-                  const addClassPrice2 = result;
-                  setClassPriceData((prevState) => [
-                    ...prevState,
-                    addClassPrice2,
-                  ]);
-                } catch (err) {
-                  console.error("Error fetching data:", err);
-                }
-              };
-              postMeasurement();
-
-              alert("Thêm thành công !!!");
-              handleClose(event);
-            },
-          }}
-        >
-          <DialogTitle>Thêm thuộc tính</DialogTitle>
-          <DialogContent>
-            <Box sx={{ width: "300px" }}></Box>
-            <TreeViewComp
-              data={categoryAttribute}
-              title={"attName"}
-              relId={relId}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button type="submit">Save</Button>
-          </DialogActions>
-        </Dialog>
-      </React.Fragment>
-    );
-  }
   return (
     <Box elevation={6} sx={{ padding: 5, width: "100%" }}>
       <div
@@ -269,7 +353,7 @@ export default function ProductAttribute(parentProp) {
           <div style={{}}>
             {breadcrumbs.map((Breadcrumb, index) => (
               <Breadcrumbs
-                key={Math.random() * 20}
+                key={index}
                 separator={<NavigateNextIcon fontSize="small" />}
                 aria-label="breadcrumb"
                 sx={{ width: "100%", paddingTop: 1 }}
@@ -280,12 +364,17 @@ export default function ProductAttribute(parentProp) {
               </Breadcrumbs>
             ))}
           </div>
-          <Tooltip title="Thêm sản phẩm mới" placement="left">
+          <Tooltip
+            title="Thêm sản phẩm mới"
+            placement="left"
+            sx={{ width: "200px" }}
+          >
             <Button color="primary" aria-label="add" onClick={handleOpenAdd}>
               <AddIcon /> Thêm thuộc tính
             </Button>
           </Tooltip>
           <FormAddDialog open={openAddDialog} />
+          <FormDeleteDialog open={openDeleteDialog} />
         </div>
       </div>
     </Box>
@@ -330,7 +419,7 @@ function TreeViewComp(PropData) {
     const handleSelectionClick = (event, nodeId) => {
       event.preventDefault();
       setSelectedSingleNodes(nodeId);
-      PropData.relId = nodeId;
+      PropData.setAttributeRelId(nodeId);
     };
 
     return (

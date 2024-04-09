@@ -35,7 +35,8 @@ import dayjs from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-export default function DetailProduct(props) {
+import ProductAttribute from "../productAttribute/ProductAttribute";
+export default function AddProduct(props) {
   const selectedCategory = useSelector(
     (state) => state.categoryProduct.selectedCategory
   );
@@ -64,8 +65,10 @@ export default function DetailProduct(props) {
   });
 
   const [openConfirm, setOpenConfirm] = React.useState(false);
-  const dispatch = useDispatch();
+  const [productRelationList, setProductRelationList] = React.useState([]);
 
+  const dispatch = useDispatch();
+  console.log(productRelationList);
   console.log(selectedDataGrid);
   // console.log(measurementData);
   useEffect(() => {
@@ -78,8 +81,7 @@ export default function DetailProduct(props) {
         const changeFieldName = result.map((item) => {
           const classesName = result2.find(
             (classes) => classes.id === item.classId
-          ).nameStr;
-          console.log(classesName); // Tạo trường label từ trường nameStr
+          ).nameStr; // Tạo trường label từ trường nameStr
           return {
             ...item,
             label: classesName,
@@ -120,6 +122,11 @@ export default function DetailProduct(props) {
 
     console.log("rendering again");
   }, []);
+  const getProductRelationList = (list) => {
+    if (list.length > 0) {
+      setProductRelationList(list);
+    }
+  };
   const handleOpenConfirm = (event) => {
     setOpenConfirm(true);
     // setAddCategory({ isChildOf: selectedSingleNode });
@@ -132,6 +139,7 @@ export default function DetailProduct(props) {
     // const getClassesName = classesData.find(
     //   (classes) => classes.id === selectedDataGrid.classId
     // );
+
     return (
       <React.Fragment>
         <Dialog
@@ -141,11 +149,37 @@ export default function DetailProduct(props) {
             component: "form",
             onSubmit: (event) => {
               event.preventDefault();
-              const respone = postData(
-                "/product-service/product",
-                selectedDataGrid
-              );
-              console.log(respone);
+
+              const postProduct = async () => {
+                try {
+                  const respone = await postData(
+                    "/product-service/product",
+                    selectedDataGrid
+                  );
+                  console.log(respone);
+                  productRelationList.map((productRelation) => {
+                    productRelation.productId = respone.id;
+                    delete productRelation.id;
+                    const postAttribute = async () => {
+                      try {
+                        const result = await postData(
+                          "/product-service/productRelation",
+                          productRelation
+                        );
+                      } catch (err) {
+                        console.error("Error fetching data:", err);
+                      }
+                    };
+                    postAttribute();
+                    console.log(productRelation);
+                  });
+                } catch (err) {
+                  console.error("Error fetching data:", err);
+                }
+              };
+
+              postProduct();
+
               handleCloseConfirm(event);
               alert("Thêm thành công");
               props.handleCloseAddproduct();
@@ -381,7 +415,12 @@ export default function DetailProduct(props) {
             setSelectedDataGrid(updatedSelectedDataGrid);
           }}
         />
-
+        <ProductAttribute
+          title={"attName"}
+          serviceURL={"/product-service/ProductAttribute"}
+          status={"add"}
+          getProductRelationList={getProductRelationList}
+        />
         <div
           style={{
             display: "flex",

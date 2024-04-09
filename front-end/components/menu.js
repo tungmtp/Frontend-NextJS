@@ -4,7 +4,7 @@ export const mnu = {
     { title: "Thông tin về công ty", link: "/home/info" },
   ],
   products: [
-    { title: "Phân loại sản phẩm", link: "/products/category" },
+    { title: "Sản phẩm Explorer", link: "/products/category" },
     { title: "Thêm sản phẩm", link: "/products/addProduct" },
     { title: "Danh mục đơn vị tính", link: "/products/measurement" },
     { title: "Thuộc tính sản phẩm", link: "/products/attribute" },

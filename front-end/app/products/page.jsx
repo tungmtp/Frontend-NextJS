@@ -39,10 +39,10 @@ import {
 export default function TreeViewCompTest(PropData) {
   return (
     <>
-      <TreeViewComp
+      {/* <TreeViewComp
         serviceURL={"/product-service/category"}
         title={"catName"}
-      />
+      /> */}
     </>
   );
 }
