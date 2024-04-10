@@ -115,7 +115,7 @@ export default function ProductAttribute(parentProp) {
     // dispatch(setSelectedCategory(id));
     // dispatch(setSelectedProduct(null));
   };
-  console.log(parentProp.getProductRelationList);
+  // console.log(parentProp.getProductRelationList);
   if (parentProp.getProductRelationList != undefined) {
     parentProp.getProductRelationList(productRelation);
   }
@@ -202,7 +202,7 @@ export default function ProductAttribute(parentProp) {
       </React.Fragment>
     );
   }
-  console.log(selectedAttribute);
+  // console.log(selectedAttribute);
   const handleOpenDelete = (item) => {
     setOpenDeleteDialog(true);
     setSelectedAttribute(item);

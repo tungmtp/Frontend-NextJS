@@ -17,6 +17,7 @@ import {
 import AddBoxTwoToneIcon from "@mui/icons-material/AddBoxTwoTone";
 import AccountTreeTwoToneIcon from "@mui/icons-material/AccountTreeTwoTone";
 import DeleteForeverTwoToneIcon from "@mui/icons-material/DeleteForeverTwoTone";
+import Divider from "@mui/material/Divider";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -460,23 +461,39 @@ export default function TreeViewComp(PropData) {
   return (
     <div>
       <Box sx={{ minHeight: 110 }}>
-        <Stack direction="row" spacing={1}>
-          <IconButton aria-label="add" onClick={handleOpenAdd}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-around",
+            boxShadow: "0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)",
+            borderRadius: 7,
+            marginBottom: "16px",
+          }}
+        >
+          <IconButton aria-label="add" onClick={handleOpenAdd} color="primary">
             <AddBoxTwoToneIcon />
           </IconButton>
-          <IconButton aria-label="addChild" onClick={handleOpenAddChild}>
+          <IconButton
+            aria-label="addChild"
+            onClick={handleOpenAddChild}
+            color="primary"
+          >
             <AccountTreeTwoToneIcon />
           </IconButton>
           <FormAddDialog open={openAddDialog} />
-          <IconButton aria-label="fix" onClick={handleOpenFix}>
+          <IconButton aria-label="fix" onClick={handleOpenFix} color="warning">
             <BorderColorTwoToneIcon />
           </IconButton>
           <FormFixdDialog open={openFixDialog} />
-          <IconButton aria-label="delete" onClick={handleOpenDelete}>
+          <IconButton
+            aria-label="delete"
+            onClick={handleOpenDelete}
+            color="error"
+          >
             <DeleteForeverTwoToneIcon />
           </IconButton>
           <FormDeleteDialog open={openDeleteDialog} />
-        </Stack>
+        </div>
         <div style={{ overflow: "auto", height: "79vh" }}>
           <TreeView
             aria-label="rich object"

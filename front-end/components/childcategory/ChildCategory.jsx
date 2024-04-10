@@ -259,7 +259,7 @@ export default function ChildCategory(parentProp) {
           >
             {breadcrumbs}
           </Breadcrumbs>
-          {!hasChildren(selectedCategory) && (
+          {!hasChildren(selectedCategory) && !parentProp.openAddProduct ? (
             <Tooltip title="Thêm sản phẩm mới" placement="left">
               <Fab
                 size="small"
@@ -270,6 +270,8 @@ export default function ChildCategory(parentProp) {
                 <AddIcon />
               </Fab>
             </Tooltip>
+          ) : (
+            <></>
           )}
         </div>
         {parentProp.openAddProduct ? (
