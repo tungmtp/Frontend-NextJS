@@ -180,16 +180,18 @@ export default function Measurement() {
               const length = formJson.length;
               const width = formJson.width;
               const height = formJson.height;
-              const rateinRoot = formJson.rateinRoot;
+              const rateInRoot = formJson.rateInRoot;
+              const upc = formJson.upc;
               const isRoot = formJson.isRoot ? true : false;
 
               const addMeasurement = {
                 measCatId: selectedButtonGroup,
                 measName: measName,
-                length: length,
-                width: width,
-                height: height,
-                rateinRoot: rateinRoot,
+                length: Number(length),
+                width: Number(width),
+                height: Number(height),
+                rateInRoot: Number(rateInRoot),
+                upc: Number(upc),
                 isRoot: isRoot,
               };
 
@@ -248,30 +250,32 @@ export default function Measurement() {
             <TextField
               name="length"
               variant="outlined"
-              type="number"
               label="Chiều dài"
               sx={{ margin: 2 }}
             />
             <TextField
               name="width"
               variant="outlined"
-              type="number"
               label="Chiều rộng"
               sx={{ margin: 2 }}
             />
             <TextField
               name="height"
               variant="outlined"
-              type="number"
               label="Chiều cao"
               sx={{ margin: 2 }}
             />
 
             <TextField
-              name="rateinRoot"
+              name="rateInRoot"
               variant="outlined"
-              type="number"
               label="Tỉ lệ so với đơn vị gốc"
+              sx={{ margin: 2 }}
+            />
+            <TextField
+              name="upc"
+              variant="outlined"
+              label="Đóng gói"
               sx={{ margin: 2 }}
             />
             <FormControlLabel
@@ -361,7 +365,7 @@ export default function Measurement() {
               });
               setMeasurementData(updatedMeasurementData);
               setSelectedDataGrid(null);
-              handleCloseDelete();
+              handleCloseFix();
               alert("Lưu thành công");
             },
           }}
@@ -383,51 +387,6 @@ export default function Measurement() {
   }
   return (
     <Paper elevation={6} sx={{ paddingTop: 1, paddingLeft: 1, height: "84vh" }}>
-      <ButtonGroup
-        variant="outlined"
-        aria-label="Basic button group"
-        sx={{ marginY: 2, marginX: 4 }}
-      >
-        <Button
-          onClick={() => handleButtonClick(1)}
-          variant={selectedButtonGroup === 1 ? "contained" : "outlined"}
-        >
-          Diện tích
-        </Button>
-        <Button
-          onClick={() => handleButtonClick(2)}
-          variant={selectedButtonGroup === 2 ? "contained" : "outlined"}
-        >
-          Chiều dài
-        </Button>
-        <Button
-          onClick={() => handleButtonClick(3)}
-          variant={selectedButtonGroup === 3 ? "contained" : "outlined"}
-        >
-          Khối lượng
-        </Button>
-        <Button
-          onClick={() => handleButtonClick(4)}
-          variant={selectedButtonGroup === 4 ? "contained" : "outlined"}
-        >
-          Đơn lẻ (unit)
-        </Button>
-        <Button
-          onClick={() => handleButtonClick(5)}
-          variant={selectedButtonGroup === 5 ? "contained" : "outlined"}
-        >
-          Thể tích
-        </Button>
-      </ButtonGroup>
-      <Fab
-        size="small"
-        color="primary"
-        aria-label="add"
-        onClick={handleOpenAdd}
-      >
-        <AddIcon />
-      </Fab>
-      <FormAddDialog open={openAddDialog} />
       <div
         style={{
           display: "flex",
@@ -435,6 +394,51 @@ export default function Measurement() {
         }}
       >
         <div style={{ height: "73vh", flexGrow: 2 }}>
+          <ButtonGroup
+            variant="outlined"
+            aria-label="Basic button group"
+            sx={{ marginY: 2, marginX: 4 }}
+          >
+            <Button
+              onClick={() => handleButtonClick(1)}
+              variant={selectedButtonGroup === 1 ? "contained" : "outlined"}
+            >
+              Diện tích
+            </Button>
+            <Button
+              onClick={() => handleButtonClick(2)}
+              variant={selectedButtonGroup === 2 ? "contained" : "outlined"}
+            >
+              Chiều dài
+            </Button>
+            <Button
+              onClick={() => handleButtonClick(3)}
+              variant={selectedButtonGroup === 3 ? "contained" : "outlined"}
+            >
+              Khối lượng
+            </Button>
+            <Button
+              onClick={() => handleButtonClick(4)}
+              variant={selectedButtonGroup === 4 ? "contained" : "outlined"}
+            >
+              Đơn lẻ (unit)
+            </Button>
+            <Button
+              onClick={() => handleButtonClick(5)}
+              variant={selectedButtonGroup === 5 ? "contained" : "outlined"}
+            >
+              Thể tích
+            </Button>
+          </ButtonGroup>
+          <Fab
+            size="small"
+            color="primary"
+            aria-label="add"
+            onClick={handleOpenAdd}
+          >
+            <AddIcon />
+          </Fab>
+          <FormAddDialog open={openAddDialog} />
           <DataGrid
             rows={filteredMeasurement}
             columns={columns}
@@ -471,7 +475,7 @@ export default function Measurement() {
                 display: "flex",
                 justifyContent: "center",
                 flexDirection: "column",
-                paddingY: "8px",
+
                 maxWidth: "447px",
                 flexGrow: 1,
               }}
@@ -556,6 +560,19 @@ export default function Measurement() {
                   setSelectedDataGrid(updatedSelectedDataGrid);
                 }}
               />
+              <TextField
+                id="standard-basic"
+                variant="outlined"
+                type="number"
+                label="Đóng gói"
+                sx={{ marginY: 2, marginX: 5 }}
+                value={selectedDataGrid?.upc}
+                onChange={(event) => {
+                  const updatedSelectedDataGrid = { ...selectedDataGrid };
+                  updatedSelectedDataGrid.upc = Number(event.target.value);
+                  setSelectedDataGrid(updatedSelectedDataGrid);
+                }}
+              />
               <div
                 style={{
                   display: "flex",
@@ -563,7 +580,13 @@ export default function Measurement() {
                   paddingBottom: 6,
                 }}
               >
-                <Button variant="contained" sx={{ marginX: 2 }}>
+                <Button
+                  variant="contained"
+                  sx={{ marginX: 2 }}
+                  onClick={() => {
+                    setSelectedDataGrid(null);
+                  }}
+                >
                   Cancel
                 </Button>
                 <Button variant="contained" onClick={handleOpenFix}>
