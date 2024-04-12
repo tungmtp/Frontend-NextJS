@@ -1,157 +1,261 @@
 "use client";
-import * as React from "react";
-import AppBar from "@mui/material/AppBar";
+import { Inter } from "next/font/google";
+// import "./globals.css";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
+import MuiDrawer from "@mui/material/Drawer";
+import MuiAppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
+import List from "@mui/material/List";
+import CssBaseline from "@mui/material/CssBaseline";
 import Typography from "@mui/material/Typography";
-import Menu from "@mui/material/Menu";
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
-import Container from "@mui/material/Container";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import Tooltip from "@mui/material/Tooltip";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import InboxIcon from "@mui/icons-material/MoveToInbox";
+import MailIcon from "@mui/icons-material/Mail";
+import { Avatar, Badge, Button, Tooltip } from "@mui/material";
+import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import AdbIcon from "@mui/icons-material/Adb";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 
-const pages = [
-  "Sản xuất",
-  "Kinh doanh",
-  "Kho",
-  "Vật tư",
-  "Mua hàng",
-  "Kế toán",
-  "Nhân sự",
-];
+// import { useRouter } from "next/navigation";
+const SelectedPageContext = createContext();
+const inter = Inter({ subsets: ["latin"] });
+import Cookies from "js-cookie";
+import { usePathname } from "next/navigation";
+import { getData } from "@/hook/Hook";
+import { mnu } from "@/components/menu";
+import Link from "next/link";
+import { useDispatch } from "react-redux";
+import {
+  setSelectedCategory,
+  setSelectedProduct,
+} from "@/redux/categoryProductRedux";
+
+const category = {
+  NEWSKY: "home",
+  "SẢN XUẤT": "produce",
+  "KINH DOANH": "business",
+  KHO: "storage",
+  "VẬT TƯ": "products",
+  "MUA HÀNG": "purchase",
+  "KẾ TOÁN": "accountancy",
+  "NHÂN SỰ": "humanResources",
+};
 const settings = ["Thông tin", "Đổi mật khẩu", "Đăng xuất"];
+const drawerWidth = 300;
+const openedMixin = (theme) => ({
+  width: drawerWidth,
+  transition: theme.transitions.create("width", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
+  }),
+  overflowX: "hidden",
+});
 
-function ResponsiveAppBar() {
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
+const closedMixin = (theme) => ({
+  transition: theme.transitions.create("width", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  overflowX: "hidden",
+  width: `calc(${theme.spacing(7)} + 1px)`,
+  [theme.breakpoints.up("sm")]: {
+    width: `calc(${theme.spacing(8)} + 1px)`,
+  },
+});
+
+const DrawerHeader = styled("div")(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "flex-end",
+  padding: theme.spacing(0, 1),
+  // necessary for content to be below app bar
+  ...theme.mixins.toolbar,
+}));
+
+const AppBar = styled(MuiAppBar, {
+  shouldForwardProp: (prop) => prop !== "open",
+})(({ theme, open }) => ({
+  zIndex: theme.zIndex.drawer + 1,
+  transition: theme.transitions.create(["width", "margin"], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  ...(open && {
+    marginLeft: drawerWidth,
+    width: `calc(100% - ${drawerWidth}px)`,
+    transition: theme.transitions.create(["width", "margin"], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  }),
+}));
+
+const Drawer = styled(MuiDrawer, {
+  shouldForwardProp: (prop) => prop !== "open",
+})(({ theme, open }) => ({
+  width: drawerWidth,
+  flexShrink: 0,
+  whiteSpace: "nowrap",
+  boxSizing: "border-box",
+  ...(open && {
+    ...openedMixin(theme),
+    "& .MuiDrawer-paper": openedMixin(theme),
+  }),
+  ...(!open && {
+    ...closedMixin(theme),
+    "& .MuiDrawer-paper": closedMixin(theme),
+  }),
+}));
+
+export default function Topbar(ParentProp) {
+  const [categoriesChild, setCategoriesChild] = useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const theme = useTheme();
+  const [open, setOpen] = React.useState(true);
+  const dispatch = useDispatch();
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
+
+  const handleCateClick = (key) => {
+    const value = category[key];
+    window.location.href = "/" + value;
   };
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       // Adjust "/your-service-url" to the specific endpoint you need to hit
+  //       const serviceURL = "/product-service/category";
+  //       const result = await getData(serviceURL);
+  //       setCategoriesChild(result); // Update your state with the fetched data
+  //     } catch (err) {
+  //       console.error("Error fetching data:", err);
+  //     }
+  //   };
 
-  const { setSelectedPage } = useSelectedPage();
+  //   fetchData(); // Call the async function
+  // }, []); // Empty dependency array ensures this effect runs only once
+  //Xây dựng sidebar category
+  const pathname = usePathname();
 
-  const handleCateClick = (event, key) => {
-    console.log(event.currentTarget.getAttribute("button-key"));
-  };
+  let pathname1 = pathname.split("/");
+  let pathSplit = pathname1[1];
+  function getKeyByValue(object, value) {
+    return Object.keys(object).find((key) => object[key] === value);
+  }
+  function getChildCategories(categoryName, data) {
+    const category = data?.find((item) => item.catName === categoryName);
+
+    if (!category) {
+      return []; // Category not found
+    }
+
+    const children = data.filter((item) => item.isChildOf === category.id);
+    let result = [...children];
+
+    // children.forEach((child) => {
+    //   const subChildren = getChildCategories(child.catName, data);
+    //   result = [...result, ...subChildren];
+    // });
+
+    return result;
+  }
+
+  const categoriesAfterFilter = getChildCategories(
+    getKeyByValue(category, pathSplit),
+    categoriesChild
+  );
+
+  function titleCategory(mnu, pathSplit) {
+    return mnu[pathSplit];
+  }
+  const titleCategoryList = titleCategory(mnu, pathSplit);
 
   return (
-    <AppBar position="static">
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <div style={{ width: 40 }}></div>
-          <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
+    <Box>
+      <CssBaseline />
+      <AppBar position="fixed" open={ParentProp.open}>
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={ParentProp.handleDrawerOpen}
+            edge="start"
             sx={{
-              mr: 2,
-              display: { xs: "none", md: "flex" },
-              fontFamily: "monospace",
+              marginRight: 5,
+              ...(ParentProp.open && { display: "none" }),
+            }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Button
+            key={"home"}
+            onClick={() => handleCateClick("NEWSKY")}
+            sx={{
+              fontSize: 24,
+              color: "white",
+              display: "block",
               fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
             }}
           >
             NEWSKY
-          </Typography>
-
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{
-                display: { xs: "block", md: "none" },
-              }}
-            >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-          <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
+          </Button>
+          <Box
             sx={{
-              mr: 2,
-              display: { xs: "flex", md: "none" },
               flexGrow: 1,
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
+              display: {
+                xs: "none",
+                md: "flex",
+              },
+              mx: 4,
             }}
           >
-            NEWSKY
-          </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCateClick}
-                sx={{
-                  my: 2,
-                  color: "white",
-                  display: "block",
-                  fontWeight: 700,
-                  letterSpacing: -0.5,
-                  mx: 1,
-                }}
-              >
-                {page}
-              </Button>
-            ))}
+            {Object.keys(category)
+              .slice(1)
+              .map((key) => (
+                <Link
+                  href={"/" + category[key]}
+                  key={key}
+                  style={{
+                    my: "8px",
+                    color: "white",
+                    display: "block",
+                    fontWeight: 700,
+                    letterSpacing: -0.5,
+                    marginRight: "30px",
+                  }}
+                >
+                  {key}
+                </Link>
+              ))}
           </Box>
-
+          <Badge badgeContent={4} color="success" style={{ marginRight: 20 }}>
+            <NotificationsIcon style={{ color: "white" }} />
+          </Badge>
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <Avatar alt="Remy Sharp" src="" />
               </IconButton>
             </Tooltip>
             <Menu
@@ -178,8 +282,7 @@ function ResponsiveAppBar() {
             </Menu>
           </Box>
         </Toolbar>
-      </Container>
-    </AppBar>
+      </AppBar>
+    </Box>
   );
 }
-export default ResponsiveAppBar;
