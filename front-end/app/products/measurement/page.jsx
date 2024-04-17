@@ -140,7 +140,7 @@ export default function Measurement() {
             break;
           case 5:
             {
-              return `${value.row?.length} X ${value.row?.width}X${value.row?.height}`;
+              return `${value.row?.length} X ${value.row?.width} X ${value.row?.height}`;
             }
             break;
         }

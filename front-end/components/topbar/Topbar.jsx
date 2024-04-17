@@ -25,7 +25,6 @@ import { Avatar, Badge, Button, Tooltip } from "@mui/material";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-
 // import { useRouter } from "next/navigation";
 const SelectedPageContext = createContext();
 const inter = Inter({ subsets: ["latin"] });
@@ -208,9 +207,8 @@ export default function Topbar(ParentProp) {
           >
             <MenuIcon />
           </IconButton>
-          <Button
-            key={"home"}
-            onClick={() => handleCateClick("NEWSKY")}
+          <Link
+            href={"/" + category["NEWSKY"]}
             sx={{
               fontSize: 24,
               color: "white",
@@ -218,8 +216,12 @@ export default function Topbar(ParentProp) {
               fontWeight: 700,
             }}
           >
-            NEWSKY
-          </Button>
+            <img
+              // style="display: block;-webkit-user-select: none;margin: auto;background-color: hsl(0, 0%, 90%);transition: background-color 300ms;"
+              style={{ width: "12rem" }}
+              src="./newsky-logo-light.png"
+            ></img>
+          </Link>
           <Box
             sx={{
               flexGrow: 1,

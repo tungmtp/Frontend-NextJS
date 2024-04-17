@@ -305,7 +305,7 @@ export default function AddProduct(props) {
         <Autocomplete
           id="combo-box-demo"
           options={classPriceData}
-          sx={{ marginTop: 2, marginX: 5, width: "57%" }}
+          sx={{ marginTop: 2, marginX: 5 }}
           renderInput={(params) => (
             <TextField {...params} label="Class giá hạch toán" />
           )}
