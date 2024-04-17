@@ -1,26 +1,26 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-export const orderSlice = createSlice({
-  name: "order",
+export const eventSourceDataSlice = createSlice({
+  name: "eventSourceData",
   initialState: {
-    orders: [],
     isFetching: false,
     error: false,
+    addSegment: "",
   },
   reducers: {
     //GET ALL
-    getOrderStart: (state) => {
-      state.isFetching = true;
-      state.error = false;
-    },
-    getOrderSuccess: (state, action) => {
-      state.isFetching = false;
-      state.orders = action.payload;
-    },
-    getOrderFailure: (state) => {
-      state.isFetching = false;
-      state.error = true;
-    },
+    // getOrderStart: (state) => {
+    //   state.isFetching = true;
+    //   state.error = false;
+    // },
+    // getOrderSuccess: (state, action) => {
+    //   state.isFetching = false;
+    //   state.orders = action.payload;
+    // },
+    // getOrderFailure: (state) => {
+    //   state.isFetching = false;
+    //   state.error = true;
+    // },
     //DELETE
     // deleteOrderStart: (state) => {
     //   state.isFetching = true;
@@ -52,23 +52,26 @@ export const orderSlice = createSlice({
     //   state.isFetching = false;
     //   state.error = true;
     // },
-    
+    setAddSegment: (state, action) => {
+      state.addSegment = action.payload;
+    },
   },
 });
 
 export const {
-  getOrderStart,
-  getOrderSuccess,
-  getOrderFailure,
-  deleteOrderStart,
-  deleteOrderSuccess,
-  deleteOrderFailure,
-  updateOrderStart,
-  updateOrderSuccess,
-  updateOrderFailure,
-  addOrderStart,
-  addOrderSuccess,
-  addOrderFailure,
-} = orderSlice.actions;
+  // getOrderStart,
+  // getOrderSuccess,
+  // getOrderFailure,
+  // deleteOrderStart,
+  // deleteOrderSuccess,
+  // deleteOrderFailure,
+  // updateOrderStart,
+  // updateOrderSuccess,
+  // updateOrderFailure,
+  // addOrderStart,
+  // addOrderSuccess,
+  // addOrderFailure,
+  setAddSegment,
+} = eventSourceDataSlice.actions;
 
-export default orderSlice.reducer;
+export default eventSourceDataSlice.reducer;

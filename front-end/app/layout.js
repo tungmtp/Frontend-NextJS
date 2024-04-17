@@ -1,5 +1,11 @@
 "use client";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+} from "react";
 import "./globals.css";
 import ReduxProvider from "@/redux/ReduxProvider";
 import TopBar from "@/components/topbar/Topbar";
@@ -7,6 +13,7 @@ import SideBar from "@/components/sidebar/Sidebar";
 import Box from "@mui/material/Box";
 import { styled, useTheme } from "@mui/material/styles";
 import { usePathname } from "next/navigation";
+
 // import { useRouter } from "next/navigation";
 
 // export const metadata = {
@@ -23,6 +30,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 export default function RootLayout({ children }) {
   const [open, setOpen] = React.useState(true);
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -34,6 +42,17 @@ export default function RootLayout({ children }) {
   let pathname1 = pathname.split("/");
   let pathSplit = pathname1[1];
 
+  //event source
+  const handleMessage = (event) => {
+    const data = JSON.parse(event.data);
+    // console.log("Received data:", data);
+    const customEvent = new CustomEvent("newDataEvent", {
+      detail: data,
+    });
+    window.dispatchEvent(customEvent);
+  };
+
+  const eventSource = useEventSource(handleMessage);
   return (
     <html lang="en">
       <head>
@@ -71,3 +90,26 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
+const useEventSource = (onMessage) => {
+  const eventSourceRef = useRef(null);
+
+  useEffect(() => {
+    const eventSource = new EventSource(
+      "http://123.31.12.44:8080/rabbitMQ/events"
+    );
+    eventSourceRef.current = eventSource;
+
+    eventSource.addEventListener("message", onMessage);
+
+    // Xử lý sự kiện kết nối bị đóng
+    eventSource.addEventListener("error", () => {
+      console.error("EventSource failed.");
+    });
+
+    return () => {
+      eventSource.close();
+    };
+  }, [onMessage]);
+
+  return eventSourceRef;
+};

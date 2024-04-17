@@ -43,8 +43,8 @@ export default function Segment() {
   const [openAddDialog, setOpenAddDialog] = React.useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
   const [openFixDialog, setOpenFixDialog] = React.useState(false);
-
   useEffect(() => {
+    let arrayLenghtFirstRender;
     const getSegmentData = async () => {
       try {
         const result = await getData("/produce-service/segment");
@@ -53,15 +53,38 @@ export default function Segment() {
           index: index + 1,
         }));
         setSegmentData(resultWithIndex);
+        arrayLenghtFirstRender = resultWithIndex.length;
       } catch (err) {
         console.error("Error fetching data:", err);
       }
     };
     getSegmentData();
+
     console.log("rendering again");
+
+    const handleNewDataFromEventSource = (event) => {
+      const dataFromEventSource = event.detail;
+      console.log("Received new data from eventSource: ", dataFromEventSource);
+
+      if (dataFromEventSource.headers.RequestType[0] != undefined) {
+        if (dataFromEventSource.headers.RequestType[0] == "ADD_SEGMENT") {
+          const addSegment = dataFromEventSource.body;
+          addSegment.index = arrayLenghtFirstRender + 1;
+          arrayLenghtFirstRender += 1;
+
+          setSegmentData((prevState) => [...prevState, addSegment]);
+        }
+      }
+    };
+
+    window.addEventListener("newDataEvent", handleNewDataFromEventSource);
+
+    return () => {
+      window.removeEventListener("newDataEvent", handleNewDataFromEventSource);
+    };
   }, []);
 
-  console.log(selectedDataGrid);
+  // console.log(selectedDataGrid);
   const columns = [
     { field: "index", headerName: "STT", width: 10 },
     { field: "id", headerName: "id", width: 1 },
@@ -139,6 +162,8 @@ export default function Segment() {
                     addData
                   );
                   const addData2 = result;
+                  addData2.index = arrayLenght + 1;
+                  setArrayLenght(arrayLenght + 1);
                   setSegmentData((prevState) => [...prevState, addData2]);
                 } catch (err) {
                   console.error("Error fetching data:", err);
@@ -214,7 +239,6 @@ export default function Segment() {
               setSegmentData(updatedData);
               setSelectedDataGrid(null);
               handleCloseDelete();
-              alert("Xóa thành công");
             },
           }}
         >
