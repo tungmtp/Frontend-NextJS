@@ -38,6 +38,7 @@ import {
   setSelectedCategory,
   setSelectedProduct,
 } from "@/redux/categoryProductRedux";
+import NewskyLogoLight from "../../img/newskyLogoLight.jpg";
 
 const category = {
   NEWSKY: "home",
@@ -219,7 +220,7 @@ export default function Topbar(ParentProp) {
             <img
               // style="display: block;-webkit-user-select: none;margin: auto;background-color: hsl(0, 0%, 90%);transition: background-color 300ms;"
               style={{ width: "12rem" }}
-              src="./newsky-logo-light.png"
+              src={NewskyLogoLight.src}
             ></img>
           </Link>
           <Box
