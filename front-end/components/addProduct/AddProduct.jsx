@@ -237,7 +237,7 @@ export default function AddProduct(props) {
           disablePortal
           id=""
           options={measurementData}
-          sx={{ marginTop: 2, marginX: 5, width: "91%" }}
+          sx={{ marginTop: 2, marginLeft: 5, width: "450px" }}
           renderInput={(params) => (
             <TextField {...params} label="Đơn vị quy chuẩn" />
           )}
@@ -261,7 +261,7 @@ export default function AddProduct(props) {
           disablePortal
           id=""
           options={["None", ...segmmentData]}
-          sx={{ marginTop: 2, marginX: 5, width: "91%" }}
+          sx={{ marginTop: 2, marginX: 5, width: "calc(91% - 490px)" }}
           renderInput={(params) => (
             <TextField {...params} label="Công đoạn sản xuất" />
           )}
@@ -291,7 +291,7 @@ export default function AddProduct(props) {
           variant="outlined"
           label="Tồn kho tối thiểu"
           type="number"
-          sx={{ marginTop: 2, marginLeft: 5, width: "30%" }}
+          sx={{ marginTop: 2, marginLeft: 5, width: "300px" }}
           value={
             selectedDataGrid?.minimumStock && selectedDataGrid?.minimumStock
           }
@@ -305,7 +305,7 @@ export default function AddProduct(props) {
         <Autocomplete
           id="combo-box-demo"
           options={classPriceData}
-          sx={{ marginTop: 2, marginX: 5 }}
+          sx={{ marginTop: 2, marginX: 5, width: "calc(91% - 340px)" }}
           renderInput={(params) => (
             <TextField {...params} label="Class giá hạch toán" />
           )}
