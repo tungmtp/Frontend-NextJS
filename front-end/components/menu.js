@@ -18,4 +18,9 @@ export const mnu = {
     { title: "Danh mục xuất kho hàng hóa", link: "/storage/bcd" },
     { title: "Danh mục nhập kho hàng hóa", link: "/storage/efg" },
   ],
+  business: [
+    { title: "Danh sách đối tác", link: "/business/partner" },
+    { title: "Bán hàng", link: "/business/order" },
+    { title: "Lịch giao hàng", link: "/business/abc" },
+  ],
 };

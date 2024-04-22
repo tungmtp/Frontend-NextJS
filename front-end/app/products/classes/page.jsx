@@ -261,7 +261,7 @@ export default function Classes() {
               });
               setClassesData(updatedData);
               setSelectedDataGrid(null);
-              handleCloseDelete();
+              handleCloseFix();
               alert("Lưu thành công");
             },
           }}
