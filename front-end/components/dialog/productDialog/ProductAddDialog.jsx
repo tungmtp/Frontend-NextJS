@@ -35,9 +35,8 @@ import dayjs from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import SelectProduct from "@/components/select/SelectProduct";
-
-export default function AddNewOrder(props) {
+import ProductAttribute from "../../productAttribute/ProductAttribute";
+export default function ProductAddDialog(props) {
   const selectedCategory = useSelector(
     (state) => state.categoryProduct.selectedCategory
   );
@@ -204,222 +203,269 @@ export default function AddNewOrder(props) {
   }
 
   return (
-    <Paper
-      elevation={6}
+    <Dialog
+      fullWidth
+      maxWidth={"lg"}
       sx={{
         width: "100%",
         height: "100%",
         overflow: "auto",
       }}
+      open={props.open}
+      // onSubmit={handleOpenConfirm}
     >
       <Typography
         sx={{
           fontSize: "18px",
           color: "#1976d2",
           fontWeight: "BOLD",
-          margin: "8px",
+          marginX: "24px",
+          marginTop: "24px",
         }}
       >
-        Thêm đơn hàng mới
+        Thêm sản phẩm
       </Typography>
       <Box
         sx={{
           width: "100%",
           height: "100%",
-          overflow: "auto",
+          display: "flex",
+          flexWrap: "wrap",
         }}
-        // onSubmit={handleOpenConfirm}
       >
-        <Box
-          sx={{
-            width: "100%",
-            display: "flex",
-            flexWrap: "wrap",
+        <TextField
+          required
+          id="nameStr"
+          variant="outlined"
+          label="Tên sản phẩm"
+          sx={{ marginTop: 2, width: "91%", marginLeft: 5 }}
+          value={selectedDataGrid?.nameStr && selectedDataGrid?.nameStr}
+          onChange={(event) => {
+            const updatedSelectedDataGrid = { ...selectedDataGrid };
+            updatedSelectedDataGrid.nameStr = event.target.value;
+
+            setSelectedDataGrid(updatedSelectedDataGrid);
           }}
-        >
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
-              label="Ngày order"
-              value={dayjs(selectedDataGrid?.dateEffected)}
-              onChange={(newValue) => {
+        />
+        <Autocomplete
+          disablePortal
+          id=""
+          options={measurementData}
+          sx={{ marginTop: 2, marginLeft: 5, width: "450px" }}
+          renderInput={(params) => (
+            <TextField {...params} label="Đơn vị quy chuẩn" />
+          )}
+          value={
+            measurementData.length > 0
+              ? measurementData.find(
+                  (measurement) => measurement.id === selectedDataGrid.measID
+                )
+              : ""
+          }
+          onChange={(event, value) => {
+            if (value) {
+              const updatedSelectedDataGrid = { ...selectedDataGrid };
+              updatedSelectedDataGrid.measID = value.id;
+              setSelectedDataGrid(updatedSelectedDataGrid);
+            }
+          }}
+          //   onChange={handleOnChange}
+        />
+        <Autocomplete
+          disablePortal
+          id=""
+          options={["None", ...segmmentData]}
+          sx={{ marginTop: 2, marginX: 5, width: "calc(91% - 490px)" }}
+          renderInput={(params) => (
+            <TextField {...params} label="Công đoạn sản xuất" />
+          )}
+          value={
+            segmmentData.length > 0
+              ? segmmentData.find(
+                  (segmment) => segmment.id === selectedDataGrid.segmentID
+                )
+              : ""
+          }
+          onChange={(event, value) => {
+            if (value && value != "None") {
+              const updatedSelectedDataGrid = { ...selectedDataGrid };
+              updatedSelectedDataGrid.segmentID = value.id;
+              setSelectedDataGrid(updatedSelectedDataGrid);
+            } else {
+              const updatedSelectedDataGrid = { ...selectedDataGrid };
+              updatedSelectedDataGrid.segmentID = "";
+              setSelectedDataGrid(updatedSelectedDataGrid);
+            }
+          }}
+          //   onChange={handleOnChange}
+        />
+        <TextField
+          required
+          id="minimumStock"
+          variant="outlined"
+          label="Tồn kho tối thiểu"
+          type="number"
+          sx={{ marginTop: 2, marginLeft: 5, width: "300px" }}
+          value={
+            selectedDataGrid?.minimumStock && selectedDataGrid?.minimumStock
+          }
+          onChange={(event) => {
+            const updatedSelectedDataGrid = { ...selectedDataGrid };
+            updatedSelectedDataGrid.minimumStock = Number(event.target.value);
+
+            setSelectedDataGrid(updatedSelectedDataGrid);
+          }}
+        />
+        <Autocomplete
+          id="combo-box-demo"
+          options={classPriceData}
+          sx={{ marginTop: 2, marginX: 5, width: "calc(91% - 340px)" }}
+          renderInput={(params) => (
+            <TextField {...params} label="Class giá hạch toán" />
+          )}
+          value={
+            classPriceData.length > 0
+              ? classPriceData.find(
+                  (classPrice) =>
+                    classPrice.id === selectedDataGrid.classPriceID
+                )
+              : ""
+          }
+          onChange={(event, value) => {
+            if (value) {
+              const updatedSelectedDataGrid = { ...selectedDataGrid };
+              updatedSelectedDataGrid.classPriceID = value.id;
+              setSelectedDataGrid(updatedSelectedDataGrid);
+            }
+          }}
+          //   onChange={handleOnChange}
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={selectedDataGrid?.mayBeBuy}
+              onClick={(event) => {
                 const updatedSelectedDataGrid = { ...selectedDataGrid };
-                console.log(newValue);
-                updatedSelectedDataGrid.dateEffected = newValue.format(
-                  "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
-                );
+                updatedSelectedDataGrid.mayBeBuy = !selectedDataGrid?.mayBeBuy;
                 setSelectedDataGrid(updatedSelectedDataGrid);
               }}
-              sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
             />
-          </LocalizationProvider>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
-              label="Ngày giao hàng lần đầu"
-              value={dayjs(selectedDataGrid?.dateEffected)}
-              onChange={(newValue) => {
+          }
+          label="Có thể mua"
+          sx={{ marginTop: 2, marginX: 5 }}
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={selectedDataGrid?.mayBeSell}
+              onClick={(event) => {
                 const updatedSelectedDataGrid = { ...selectedDataGrid };
-                console.log(newValue);
-                updatedSelectedDataGrid.dateEffected = newValue.format(
-                  "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
-                );
+                updatedSelectedDataGrid.mayBeSell =
+                  !selectedDataGrid?.mayBeSell;
                 setSelectedDataGrid(updatedSelectedDataGrid);
               }}
-              sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
             />
-          </LocalizationProvider>
-          <TextField
-            required
-            id="nameStr"
-            variant="standard"
-            label="Nhân viên thực hiện"
-            sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
-            value={selectedDataGrid?.nameStr && selectedDataGrid?.nameStr}
-            onChange={(event) => {
-              const updatedSelectedDataGrid = { ...selectedDataGrid };
-              updatedSelectedDataGrid.nameStr = event.target.value;
-
-              setSelectedDataGrid(updatedSelectedDataGrid);
-            }}
-          />
-          <Autocomplete
-            disablePortal
-            id=""
-            options={measurementData}
-            sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
-            renderInput={(params) => (
-              <TextField {...params} variant="standard" label="Đối tác" />
-            )}
-            value={
-              measurementData.length > 0
-                ? measurementData.find(
-                    (measurement) => measurement.id === selectedDataGrid.measID
-                  )
-                : ""
-            }
-            onChange={(event, value) => {
-              if (value) {
+          }
+          label="Có thể bán"
+          sx={{ marginTop: 2, marginX: 5 }}
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={selectedDataGrid?.mayBeProduce}
+              onClick={(event) => {
                 const updatedSelectedDataGrid = { ...selectedDataGrid };
-                updatedSelectedDataGrid.measID = value.id;
+                updatedSelectedDataGrid.mayBeProduce =
+                  !selectedDataGrid?.mayBeProduce;
                 setSelectedDataGrid(updatedSelectedDataGrid);
-              }
-            }}
-            //   onChange={handleOnChange}
-          />
-          <Autocomplete
-            disablePortal
-            id=""
-            options={["None", ...segmmentData]}
-            sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
-            renderInput={(params) => (
-              <TextField {...params} variant="standard" label="Người liên hệ" />
-            )}
-            value={
-              segmmentData.length > 0
-                ? segmmentData.find(
-                    (segmment) => segmment.id === selectedDataGrid.segmentID
-                  )
-                : ""
-            }
-            onChange={(event, value) => {
-              if (value && value != "None") {
+              }}
+            />
+          }
+          label="Có thể sản xuất"
+          sx={{ marginTop: 2, marginX: 5 }}
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={selectedDataGrid?.canSellWithOutStock}
+              onClick={(event) => {
                 const updatedSelectedDataGrid = { ...selectedDataGrid };
-                updatedSelectedDataGrid.segmentID = value.id;
+                updatedSelectedDataGrid.canSellWithOutStock =
+                  !selectedDataGrid?.canSellWithOutStock;
                 setSelectedDataGrid(updatedSelectedDataGrid);
-              } else {
+              }}
+            />
+          }
+          label="Có thể bán mà không có SP tồn kho"
+          sx={{ marginTop: 2, marginX: 5 }}
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={selectedDataGrid?.disContinue}
+              onClick={(event) => {
                 const updatedSelectedDataGrid = { ...selectedDataGrid };
-                updatedSelectedDataGrid.segmentID = "";
+                updatedSelectedDataGrid.disContinue =
+                  !selectedDataGrid?.disContinue;
                 setSelectedDataGrid(updatedSelectedDataGrid);
-              }
-            }}
-            //   onChange={handleOnChange}
-          />
-          <TextField
-            required
-            id="nameStr"
-            variant="standard"
-            label="Cách tính"
-            sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
-            value={selectedDataGrid?.nameStr && selectedDataGrid?.nameStr}
-            onChange={(event) => {
-              const updatedSelectedDataGrid = { ...selectedDataGrid };
-              updatedSelectedDataGrid.nameStr = event.target.value;
+              }}
+            />
+          }
+          label="Không sử dụng sản phẩm này nữa"
+          sx={{ marginTop: 2, marginX: 5 }}
+        />
 
-              setSelectedDataGrid(updatedSelectedDataGrid);
-            }}
-          />
-
-          <TextField
-            id=""
-            variant="standard"
-            label="Dự án"
-            sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
-            value={selectedDataGrid?.comment}
-            onChange={(event) => {
-              const updatedSelectedDataGrid = { ...selectedDataGrid };
-              updatedSelectedDataGrid.comment = event.target.value;
-              console.log(event.target.value);
-              setSelectedDataGrid(updatedSelectedDataGrid);
-            }}
-          />
-          {/* <ProductAttribute
+        <TextField
+          multiline
+          id=""
+          variant="outlined"
+          label="Ghi chú"
+          sx={{ marginTop: 2, marginLeft: 5, width: "91%" }}
+          value={selectedDataGrid?.comment}
+          onChange={(event) => {
+            const updatedSelectedDataGrid = { ...selectedDataGrid };
+            updatedSelectedDataGrid.comment = event.target.value;
+            console.log(event.target.value);
+            setSelectedDataGrid(updatedSelectedDataGrid);
+          }}
+        />
+        <ProductAttribute
           title={"attName"}
           serviceURL={"/product-service/ProductAttribute"}
           status={"add"}
           getProductRelationList={getProductRelationList}
-        /> */}
-        </Box>
-        <Box
-          sx={{
-            marginTop: "50px",
-            width: "100%",
+        />
+        <div
+          style={{
             display: "flex",
-            flexWrap: "wrap",
+            justifyContent: "center",
+            paddingBottom: 6,
+            width: "100%",
+            position: "sticky",
+            bottom: 0,
+            height: "80px",
+            background: "rgb(239,239,239,0.8)",
           }}
         >
-          <Typography
-            sx={{
-              fontSize: "18px",
-              color: "Black",
-              fontWeight: "BOLD",
-              margin: "8px",
-              width: "92%",
-            }}
+          <Button
+            variant="contained"
+            sx={{ margin: 2 }}
+            onClick={props.handleCloseAddproduct}
           >
-            Chi tiết đơn hàng
-          </Typography>
-          <SelectProduct />
-        </Box>
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            color="warning"
+            variant="contained"
+            sx={{ margin: 2 }}
+            onClick={handleOpenConfirm}
+          >
+            Save
+          </Button>
+          <FormConfirmDialog open={openConfirm} />
+        </div>
       </Box>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          paddingBottom: 6,
-          width: "100%",
-          position: "sticky",
-          bottom: 0,
-          height: "80px",
-          background: "rgb(239,239,239,0.8)",
-        }}
-      >
-        <Button
-          variant="contained"
-          sx={{ margin: 2 }}
-          onClick={props.handleCloseAddproduct}
-        >
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          color="warning"
-          variant="contained"
-          sx={{ margin: 2 }}
-          onClick={handleOpenConfirm}
-        >
-          Save
-        </Button>
-        <FormConfirmDialog open={openConfirm} />
-      </div>
-    </Paper>
+    </Dialog>
   );
 }
