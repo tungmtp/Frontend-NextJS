@@ -42,13 +42,13 @@ import NewskyLogoLight from "../../img/newskyLogoLight.jpg";
 
 const category = {
   NEWSKY: "home",
-  "SẢN XUẤT": "produce",
-  "KINH DOANH": "business",
-  KHO: "storage",
-  "VẬT TƯ": "products",
-  "MUA HÀNG": "purchase",
-  "KẾ TOÁN": "accountancy",
-  "NHÂN SỰ": "humanResources",
+  "Sản xuất": "produce",
+  "Kinh doanh": "business",
+  Kho: "storage",
+  "Vật tư": "products/category",
+  "Mua hàng": "purchase",
+  "Kế toán": "accountancy",
+  "Nhân sự": "humanResources",
 };
 const settings = ["Thông tin", "Đổi mật khẩu", "Đăng xuất"];
 const drawerWidth = 300;

@@ -96,9 +96,14 @@ export default function TreeViewComp(PropData) {
       //handleSelection(event);
       console.log(nodeId);
       // const isSelected = selectedNodes.includes(nodeId);
-      dispatch(setSelectedCategory(nodeId));
-      dispatch(setSelectedProduct(null));
-      setSelectedSingleNodes(nodeId);
+      if (PropData.status == "forSelect") {
+        PropData.setSelectedNode(nodeId);
+        setSelectedSingleNodes(nodeId);
+      } else {
+        dispatch(setSelectedCategory(nodeId));
+        dispatch(setSelectedProduct(null));
+        setSelectedSingleNodes(nodeId);
+      }
 
       // if (isSelected) {
       //   setSelectedNodes(selectedNodes.filter((id) => id !== nodeId));

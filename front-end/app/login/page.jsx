@@ -61,7 +61,7 @@ export default function Login() {
       if (response.ok) {
         const token = await response.text();
         Cookies.set("token", token);
-        window.location.href = "/home";
+        window.location.href = "/products/category";
       } else {
         setLoginFail(true);
         console.error("Lỗi đăng nhập");

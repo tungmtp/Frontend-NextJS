@@ -105,8 +105,7 @@ export default function SelectProduct(props) {
       debouncedFetchOptions.cancel();
     };
   }, [inputValue]);
-  console.log(inputValue);
-  console.log(options);
+
   return (
     <div>
       <Autocomplete

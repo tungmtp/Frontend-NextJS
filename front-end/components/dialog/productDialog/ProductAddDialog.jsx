@@ -6,7 +6,7 @@ import {
 } from "@/redux/categoryProductRedux";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Box from "@mui/material/Box";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
@@ -26,7 +26,13 @@ import FolderOpenTwoToneIcon from "@mui/icons-material/FolderOpenTwoTone";
 
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import { deleteData, getData, postData, putData } from "@/hook/Hook";
+import {
+  deleteData,
+  getData,
+  getDataById,
+  postData,
+  putData,
+} from "@/hook/Hook";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { format } from "date-fns";
@@ -36,20 +42,23 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import ProductAttribute from "../../productAttribute/ProductAttribute";
+import { IconButton } from "@mui/material";
+import TreeViewComp from "@/components/treeview/TreeViewComp";
 export default function ProductAddDialog(props) {
-  const selectedCategory = useSelector(
-    (state) => state.categoryProduct.selectedCategory
-  );
+  const [openTreview, setOpenTreeview] = useState(false);
   const [classPriceData, setClassPriceData] = useState([]);
   const [classesData, setClassesData] = useState([]);
   const [measurementData, setMeasurementData] = useState([]);
   const [segmmentData, setSegmentData] = useState([]);
   const date = new Date();
   const currentDate = dayjs(date).format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
-
+  const [selectedCategory, setSelectedCategory] = React.useState({
+    catName: "",
+    id: "",
+  });
   const [selectedDataGrid, setSelectedDataGrid] = useState({
     nameStr: "",
-    extraCategoryID: selectedCategory,
+    extraCategoryID: "",
     minimumStock: 0,
     mayBeBuy: false,
     mayBeProduce: false,
@@ -63,13 +72,12 @@ export default function ProductAddDialog(props) {
     createdOn: currentDate,
     measID: "",
   });
-
   const [openConfirm, setOpenConfirm] = React.useState(false);
   const [productRelationList, setProductRelationList] = React.useState([]);
 
   const dispatch = useDispatch();
-  console.log(productRelationList);
-  console.log(selectedDataGrid);
+  // console.log(productRelationList);
+  // console.log(selectedDataGrid);
   // console.log(measurementData);
   useEffect(() => {
     const getClassPriceData = async () => {
@@ -202,6 +210,85 @@ export default function ProductAddDialog(props) {
     );
   }
 
+  const handleOpenAdd = (event) => {
+    event.preventDefault();
+    setOpenTreeview(true);
+  };
+  const handleClose = (event) => {
+    event.preventDefault();
+    setOpenTreeview(false);
+  };
+  const FormAddCategory = (open) => {
+    const [treeviewNodeId, setTreeviewNodeId] = React.useState();
+    // let attributeRelId1 = attributeRelId;
+
+    // let relTable = "productAttribute";
+    // let addAttribute = null;
+    // if (parentProp.status == "add") {
+    //   addAttribute = {
+    //     id: arrayLenght + 1,
+    //     productId: null,
+    //     relId: attributeRelId1,
+    //     relTable: relTable,
+    //   };
+    // } else {
+    //   addAttribute = {
+    //     productId: selectedProduct.id,
+    //     relId: attributeRelId1,
+    //     relTable: relTable,
+    //   };
+    // }
+
+    return (
+      <React.Fragment>
+        <Dialog
+          open={open.open}
+          onClose={handleClose}
+          PaperProps={{
+            component: "form",
+            onSubmit: (event) => {
+              event.preventDefault();
+
+              const getCatById = async () => {
+                try {
+                  const result = await getDataById(
+                    "/product-service/category",
+                    treeviewNodeId
+                  );
+
+                  console.log(result);
+                  setSelectedCategory(result);
+                  const updatedSelectedDataGrid = { ...selectedDataGrid };
+                  updatedSelectedDataGrid.extraCategoryID = result.id;
+                  console.log(updatedSelectedDataGrid.extraCategoryID);
+                  setSelectedDataGrid(updatedSelectedDataGrid);
+                  handleClose(event);
+                } catch (err) {
+                  console.error("Error fetching data:", err);
+                }
+              };
+              getCatById();
+            },
+          }}
+        >
+          <DialogTitle>Thêm phân loại</DialogTitle>
+          <DialogContent>
+            <Box sx={{ width: "300px" }}></Box>
+            <TreeViewComp
+              status="forSelect"
+              serviceURL={"/product-service/category"}
+              title={"catName"}
+              setSelectedNode={setTreeviewNodeId}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button type="submit">Add</Button>
+          </DialogActions>
+        </Dialog>
+      </React.Fragment>
+    );
+  };
   return (
     <Dialog
       fullWidth
@@ -231,8 +318,32 @@ export default function ProductAddDialog(props) {
           height: "100%",
           display: "flex",
           flexWrap: "wrap",
+          alignItems: "center",
         }}
       >
+        <TextField
+          required
+          id="nameStr"
+          variant="outlined"
+          label="Chọn thư mục"
+          InputProps={{
+            readOnly: true,
+          }}
+          sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
+          value={selectedCategory.catName}
+        />
+
+        <Tooltip title="Thêm thư mục" sx={{ marginLeft: 2 }}>
+          <Fab
+            size="small"
+            color="primary"
+            aria-label="add"
+            onClick={handleOpenAdd}
+          >
+            <AddIcon />
+          </Fab>
+        </Tooltip>
+        <FormAddCategory open={openTreview} />
         <TextField
           required
           id="nameStr"

@@ -36,59 +36,67 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import SelectProduct from "@/components/select/SelectProduct";
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+const calcType = {
+  1: "Cung cấp vật tư",
+  2: "Thi công lắp đặt",
+};
+
+const getcalcTypeName = (selectedcalcType) => {
+  return calcType[selectedcalcType];
+};
 
 export default function AddNewOrder(props) {
-  const selectedCategory = useSelector(
-    (state) => state.categoryProduct.selectedCategory
-  );
-  const [classPriceData, setClassPriceData] = useState([]);
-  const [classesData, setClassesData] = useState([]);
-  const [measurementData, setMeasurementData] = useState([]);
+  const [employeesData, setEmployeesData] = useState([]);
+  const [partnerData, setPartnerData] = useState([]);
+  const [contactData, setContactData] = useState([]);
   const [segmmentData, setSegmentData] = useState([]);
   const date = new Date();
   const currentDate = dayjs(date).format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
 
   const [selectedDataGrid, setSelectedDataGrid] = useState({
-    nameStr: "",
-    extraCategoryID: selectedCategory,
-    minimumStock: 0,
-    mayBeBuy: false,
-    mayBeProduce: false,
-    mayBeSell: false,
-    canSellWithOutStock: false,
-    disContinue: false,
-    classPriceID: "",
-    segmentID: "",
+    orderType: 0,
+    orderDate: currentDate,
+    endDate: currentDate,
     comment: "",
-    copyFrom: "",
+    partnersID: "",
+    projectID: "",
+    contactID: "",
+    staffControl: "",
+    complete: false,
+    createdBy: "",
     createdOn: currentDate,
-    measID: "",
+    calcType: 1,
+    lotNo: "",
+    projectitemID: "",
+    editBy: "",
   });
 
   const [openConfirm, setOpenConfirm] = React.useState(false);
   const [productRelationList, setProductRelationList] = React.useState([]);
 
-  const dispatch = useDispatch();
-  console.log(productRelationList);
+  // console.log(productRelationList);
   console.log(selectedDataGrid);
-  // console.log(measurementData);
+  // console.log(contactData);
+
   useEffect(() => {
     const getClassPriceData = async () => {
       try {
         const result = await getData("/product-service/classPrice");
-        const result2 = await getData("/product-service/classes");
-        const result3 = await getData("/product-service/Measurement");
+        const result2 = await getData("/business-service/partner");
+
+        const result3 = await getData("/business-service/contact");
         const result4 = await getData("/produce-service/segment");
-        const changeFieldName = result.map((item) => {
-          const classesName = result2.find(
-            (classes) => classes.id === item.classId
-          ).nameStr; // Tạo trường label từ trường nameStr
-          return {
-            ...item,
-            label: classesName,
-          };
-        });
-        setClassPriceData(changeFieldName);
+        // const changeFieldName = result.map((item) => {
+        //   const classesName = result2.find(
+        //     (classes) => classes.id === item.classId
+        //   ).nameStr; // Tạo trường label từ trường nameStr
+        //   return {
+        //     ...item,
+        //     label: classesName,
+        //   };
+        // });
+        // setEmployeesData(changeFieldName);
 
         // Đổi tên trường nameStr thành label để phù hợp dữ liệu đầu vào autocomplete
         const changeFieldName2 = result2.map((item) => {
@@ -97,16 +105,17 @@ export default function AddNewOrder(props) {
             label: item.nameStr, // Tạo trường label từ trường nameStr
           };
         });
-        setClassesData(changeFieldName2);
+
+        setPartnerData(changeFieldName2);
 
         const changeFieldName3 = result3.map((item) => {
           return {
             ...item,
-            label: item.measName, // Tạo trường label từ trường measName
+            label: item.nameStr, // Tạo trường label từ trường nameStr
           };
         });
 
-        setMeasurementData(changeFieldName3);
+        setContactData(changeFieldName3);
         const changeFieldName4 = result4.map((item) => {
           return {
             ...item,
@@ -123,6 +132,7 @@ export default function AddNewOrder(props) {
 
     console.log("rendering again");
   }, []);
+
   const getProductRelationList = (list) => {
     if (list.length > 0) {
       setProductRelationList(list);
@@ -237,29 +247,31 @@ export default function AddNewOrder(props) {
             flexWrap: "wrap",
           }}
         >
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
-              label="Ngày order"
-              value={dayjs(selectedDataGrid?.dateEffected)}
-              onChange={(newValue) => {
-                const updatedSelectedDataGrid = { ...selectedDataGrid };
-                console.log(newValue);
-                updatedSelectedDataGrid.dateEffected = newValue.format(
-                  "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
-                );
-                setSelectedDataGrid(updatedSelectedDataGrid);
-              }}
-              sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
-            />
-          </LocalizationProvider>
+          <FormControl size="small">
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label="Ngày order"
+                value={dayjs(selectedDataGrid?.orderDate)}
+                onChange={(newValue) => {
+                  const updatedSelectedDataGrid = { ...selectedDataGrid };
+                  console.log(newValue);
+                  updatedSelectedDataGrid.orderDate = newValue.format(
+                    "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
+                  );
+                  setSelectedDataGrid(updatedSelectedDataGrid);
+                }}
+                sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
+              />
+            </LocalizationProvider>
+          </FormControl>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
               label="Ngày giao hàng lần đầu"
-              value={dayjs(selectedDataGrid?.dateEffected)}
+              value={dayjs(selectedDataGrid?.endDate)}
               onChange={(newValue) => {
                 const updatedSelectedDataGrid = { ...selectedDataGrid };
                 console.log(newValue);
-                updatedSelectedDataGrid.dateEffected = newValue.format(
+                updatedSelectedDataGrid.endDate = newValue.format(
                   "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
                 );
                 setSelectedDataGrid(updatedSelectedDataGrid);
@@ -268,9 +280,9 @@ export default function AddNewOrder(props) {
             />
           </LocalizationProvider>
           <TextField
+            size="small"
             required
             id="nameStr"
-            variant="standard"
             label="Nhân viên thực hiện"
             sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
             value={selectedDataGrid?.nameStr && selectedDataGrid?.nameStr}
@@ -282,24 +294,23 @@ export default function AddNewOrder(props) {
             }}
           />
           <Autocomplete
+            size="small"
             disablePortal
             id=""
-            options={measurementData}
+            options={partnerData}
             sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
-            renderInput={(params) => (
-              <TextField {...params} variant="standard" label="Đối tác" />
-            )}
+            renderInput={(params) => <TextField {...params} label="Đối tác" />}
             value={
-              measurementData.length > 0
-                ? measurementData.find(
-                    (measurement) => measurement.id === selectedDataGrid.measID
+              partnerData.length > 0
+                ? partnerData.find(
+                    (partner) => partner.id === selectedDataGrid.partnersID
                   )
                 : ""
             }
             onChange={(event, value) => {
               if (value) {
                 const updatedSelectedDataGrid = { ...selectedDataGrid };
-                updatedSelectedDataGrid.measID = value.id;
+                updatedSelectedDataGrid.partnersID = value.id;
                 setSelectedDataGrid(updatedSelectedDataGrid);
               }
             }}
@@ -308,50 +319,61 @@ export default function AddNewOrder(props) {
           <Autocomplete
             disablePortal
             id=""
-            options={["None", ...segmmentData]}
+            size="small"
+            options={["None", ...contactData]}
             sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
             renderInput={(params) => (
-              <TextField {...params} variant="standard" label="Người liên hệ" />
+              <TextField {...params} label="Người liên hệ" />
             )}
             value={
-              segmmentData.length > 0
-                ? segmmentData.find(
-                    (segmment) => segmment.id === selectedDataGrid.segmentID
+              contactData.length > 0
+                ? contactData.find(
+                    (contact) => contact.id === selectedDataGrid.contactID
                   )
                 : ""
             }
             onChange={(event, value) => {
               if (value && value != "None") {
                 const updatedSelectedDataGrid = { ...selectedDataGrid };
-                updatedSelectedDataGrid.segmentID = value.id;
+                updatedSelectedDataGrid.contactID = value.id;
                 setSelectedDataGrid(updatedSelectedDataGrid);
               } else {
                 const updatedSelectedDataGrid = { ...selectedDataGrid };
-                updatedSelectedDataGrid.segmentID = "";
+                updatedSelectedDataGrid.contactID = "";
                 setSelectedDataGrid(updatedSelectedDataGrid);
               }
             }}
             //   onChange={handleOnChange}
           />
-          <TextField
-            required
-            id="nameStr"
-            variant="standard"
-            label="Cách tính"
+
+          <FormControl
             sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
-            value={selectedDataGrid?.nameStr && selectedDataGrid?.nameStr}
-            onChange={(event) => {
-              const updatedSelectedDataGrid = { ...selectedDataGrid };
-              updatedSelectedDataGrid.nameStr = event.target.value;
-
-              setSelectedDataGrid(updatedSelectedDataGrid);
-            }}
-          />
-
+            size="small"
+          >
+            <InputLabel id="partner-type-label">Loại đối tác</InputLabel>
+            <Select
+              sx={{ width: "300px" }}
+              labelId="partner-type-label"
+              id="partner-type-select"
+              value={selectedDataGrid?.calcType}
+              label="Cách tính"
+              onChange={(event) => {
+                const updatedSelectedDataGrid = { ...selectedDataGrid };
+                updatedSelectedDataGrid.calcType = Number(event.target.value);
+                setSelectedDataGrid(updatedSelectedDataGrid);
+              }}
+            >
+              {Object.keys(calcType).map((key) => (
+                <MenuItem key={key} value={key}>
+                  {getcalcTypeName(key)}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <TextField
             id=""
-            variant="standard"
             label="Dự án"
+            size="small"
             sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
             value={selectedDataGrid?.comment}
             onChange={(event) => {

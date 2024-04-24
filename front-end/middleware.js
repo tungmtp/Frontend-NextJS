@@ -31,5 +31,5 @@ export async function middleware(req) {
 
 // Middleware configuration to exclude certain paths
 export const config = {
-  matcher: ["/", "/home/:path*", "/another-protected-route/:path*"], // Add paths you want the middleware to run on
+  matcher: ["/", "/home/:path*", "/products/:path*"], // Add paths you want the middleware to run on
 };
