@@ -21,7 +21,6 @@ export const verifyToken = async (token, TestTokenUrl) => {
 
     // Parse the JSON response directly and return it
     const data = await response.text();
-    console.log(data);
     return data;
   } catch (error) {
     console.error("Verification failed:", error);

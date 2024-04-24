@@ -161,7 +161,7 @@ export default function SideBar(ParentProp) {
           </IconButton>
         </DrawerHeader>
         <Divider />
-        <List>
+        <List dense>
           {titleCategoryList?.map((cate, index) => (
             <ListItem
               selected={cate.link === pathname}

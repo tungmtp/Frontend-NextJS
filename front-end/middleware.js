@@ -6,19 +6,20 @@ import { verifyToken } from "./hook/Hook";
 export async function middleware(req) {
   const token = req.cookies.get("token"); // Get the token from the cookie
   // If there's no token, redirect to login
-  if (!token) {
-    const returnUrl = encodeURIComponent(req.url);
-    return NextResponse.redirect(
-      new URL(`/login?returnUrl=${returnUrl}`, req.nextUrl.origin)
-    );
-  }
+  // if (!token) {
+  //   const returnUrl = encodeURIComponent(req.url);
+  //   return NextResponse.redirect(
+  //     new URL(`/login?returnUrl=${returnUrl}`, req.nextUrl.origin)
+  //   );
+  // }
 
   // Validate the token by making a request to your validation endpoint
-  const isValid = verifyToken(token, "/auth/testToken");
+  const isValid = await verifyToken(token?.value, "/auth/testToken");
+
   // Implement this function to make the HTTP request
 
   // Redirect to login if the token is invalid
-  if (!isValid) {
+  if (isValid != "OK") {
     const returnUrl = encodeURIComponent(req.url);
     return NextResponse.redirect(
       new URL(`/login?returnUrl=${returnUrl}`, req.nextUrl.origin)
@@ -31,5 +32,15 @@ export async function middleware(req) {
 
 // Middleware configuration to exclude certain paths
 export const config = {
-  matcher: ["/", "/home/:path*", "/products/:path*"], // Add paths you want the middleware to run on
+  matcher: [
+    "/",
+    "/home/:path*",
+    "/products/:path*",
+    "/produce/:path*",
+    "/humanResources/:path*",
+    "/purchase/:path*",
+    "/storage/:path*",
+    "/business/:path*",
+    "/accountancy/:path*",
+  ], // Add paths you want the middleware to run on
 };
