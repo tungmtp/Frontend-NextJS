@@ -43,6 +43,7 @@ export default function Segment() {
   const [openAddDialog, setOpenAddDialog] = React.useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
   const [openFixDialog, setOpenFixDialog] = React.useState(false);
+  console.log(selectedDataGrid);
   useEffect(() => {
     let arrayLenghtFirstRender;
     const getSegmentData = async () => {
@@ -73,6 +74,38 @@ export default function Segment() {
           arrayLenghtFirstRender += 1;
 
           setSegmentData((prevState) => [...prevState, addSegment]);
+        } else if (
+          dataFromEventSource.headers.RequestType[0] == "UPDATE_SEGMENT"
+        ) {
+          const updateSegment = dataFromEventSource.body;
+          setSegmentData((prevState) =>
+            prevState.map((item) => {
+              if (item.id === updateSegment.id) {
+                updateSegment.index = item.index;
+                return updateSegment;
+              }
+              return item;
+            })
+          );
+          console.log(selectedDataGrid);
+
+          setSelectedDataGrid((prevState) => {
+            if (prevState.id === updateSegment.id) {
+              return updateSegment;
+            }
+          });
+        } else if (
+          dataFromEventSource.headers.RequestType[0] == "DELETE_SEGMENT"
+        ) {
+          const deleteSegmentId = dataFromEventSource.body;
+          setSegmentData((prevState) =>
+            prevState.filter((item) => item.id !== deleteSegmentId)
+          );
+          setSelectedDataGrid((prevState) => {
+            if (prevState.id === deleteSegmentId) {
+              return null;
+            }
+          });
         }
       }
     };
