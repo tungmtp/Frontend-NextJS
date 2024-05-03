@@ -22,7 +22,8 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
 import FolderOpenTwoToneIcon from "@mui/icons-material/FolderOpenTwoTone";
-
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import { deleteData, getData, postData, putData } from "@/hook/Hook";
@@ -34,7 +35,7 @@ import dayjs from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { FormControl } from "@mui/material";
+import { FormControl, IconButton } from "@mui/material";
 export default function Contact() {
   const [contactRelation, setContactRelation] = useState([]);
   const [contactData, setContactData] = useState([]);
@@ -315,7 +316,7 @@ export default function Contact() {
       </React.Fragment>
     );
   }
-  console.log(contactRelation);
+  console.log(selectedContactRelation);
   const handleOpenAddContactRelation = (event) => {
     event.preventDefault();
     setOpenAddContactRelationDialog(true);
@@ -505,9 +506,22 @@ export default function Contact() {
                 return item;
               });
               setContactData(updatedData);
-              setSelectedDataGrid(null);
+
+              delete selectedContactRelation.label;
+              selectedContactRelation.relData = JSON.stringify(selectedRelData);
+              const respone2 = putData(
+                "/business-service/contactRelation",
+                selectedContactRelation.id,
+                selectedContactRelation
+              );
+              const updatedContactRelation = contactRelation.map((item) => {
+                if (item.id === selectedContactRelation.id) {
+                  return selectedContactRelation;
+                }
+                return item;
+              });
+              setContactRelation(updatedContactRelation);
               handleCloseFix();
-              alert("Lưu thành công");
             },
           }}
         >
@@ -660,15 +674,38 @@ export default function Contact() {
                   }
                 }}
               />
-              <Fab
+              {selectedContactRelation !== null && (
+                <IconButton
+                  aria-label="delete"
+                  sx={{}}
+                  onClick={() => {
+                    const respone = deleteData(
+                      "/business-service/contactRelation",
+                      selectedContactRelation.id
+                    );
+                    console.log(respone);
+                    const updatedData = contactRelation.filter(
+                      (item) => item.id !== selectedContactRelation.id
+                    );
+                    setContactRelation(updatedData);
+                    setSelectedContactRelation(null);
+                    setSelectedRelData(null);
+                  }}
+                >
+                  <DeleteIcon color="warning" />
+                </IconButton>
+              )}
+
+              <IconButton
                 size="small"
                 color="primary"
                 aria-label="add"
                 onClick={handleOpenAddContactRelation}
-                sx={{ marginLeft: 2, height: "100%" }}
+                sx={{ height: "100%" }}
               >
-                <AddIcon />
-              </Fab>
+                <AddCircleIcon />
+              </IconButton>
+
               <FormAddContactRelationDialog
                 open={openAddContactRelationDialog}
               />
