@@ -34,27 +34,24 @@ import dayjs from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-
+import { FormControl } from "@mui/material";
 export default function Contact() {
   const [contactRelation, setContactRelation] = useState([]);
   const [contactData, setContactData] = useState([]);
   const [partnerData, setPartnerData] = useState([]);
   const [selectedDataGrid, setSelectedDataGrid] = useState(null);
+  const [selectedContactRelation, setSelectedContactRelation] = useState(null);
+  const [selectedRelData, setSelectedRelData] = useState(null);
   const [openAddDialog, setOpenAddDialog] = React.useState(false);
+  const [openAddContactRelationDialog, setOpenAddContactRelationDialog] =
+    React.useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
   const [openFixDialog, setOpenFixDialog] = React.useState(false);
   useEffect(() => {
     const getContactRelation = async () => {
       try {
-        const result = await getData("/business-service/contactRelation");
         const result2 = await getData("/business-service/contact");
         const result3 = await getData("/business-service/partner");
-
-        const resultWithIndex = result.map((row, index) => ({
-          ...row,
-          index: index + 1,
-        }));
-        setContactRelation(resultWithIndex);
 
         // Đổi tên trường nameStr thành label để phù hợp dữ liệu đầu vào autocomplete
         const changeFieldName = result2.map((item, index) => {
@@ -79,10 +76,9 @@ export default function Contact() {
       }
     };
     getContactRelation();
-    console.log("rendering again");
+    console.log('rendering again "  ');
   }, []);
 
-  console.log(selectedDataGrid);
   const columns = [
     { field: "index", headerName: "STT", width: 10 },
     { field: "id", headerName: "id", width: 1 },
@@ -105,6 +101,29 @@ export default function Contact() {
             variant="body1"
             onClick={() => {
               setSelectedDataGrid(params.row);
+              const getContactRelation = async () => {
+                try {
+                  const result = await getData(
+                    `/business-service/contactRelation/byContactID/${params.row.id}`
+                  );
+                  const changeFieldName = result.map((item) => {
+                    const partnerName = partnerData.find(
+                      (partner) => partner.id === item.relId
+                    ).nameStr; // Tạo trường label từ trường nameStr
+                    return {
+                      ...item,
+                      label: partnerName,
+                    };
+                  });
+
+                  setContactRelation(changeFieldName);
+                } catch (err) {
+                  console.error("Error fetching data:", err);
+                }
+              };
+              getContactRelation();
+              setSelectedContactRelation(null);
+              setSelectedRelData(null);
             }}
           >
             {params.row.nameStr}
@@ -142,31 +161,6 @@ export default function Contact() {
       headerName: "Email",
       width: 200,
     },
-    {
-      field: "12",
-      headerName: "Đối tác",
-      width: 100,
-
-      renderCell: (params) => {
-        const partnerName = partnerData.find(
-          (item) => item.id === params.row.partnersID
-        )?.nameStr;
-
-        return (
-          <Link
-            underline="hover"
-            key={params.row.id}
-            color="inherit"
-            variant="body1"
-            onClick={() => {
-              setSelectedDataGrid(params.row);
-            }}
-          >
-            {partnerName}
-          </Link>
-        );
-      },
-    },
   ];
 
   const handleOpenAdd = (event) => {
@@ -179,6 +173,8 @@ export default function Contact() {
   };
   function FormAddDialog(open) {
     let selectedPartnerId = "";
+    let selectedDateFrom = "";
+    let selectedDateTo = "";
 
     return (
       <React.Fragment>
@@ -197,6 +193,7 @@ export default function Contact() {
               const handPhone = formJson.handPhone;
               const email = formJson.email;
               const title = formJson.title;
+              const relTitle = formJson.relTitle;
 
               const addContact = {
                 partnersID: PartnerID,
@@ -207,6 +204,17 @@ export default function Contact() {
               };
               console.log(addContact);
 
+              const addContactRelation = {
+                contactId: "",
+                relId: selectedPartnerId,
+                relTable: "Partner",
+                relData: JSON.stringify({
+                  from: selectedDateFrom,
+                  to: selectedDateTo,
+                  title: relTitle,
+                }),
+              };
+
               const postContact = async () => {
                 try {
                   const result = await postData(
@@ -215,56 +223,205 @@ export default function Contact() {
                   );
                   const addContact2 = result;
                   setContactData((prevState) => [...prevState, addContact2]);
+                  addContactRelation.contactId = result.id;
+                  const result2 = await postData(
+                    "/business-service/contactRelation",
+                    addContactRelation
+                  );
                 } catch (err) {
                   console.error("Error fetching data:", err);
                 }
               };
               postContact();
+              console.log(addContactRelation);
               handleClose(event);
             },
           }}
         >
-          <DialogTitle>Thêm giá hạch toán</DialogTitle>
+          <DialogTitle>Thêm liên hệ mới</DialogTitle>
           <DialogContent sx={{ display: "flex", flexWrap: "wrap" }}>
-            <Autocomplete
-              name="classId"
-              options={partnerData}
-              sx={{ margin: 2, width: "477px" }}
-              renderInput={(params) => (
-                <TextField {...params} label="Đối tác" />
-              )}
-              onChange={(event, value) => {
-                selectedPartnerId = value.id;
-              }}
-              //   onChange={handleOnChange}
-            />
             <TextField
+              required
               name="nameStr"
               variant="outlined"
               label="Tên liên hệ"
               sx={{ margin: 2 }}
             />
             <TextField
+              required
               name="handPhone"
               variant="outlined"
               label="Số điện thoại"
               sx={{ margin: 2 }}
             />
             <TextField
+              required
               name="email"
               variant="outlined"
               label="Email"
               sx={{ margin: 2 }}
             />
             <TextField
+              required
               name="title"
               variant="outlined"
               label="Chức vụ"
               sx={{ margin: 2 }}
             />
+            <Autocomplete
+              aria-required
+              name="relId"
+              options={partnerData}
+              sx={{ margin: 2, width: "225px" }}
+              renderInput={(params) => (
+                <TextField {...params} label="Đối tác liên kết" />
+              )}
+              onChange={(event, value) => {
+                selectedPartnerId = value.id;
+              }}
+            />
+            <TextField
+              name="relTitle"
+              variant="outlined"
+              label="Chức vụ"
+              sx={{ margin: 2 }}
+            />
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                name="dateEffected"
+                label="Từ ngày"
+                sx={{ margin: 2, width: "225px" }}
+                onChange={(newValue) => {
+                  selectedDateFrom = newValue.format("YYYY-MM-DD");
+                }}
+              />
+            </LocalizationProvider>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                name="dateEffected"
+                label="Đến ngày"
+                sx={{ margin: 2, width: "225px" }}
+                onChange={(newValue) => {
+                  selectedDateTo = newValue.format("YYYY-MM-DD");
+                }}
+              />
+            </LocalizationProvider>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose}>Cancel</Button>
+            <Button type="submit">Save</Button>
+          </DialogActions>
+        </Dialog>
+      </React.Fragment>
+    );
+  }
+  console.log(contactRelation);
+  const handleOpenAddContactRelation = (event) => {
+    event.preventDefault();
+    setOpenAddContactRelationDialog(true);
+  };
+  const handleCloseAddContactRelation = (event) => {
+    event.preventDefault();
+    setOpenAddContactRelationDialog(false);
+  };
+  function FormAddContactRelationDialog(open) {
+    let selectedPartnerId = "";
+    let selectedDateFrom = "";
+    let selectedDateTo = "";
+
+    return (
+      <React.Fragment>
+        <Dialog
+          open={open.open}
+          onClose={handleClose}
+          PaperProps={{
+            component: "form",
+            onSubmit: (event) => {
+              event.preventDefault();
+              const formData = new FormData(event.currentTarget);
+              const formJson = Object.fromEntries(formData.entries());
+              const relTitle = formJson.relTitle;
+
+              const addContactRelation = {
+                contactId: selectedDataGrid.id,
+                relId: selectedPartnerId,
+                relTable: "Partner",
+                relData: JSON.stringify({
+                  from: selectedDateFrom,
+                  to: selectedDateTo,
+                  title: relTitle,
+                }),
+              };
+
+              const postContactRelation = async () => {
+                try {
+                  const result = await postData(
+                    "/business-service/contactRelation",
+                    addContactRelation
+                  );
+                  const addContactRelation2 = result;
+                  addContactRelation2.label = partnerData.find(
+                    (partner) => partner.id === addContactRelation2.relId
+                  ).nameStr; // Tạo trường label từ trường nameStr
+                  setContactRelation((prevState) => [
+                    ...prevState,
+                    addContactRelation2,
+                  ]);
+                } catch (err) {
+                  console.error("Error fetching data:", err);
+                }
+              };
+              postContactRelation();
+              console.log(addContactRelation);
+              handleCloseAddContactRelation(event);
+            },
+          }}
+        >
+          <DialogTitle>
+            Thêm liên kết đối tác cho: {selectedDataGrid.nameStr}
+          </DialogTitle>
+          <DialogContent sx={{ display: "flex", flexWrap: "wrap" }}>
+            <Autocomplete
+              aria-required
+              name="relId"
+              options={partnerData}
+              sx={{ margin: 2, width: "225px" }}
+              renderInput={(params) => (
+                <TextField {...params} label="Đối tác liên kết" />
+              )}
+              onChange={(event, value) => {
+                selectedPartnerId = value.id;
+              }}
+            />
+            <TextField
+              name="relTitle"
+              variant="outlined"
+              label="Chức vụ"
+              sx={{ margin: 2 }}
+            />
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                name="dateEffected"
+                label="Từ ngày"
+                sx={{ margin: 2, width: "225px" }}
+                onChange={(newValue) => {
+                  selectedDateFrom = newValue.format("YYYY-MM-DD");
+                }}
+              />
+            </LocalizationProvider>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                name="dateEffected"
+                label="Đến ngày"
+                sx={{ margin: 2, width: "225px" }}
+                onChange={(newValue) => {
+                  selectedDateTo = newValue.format("YYYY-MM-DD");
+                }}
+              />
+            </LocalizationProvider>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseAddContactRelation}>Cancel</Button>
             <Button type="submit">Save</Button>
           </DialogActions>
         </Dialog>
@@ -369,25 +526,35 @@ export default function Contact() {
       </React.Fragment>
     );
   }
+  console.log(selectedRelData);
   return (
-    <Paper elevation={6} sx={{ paddingTop: 1, paddingLeft: 1, height: "84vh" }}>
-      <Button
-        size="small"
-        color="primary"
-        aria-label="add"
-        onClick={handleOpenAdd}
-        variant="contained"
-        sx={{ marginY: "8px" }}
-      >
-        <AddIcon /> Add New
-      </Button>
-      <FormAddDialog open={openAddDialog} />
+    <Paper
+      elevation={6}
+      sx={{
+        paddingTop: 1,
+        paddingLeft: 1,
+        height: "84vh",
+        display: "flex",
+        flexDirection: "row",
+      }}
+    >
       <div
         style={{
           display: "flex",
-          flexDirection: "row",
+          flexDirection: "column",
         }}
       >
+        <Button
+          size="small"
+          color="primary"
+          aria-label="add"
+          onClick={handleOpenAdd}
+          variant="contained"
+          sx={{ marginY: "8px", width: "110px" }}
+        >
+          <AddIcon /> Add New
+        </Button>
+        <FormAddDialog open={openAddDialog} />
         <div style={{ height: "73vh", flexGrow: 2 }}>
           <DataGrid
             rows={contactData}
@@ -406,120 +573,192 @@ export default function Contact() {
             }}
           />
         </div>
-        <Box
-          elevation={1}
-          sx={{
-            paddingX: 4,
-            py: 2,
-            flexGrow: 3,
-          }}
-        >
-          {selectedDataGrid ? (
-            <Paper
-              elevation={3}
+      </div>
+      <Box
+        elevation={1}
+        sx={{
+          paddingX: 4,
+          py: 2,
+          flexGrow: 3,
+        }}
+      >
+        {selectedDataGrid ? (
+          <Paper
+            elevation={3}
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              flexDirection: "column",
+              paddingY: "8px",
+              maxWidth: "447px",
+              flexGrow: 1,
+            }}
+          >
+            <TextField
+              id="nameStr"
+              variant="outlined"
+              label="Tên liên hệ"
+              sx={{ marginTop: 2, marginX: 5 }}
+              value={selectedDataGrid?.nameStr}
+              onChange={(event) => {
+                const updatedSelectedDataGrid = { ...selectedDataGrid };
+                updatedSelectedDataGrid.nameStr = event.target.value;
+
+                setSelectedDataGrid(updatedSelectedDataGrid);
+              }}
+            />
+            <TextField
+              id="handPhone"
+              variant="outlined"
+              label="Số điện thoại"
+              sx={{ marginTop: 2, marginX: 5 }}
+              value={selectedDataGrid?.handPhone}
+              onChange={(event) => {
+                const updatedSelectedDataGrid = { ...selectedDataGrid };
+                updatedSelectedDataGrid.handPhone = event.target.value;
+
+                setSelectedDataGrid(updatedSelectedDataGrid);
+              }}
+            />
+            <TextField
+              id="email"
+              variant="outlined"
+              label="Email"
+              sx={{ marginTop: 2, marginX: 5 }}
+              value={selectedDataGrid?.email}
+              onChange={(event) => {
+                const updatedSelectedDataGrid = { ...selectedDataGrid };
+                updatedSelectedDataGrid.email = event.target.value;
+
+                setSelectedDataGrid(updatedSelectedDataGrid);
+              }}
+            />
+            <Box
               sx={{
                 display: "flex",
-                justifyContent: "center",
-                flexDirection: "column",
-                paddingY: "8px",
-                maxWidth: "447px",
-                flexGrow: 1,
+                marginY: 2,
+                marginX: 5,
+                justifyContent: "space-around",
+                alignItems: "center",
               }}
             >
-              <TextField
-                id="nameStr"
-                variant="outlined"
-                label="Tên liên hệ"
-                sx={{ marginTop: 2, marginX: 5 }}
-                value={selectedDataGrid?.nameStr}
-                onChange={(event) => {
-                  const updatedSelectedDataGrid = { ...selectedDataGrid };
-                  updatedSelectedDataGrid.nameStr = event.target.value;
-
-                  setSelectedDataGrid(updatedSelectedDataGrid);
-                }}
-              />
-              <TextField
-                id="handPhone"
-                variant="outlined"
-                label="Số điện thoại"
-                sx={{ marginTop: 2, marginX: 5 }}
-                value={selectedDataGrid?.handPhone}
-                onChange={(event) => {
-                  const updatedSelectedDataGrid = { ...selectedDataGrid };
-                  updatedSelectedDataGrid.handPhone = event.target.value;
-
-                  setSelectedDataGrid(updatedSelectedDataGrid);
-                }}
-              />
-              <TextField
-                id="email"
-                variant="outlined"
-                label="Email"
-                sx={{ marginTop: 2, marginX: 5 }}
-                value={selectedDataGrid?.email}
-                onChange={(event) => {
-                  const updatedSelectedDataGrid = { ...selectedDataGrid };
-                  updatedSelectedDataGrid.email = event.target.value;
-
-                  setSelectedDataGrid(updatedSelectedDataGrid);
-                }}
-              />
               <Autocomplete
-                options={partnerData}
-                sx={{ marginY: 2, marginX: 5 }}
+                fullWidth
+                options={contactRelation}
                 renderInput={(params) => (
-                  <TextField {...params} label="Đối tác" />
+                  <TextField {...params} label="Các đối tác đã liên kết" />
                 )}
-                value={partnerData.find(
-                  (partner) => partner.id === selectedDataGrid?.partnersID
-                )}
+                value={
+                  contactRelation.length > 0 && selectedContactRelation !== null
+                    ? selectedContactRelation
+                    : ""
+                }
                 onChange={(event, value) => {
                   if (value) {
-                    const updatedSelectedDataGrid = { ...selectedDataGrid };
-                    updatedSelectedDataGrid.partnersID = value?.id;
-                    console.log(value);
-                    setSelectedDataGrid(updatedSelectedDataGrid);
+                    setSelectedContactRelation(value);
+                    setSelectedRelData(JSON.parse(value.relData));
                   }
                 }}
               />
+              <Fab
+                size="small"
+                color="primary"
+                aria-label="add"
+                onClick={handleOpenAddContactRelation}
+                sx={{ marginLeft: 2, height: "100%" }}
+              >
+                <AddIcon />
+              </Fab>
+              <FormAddContactRelationDialog
+                open={openAddContactRelationDialog}
+              />
+            </Box>
+            <FormControl size="small">
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                {selectedRelData && (
+                  <DatePicker
+                    label="Từ ngày"
+                    value={dayjs(selectedRelData?.from)}
+                    onChange={(newValue) => {
+                      const updatedSelectedRelData = { ...selectedRelData };
+                      console.log(newValue);
+                      updatedSelectedRelData.from =
+                        newValue.format("YYYY-MM-DD");
+                      setSelectedRelData(updatedSelectedRelData);
+                    }}
+                    sx={{ marginX: 5 }}
+                  />
+                )}
+              </LocalizationProvider>
+            </FormControl>
 
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  paddingBottom: 6,
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              {selectedRelData && (
+                <DatePicker
+                  label="Đến ngày"
+                  value={dayjs(selectedRelData.to)}
+                  onChange={(newValue) => {
+                    const updatedSelectedRelData = { ...selectedRelData };
+                    console.log(newValue);
+                    updatedSelectedRelData.to = newValue.format("YYYY-MM-DD");
+                    setSelectedRelData(updatedSelectedRelData);
+                  }}
+                  sx={{ marginTop: 2, marginX: 5 }}
+                />
+              )}
+            </LocalizationProvider>
+            {selectedRelData && (
+              <TextField
+                id="email"
+                variant="outlined"
+                label="Chức vụ"
+                sx={{ marginY: 2, marginX: 5 }}
+                value={selectedRelData?.title}
+                onChange={(event) => {
+                  const updatedSelectedRelData = { ...selectedRelData };
+                  updatedSelectedRelData.title = event.target.value;
+
+                  setSelectedRelData(updatedSelectedRelData);
+                }}
+              />
+            )}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                paddingBottom: 6,
+              }}
+            >
+              <Button
+                variant="contained"
+                sx={{ marginX: 2 }}
+                onClick={() => {
+                  setSelectedDataGrid(null);
+                  setSelectedContactRelation(null);
+                  setSelectedRelData(null);
                 }}
               >
-                <Button
-                  variant="contained"
-                  sx={{ marginX: 2 }}
-                  onClick={() => {
-                    setSelectedDataGrid(null);
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button variant="contained" onClick={handleOpenFix}>
-                  Save
-                </Button>
-                <FormFixDialog open={openFixDialog} />
-                <Button
-                  color="error"
-                  variant="contained"
-                  sx={{ marginX: 2 }}
-                  onClick={handleOpenDelete}
-                >
-                  Delete
-                </Button>
-                <FormDeleteDialog open={openDeleteDialog} />
-              </div>
-            </Paper>
-          ) : (
-            <div style={{ flexGrow: 2 }}></div>
-          )}
-        </Box>
-      </div>
+                Cancel
+              </Button>
+              <Button variant="contained" onClick={handleOpenFix}>
+                Save
+              </Button>
+              <FormFixDialog open={openFixDialog} />
+              <Button
+                color="error"
+                variant="contained"
+                sx={{ marginX: 2 }}
+                onClick={handleOpenDelete}
+              >
+                Delete
+              </Button>
+              <FormDeleteDialog open={openDeleteDialog} />
+            </div>
+          </Paper>
+        ) : (
+          <div style={{ flexGrow: 2 }}></div>
+        )}
+      </Box>
     </Paper>
   );
 }
