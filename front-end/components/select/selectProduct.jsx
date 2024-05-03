@@ -110,7 +110,8 @@ export default function SelectProduct(props) {
     <div>
       <Autocomplete
         fullWidth
-        sx={{ width: "500px" }}
+        size="small"
+        sx={{ width: "640px" }}
         open={open}
         onOpen={() => setOpen(true)}
         onClose={() => setOpen(false)}

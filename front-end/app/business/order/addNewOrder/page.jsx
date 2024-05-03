@@ -17,7 +17,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Fab from "@mui/material/Fab";
-import Link from "@mui/material/Link";
+import Link from "next/link";
 import TextField from "@mui/material/TextField";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
@@ -37,6 +37,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import SelectProduct from "@/components/select/SelectProduct";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import OrderDetail from "@/components/orderDetail/OrderDetail";
 const calcType = {
   1: "Cung cấp vật tư",
   2: "Thi công lắp đặt",
@@ -50,7 +51,7 @@ export default function AddNewOrder(props) {
   const [employeesData, setEmployeesData] = useState([]);
   const [partnerData, setPartnerData] = useState([]);
   const [contactData, setContactData] = useState([]);
-  const [segmmentData, setSegmentData] = useState([]);
+  const [employeeData, setEmployeeData] = useState([]);
   const date = new Date();
   const currentDate = dayjs(date).format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
 
@@ -84,9 +85,8 @@ export default function AddNewOrder(props) {
       try {
         const result = await getData("/product-service/classPrice");
         const result2 = await getData("/business-service/partner");
-
         const result3 = await getData("/business-service/contact");
-        const result4 = await getData("/produce-service/segment");
+        const result4 = await getData("/employee-service/employee");
         // const changeFieldName = result.map((item) => {
         //   const classesName = result2.find(
         //     (classes) => classes.id === item.classId
@@ -119,11 +119,11 @@ export default function AddNewOrder(props) {
         const changeFieldName4 = result4.map((item) => {
           return {
             ...item,
-            label: item.segmentName, // Tạo trường label từ trường segmentName
+            label: `${item.firstName} ${item.lastName} `, // Tạo trường label từ trường segmentName
           };
         });
 
-        setSegmentData(changeFieldName4);
+        setEmployeeData(changeFieldName4);
       } catch (err) {
         console.error("Error fetching data:", err);
       }
@@ -279,19 +279,33 @@ export default function AddNewOrder(props) {
               sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
             />
           </LocalizationProvider>
-          <TextField
+          <Autocomplete
             size="small"
-            required
-            id="nameStr"
-            label="Nhân viên thực hiện"
+            disablePortal
+            id=""
+            options={employeeData}
             sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
-            value={selectedDataGrid?.nameStr && selectedDataGrid?.nameStr}
-            onChange={(event) => {
-              const updatedSelectedDataGrid = { ...selectedDataGrid };
-              updatedSelectedDataGrid.nameStr = event.target.value;
-
-              setSelectedDataGrid(updatedSelectedDataGrid);
+            renderInput={(params) => (
+              <TextField {...params} label="Nhân viên thực hiện" />
+            )}
+            value={
+              employeeData.length > 0 &&
+              employeeData.find(
+                (employee) => employee.id === selectedDataGrid.staffControl
+              )
+                ? employeeData.find(
+                    (employee) => employee.id === selectedDataGrid.staffControl
+                  )
+                : ""
+            }
+            onChange={(event, value) => {
+              if (value) {
+                const updatedSelectedDataGrid = { ...selectedDataGrid };
+                updatedSelectedDataGrid.staffControl = value.id;
+                setSelectedDataGrid(updatedSelectedDataGrid);
+              }
             }}
+            //   onChange={handleOnChange}
           />
           <Autocomplete
             size="small"
@@ -301,7 +315,10 @@ export default function AddNewOrder(props) {
             sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
             renderInput={(params) => <TextField {...params} label="Đối tác" />}
             value={
-              partnerData.length > 0
+              partnerData.length > 0 &&
+              partnerData.find(
+                (partner) => partner.id === selectedDataGrid.partnersID
+              )
                 ? partnerData.find(
                     (partner) => partner.id === selectedDataGrid.partnersID
                   )
@@ -326,7 +343,10 @@ export default function AddNewOrder(props) {
               <TextField {...params} label="Người liên hệ" />
             )}
             value={
-              contactData.length > 0
+              contactData.length > 0 &&
+              contactData.find(
+                (contact) => contact.id === selectedDataGrid.contactID
+              )
                 ? contactData.find(
                     (contact) => contact.id === selectedDataGrid.contactID
                   )
@@ -350,7 +370,7 @@ export default function AddNewOrder(props) {
             sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
             size="small"
           >
-            <InputLabel id="partner-type-label">Loại đối tác</InputLabel>
+            <InputLabel id="partner-type-label">Cách tính</InputLabel>
             <Select
               sx={{ width: "300px" }}
               labelId="partner-type-label"
@@ -409,7 +429,7 @@ export default function AddNewOrder(props) {
           >
             Chi tiết đơn hàng
           </Typography>
-          <SelectProduct />
+          <OrderDetail />
         </Box>
       </Box>
       <div
@@ -429,7 +449,13 @@ export default function AddNewOrder(props) {
           sx={{ margin: 2 }}
           onClick={props.handleCloseAddproduct}
         >
-          Cancel
+          <Link
+            href={"/business/order"}
+            style={{ color: "white", textDecoration: "none" }}
+          >
+            {" "}
+            Cancel
+          </Link>
         </Button>
         <Button
           type="submit"

@@ -40,17 +40,6 @@ import {
   setSelectedProduct,
 } from "@/redux/categoryProductRedux";
 
-const category = {
-  NEWSKY: "home",
-  "Sản xuất": "produce",
-  "Kinh doanh": "business",
-  Kho: "storage",
-  "Vật tư": "products",
-  "Mua hàng": "purchase",
-  "Kế toán": "accountancy",
-  "Nhân sự": "humanResources",
-};
-
 const drawerWidth = 300;
 const openedMixin = (theme) => ({
   width: drawerWidth,
@@ -137,10 +126,10 @@ export default function SideBar(ParentProp) {
     return result;
   }
 
-  const categoriesAfterFilter = getChildCategories(
-    getKeyByValue(category, pathSplit),
-    categoriesChild
-  );
+  // const categoriesAfterFilter = getChildCategories(
+  //   getKeyByValue(category, pathSplit),
+  //   categoriesChild
+  // );
 
   function titleCategory(mnu, pathSplit) {
     return mnu[pathSplit];

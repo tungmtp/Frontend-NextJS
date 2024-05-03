@@ -42,8 +42,8 @@ import NewskyLogoLight from "../../img/newskyLogoLight.jpg";
 
 const category = {
   NEWSKY: "home",
-  "Sản xuất": "produce",
-  "Kinh doanh": "business",
+  "Sản xuất": "produce/segment",
+  "Kinh doanh": "business/partner",
   Kho: "storage",
   "Vật tư": "products/category",
   "Mua hàng": "purchase",
@@ -61,26 +61,26 @@ const openedMixin = (theme) => ({
   overflowX: "hidden",
 });
 
-const closedMixin = (theme) => ({
-  transition: theme.transitions.create("width", {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  overflowX: "hidden",
-  width: `calc(${theme.spacing(7)} + 1px)`,
-  [theme.breakpoints.up("sm")]: {
-    width: `calc(${theme.spacing(8)} + 1px)`,
-  },
-});
+// const closedMixin = (theme) => ({
+//   transition: theme.transitions.create("width", {
+//     easing: theme.transitions.easing.sharp,
+//     duration: theme.transitions.duration.leavingScreen,
+//   }),
+//   overflowX: "hidden",
+//   width: `calc(${theme.spacing(7)} + 1px)`,
+//   [theme.breakpoints.up("sm")]: {
+//     width: `calc(${theme.spacing(8)} + 1px)`,
+//   },
+// });
 
-const DrawerHeader = styled("div")(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "flex-end",
-  padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
-  ...theme.mixins.toolbar,
-}));
+// const DrawerHeader = styled("div")(({ theme }) => ({
+//   display: "flex",
+//   alignItems: "center",
+//   justifyContent: "flex-end",
+//   padding: theme.spacing(0, 1),
+//   // necessary for content to be below app bar
+//   ...theme.mixins.toolbar,
+// }));
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
@@ -100,41 +100,41 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
-const Drawer = styled(MuiDrawer, {
-  shouldForwardProp: (prop) => prop !== "open",
-})(({ theme, open }) => ({
-  width: drawerWidth,
-  flexShrink: 0,
-  whiteSpace: "nowrap",
-  boxSizing: "border-box",
-  ...(open && {
-    ...openedMixin(theme),
-    "& .MuiDrawer-paper": openedMixin(theme),
-  }),
-  ...(!open && {
-    ...closedMixin(theme),
-    "& .MuiDrawer-paper": closedMixin(theme),
-  }),
-}));
+// const Drawer = styled(MuiDrawer, {
+//   shouldForwardProp: (prop) => prop !== "open",
+// })(({ theme, open }) => ({
+//   width: drawerWidth,
+//   flexShrink: 0,
+//   whiteSpace: "nowrap",
+//   boxSizing: "border-box",
+//   ...(open && {
+//     ...openedMixin(theme),
+//     "& .MuiDrawer-paper": openedMixin(theme),
+//   }),
+//   ...(!open && {
+//     ...closedMixin(theme),
+//     "& .MuiDrawer-paper": closedMixin(theme),
+//   }),
+// }));
 
 export default function Topbar(ParentProp) {
-  const [categoriesChild, setCategoriesChild] = useState(null);
+  // const [categoriesChild, setCategoriesChild] = useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const theme = useTheme();
-  const [open, setOpen] = React.useState(true);
-  const dispatch = useDispatch();
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
+  // const theme = useTheme();
+  // const [open, setOpen] = React.useState(true);
+  // const dispatch = useDispatch();
+  // const handleDrawerOpen = () => {
+  //   setOpen(true);
+  // };
 
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
+  // const handleDrawerClose = () => {
+  //   setOpen(false);
+  // };
 
-  const handleCateClick = (key) => {
-    const value = category[key];
-    window.location.href = "/" + value;
-  };
+  // const handleCateClick = (key) => {
+  //   const value = category[key];
+  //   window.location.href = "/" + value;
+  // };
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -181,15 +181,15 @@ export default function Topbar(ParentProp) {
     return result;
   }
 
-  const categoriesAfterFilter = getChildCategories(
-    getKeyByValue(category, pathSplit),
-    categoriesChild
-  );
+  // const categoriesAfterFilter = getChildCategories(
+  //   getKeyByValue(category, pathSplit),
+  //   categoriesChild
+  // );
 
   function titleCategory(mnu, pathSplit) {
     return mnu[pathSplit];
   }
-  const titleCategoryList = titleCategory(mnu, pathSplit);
+  // const titleCategoryList = titleCategory(mnu, pathSplit);
 
   return (
     <Box>
@@ -225,11 +225,13 @@ export default function Topbar(ParentProp) {
           </Link>
           <Box
             sx={{
+              display: "flex",
+              alignItems: "center",
               flexGrow: 1,
-              display: {
-                xs: "none",
-                md: "flex",
-              },
+              // display: {
+              //   xs: "none",
+              //   md: "flex",
+              // },
               mx: 4,
             }}
           >

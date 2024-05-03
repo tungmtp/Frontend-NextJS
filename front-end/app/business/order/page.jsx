@@ -31,6 +31,7 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import { deleteData, getData, postData, putData } from "@/hook/Hook";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
+import CustomNoRowsOverlay from "@/components/general/CustomNoRowsOverlay";
 const measureCategory = {
   1: "Diện tích",
   2: "Chiều dài",
@@ -307,6 +308,10 @@ export default function Order() {
       </React.Fragment>
     );
   }
+  //tạo 1 func để truyền vào dataGird vì hàm trong dataGird không nhận prop truyền vào
+  const NoRowsOverlay = () => {
+    return <CustomNoRowsOverlay title="Chưa có đơn hàng ngày hôm nay !!!" />;
+  };
   return (
     <Paper
       elevation={6}
@@ -405,6 +410,7 @@ export default function Order() {
             disableRowSelectionOnClick
             slots={{
               toolbar: GridToolbar,
+              noRowsOverlay: NoRowsOverlay,
             }}
             initialState={{
               columns: {
