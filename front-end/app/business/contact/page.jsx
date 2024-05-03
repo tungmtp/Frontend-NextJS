@@ -35,49 +35,50 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
-export default function ClassPrice() {
-  const [classPriceData, setClassPriceData] = useState([]);
-  const [classesData, setClassesData] = useState([]);
-  const [measurementData, setMeasurementData] = useState([]);
+export default function Contact() {
+  const [contactRelation, setContactRelation] = useState([]);
+  const [contactData, setContactData] = useState([]);
+  const [partnerData, setPartnerData] = useState([]);
   const [selectedDataGrid, setSelectedDataGrid] = useState(null);
   const [openAddDialog, setOpenAddDialog] = React.useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
   const [openFixDialog, setOpenFixDialog] = React.useState(false);
   useEffect(() => {
-    const getClassPriceData = async () => {
+    const getContactRelation = async () => {
       try {
-        const result = await getData("/product-service/classPrice");
-        const result2 = await getData("/product-service/classes");
-        const result3 = await getData("/product-service/Measurement");
+        const result = await getData("/business-service/contactRelation");
+        const result2 = await getData("/business-service/contact");
+        const result3 = await getData("/business-service/partner");
 
         const resultWithIndex = result.map((row, index) => ({
           ...row,
           index: index + 1,
         }));
-        setClassPriceData(resultWithIndex);
+        setContactRelation(resultWithIndex);
 
         // Đổi tên trường nameStr thành label để phù hợp dữ liệu đầu vào autocomplete
-        const changeFieldName = result2.map((item) => {
+        const changeFieldName = result2.map((item, index) => {
+          return {
+            ...item,
+            index: index + 1,
+            label: item.nameStr, // Tạo trường label từ trường nameStr
+          };
+        });
+        setContactData(changeFieldName);
+
+        const changeFieldName3 = result3.map((item) => {
           return {
             ...item,
             label: item.nameStr, // Tạo trường label từ trường nameStr
           };
         });
-        setClassesData(changeFieldName);
 
-        const changeFieldName3 = result3.map((item) => {
-          return {
-            ...item,
-            label: item.measName, // Tạo trường label từ trường measName
-          };
-        });
-
-        setMeasurementData(changeFieldName3);
+        setPartnerData(changeFieldName3);
       } catch (err) {
         console.error("Error fetching data:", err);
       }
     };
-    getClassPriceData();
+    getContactRelation();
     console.log("rendering again");
   }, []);
 
@@ -87,14 +88,14 @@ export default function ClassPrice() {
     { field: "id", headerName: "id", width: 1 },
 
     {
-      field: "classId",
-      headerName: "Tên Class",
-      width: 300,
+      field: "nameStr",
+      headerName: "Tên liên hệ",
+      width: 200,
 
       renderCell: (params) => {
-        const className = classesData.find(
-          (item) => item.id === params.row.classId
-        )?.label;
+        // const contactName = contactData.find(
+        //   (item) => item.id === params.row.contactId
+        // )?.label;
 
         return (
           <Link
@@ -106,47 +107,50 @@ export default function ClassPrice() {
               setSelectedDataGrid(params.row);
             }}
           >
-            {className}
+            {params.row.nameStr}
           </Link>
         );
       },
     },
     {
-      field: "dateEffected",
-      headerName: "Ngày áp dụng",
-      width: 180,
+      field: "handPhone",
+      headerName: "Số điện thoại",
+      width: 200,
 
       renderCell: (params) => {
-        const formattedDate = format(
-          new Date(params.row.dateEffected),
-          "MM-dd-yyyy"
-        );
+        // const handPhone = contactData.find(
+        //   (item) => item.id === params.row.contactId
+        // )?.handPhone;
+
         return (
           <Link
             underline="hover"
             key={params.row.id}
             color="inherit"
-            variant="body1"
+            variant="body2"
             onClick={() => {
               setSelectedDataGrid(params.row);
             }}
           >
-            {formattedDate}
+            {params.row.handPhone}
           </Link>
         );
       },
     },
-    { field: "price", headerName: "Giá thành", width: 100 },
-
     {
-      field: "defaultMeas",
-      headerName: "Đơn vị mặc định",
-      width: 120,
+      field: "email",
+      headerName: "Email",
+      width: 200,
+    },
+    {
+      field: "12",
+      headerName: "Đối tác",
+      width: 100,
 
       renderCell: (params) => {
-        const measName = measurementData.find(
-          (item) => item.id === params.row.defaultMeas
-        )?.label;
+        const partnerName = partnerData.find(
+          (item) => item.id === params.row.partnersID
+        )?.nameStr;
 
         return (
           <Link
@@ -158,7 +162,7 @@ export default function ClassPrice() {
               setSelectedDataGrid(params.row);
             }}
           >
-            {measName}
+            {partnerName}
           </Link>
         );
       },
@@ -174,9 +178,8 @@ export default function ClassPrice() {
     setOpenAddDialog(false);
   };
   function FormAddDialog(open) {
-    let selectedClassId = "";
-    let selectedDefaultMeas = "";
-    let selectedDateEffected = "";
+    let selectedPartnerId = "";
+
     return (
       <React.Fragment>
         <Dialog
@@ -189,86 +192,75 @@ export default function ClassPrice() {
               const formData = new FormData(event.currentTarget);
               const formJson = Object.fromEntries(formData.entries());
 
-              const dateEffected = selectedDateEffected;
-              const classId = selectedClassId;
-              const DefaultMeas = selectedDefaultMeas;
-              const price = formJson.price;
+              const PartnerID = selectedPartnerId;
+              const nameStr = formJson.nameStr;
+              const handPhone = formJson.handPhone;
+              const email = formJson.email;
+              const title = formJson.title;
 
-              const addClassPrice = {
-                classId: classId,
-                defaultMeas: DefaultMeas,
-                dateEffected: dateEffected,
-                price: Number(price),
+              const addContact = {
+                partnersID: PartnerID,
+                nameStr: nameStr,
+                handPhone: handPhone,
+                email: email,
+                title: title,
               };
-              console.log(addClassPrice);
+              console.log(addContact);
 
-              const postMeasurement = async () => {
+              const postContact = async () => {
                 try {
                   const result = await postData(
-                    "/product-service/classPrice",
-                    addClassPrice
+                    "/business-service/contact",
+                    addContact
                   );
-                  const addClassPrice2 = result;
-                  setClassPriceData((prevState) => [
-                    ...prevState,
-                    addClassPrice2,
-                  ]);
+                  const addContact2 = result;
+                  setContactData((prevState) => [...prevState, addContact2]);
                 } catch (err) {
                   console.error("Error fetching data:", err);
                 }
               };
-              postMeasurement();
-
-              alert("Thêm thành công !!!");
+              postContact();
               handleClose(event);
             },
           }}
         >
           <DialogTitle>Thêm giá hạch toán</DialogTitle>
-          <DialogContent>
+          <DialogContent sx={{ display: "flex", flexWrap: "wrap" }}>
             <Autocomplete
-              disablePortal
               name="classId"
-              options={classesData}
-              sx={{ margin: 2 }}
+              options={partnerData}
+              sx={{ margin: 2, width: "477px" }}
               renderInput={(params) => (
-                <TextField {...params} label="Tên Class" />
+                <TextField {...params} label="Đối tác" />
               )}
               onChange={(event, value) => {
-                selectedClassId = value.id;
+                selectedPartnerId = value.id;
               }}
               //   onChange={handleOnChange}
             />
-            <Autocomplete
-              disablePortal
-              name="defaultMeas"
-              options={measurementData}
-              sx={{ margin: 2 }}
-              renderInput={(params) => (
-                <TextField {...params} label="Đơn vị mặc định" />
-              )}
-              onChange={(event, value) => {
-                selectedDefaultMeas = value.id;
-              }}
-            />
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                name="dateEffected"
-                label="Ngày áp dụng"
-                sx={{ margin: 2 }}
-                onChange={(newValue) => {
-                  selectedDateEffected = newValue.format(
-                    "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
-                  );
-                }}
-              />
-            </LocalizationProvider>
-
             <TextField
-              name="price"
+              name="nameStr"
               variant="outlined"
-              label="Giá thành"
-              sx={{ margin: 2, marginBottom: 22 }}
+              label="Tên liên hệ"
+              sx={{ margin: 2 }}
+            />
+            <TextField
+              name="handPhone"
+              variant="outlined"
+              label="Số điện thoại"
+              sx={{ margin: 2 }}
+            />
+            <TextField
+              name="email"
+              variant="outlined"
+              label="Email"
+              sx={{ margin: 2 }}
+            />
+            <TextField
+              name="title"
+              variant="outlined"
+              label="Chức vụ"
+              sx={{ margin: 2 }}
             />
           </DialogContent>
           <DialogActions>
@@ -287,9 +279,9 @@ export default function ClassPrice() {
     setOpenDeleteDialog(false);
   };
   function FormDeleteDialog(open) {
-    const getClassesName = classesData.find(
-      (classes) => classes.id === selectedDataGrid.classId
-    );
+    // const getClassesName = contactData.find(
+    //   (classes) => classes.id === selectedDataGrid.classId
+    // );
     return (
       <React.Fragment>
         <Dialog
@@ -300,21 +292,20 @@ export default function ClassPrice() {
             onSubmit: (event) => {
               event.preventDefault();
               const respone = deleteData(
-                "/product-service/classPrice",
+                "/business-service/contact",
                 selectedDataGrid.id
               );
               console.log(respone);
-              const updatedData = classPriceData.filter(
+              const updatedData = contactData.filter(
                 (item) => item.id !== selectedDataGrid.id
               );
-              setClassPriceData(updatedData);
+              setContactData(updatedData);
               setSelectedDataGrid(null);
               handleCloseDelete();
-              alert("Xóa thành công");
             },
           }}
         >
-          <DialogTitle>Xóa {getClassesName.nameStr}</DialogTitle>
+          <DialogTitle>Xóa {selectedDataGrid.nameStr}</DialogTitle>
           <DialogContent>Bạn chắc chắn muốn xóa thư mục này?</DialogContent>
           <DialogActions>
             <Button onClick={handleCloseDelete}>Cancel</Button>
@@ -328,14 +319,13 @@ export default function ClassPrice() {
     setOpenFixDialog(true);
     // setAddCategory({ isChildOf: selectedSingleNode });
   };
-  const handleCloseFix = (event) => {
-    event.preventDefault();
+  const handleCloseFix = () => {
     setOpenFixDialog(false);
   };
   function FormFixDialog(open) {
-    const getClassesName = classesData.find(
-      (classes) => classes.id === selectedDataGrid.classId
-    );
+    // const getClassesName = contactData.find(
+    //   (classes) => classes.id === selectedDataGrid.classId
+    // );
     return (
       <React.Fragment>
         <Dialog
@@ -346,27 +336,29 @@ export default function ClassPrice() {
             onSubmit: (event) => {
               event.preventDefault();
               const respone = putData(
-                "/product-service/classPrice",
+                "/business-service/contact",
                 selectedDataGrid.id,
                 selectedDataGrid
               );
               console.log(respone);
-              const updatedData = classPriceData.map((item) => {
+              const updatedData = contactData.map((item) => {
                 if (item.id === selectedDataGrid.id) {
                   return selectedDataGrid;
                 }
                 return item;
               });
-              setClassPriceData(updatedData);
-
-              handleCloseFix(event);
+              setContactData(updatedData);
+              setSelectedDataGrid(null);
+              handleCloseFix();
               alert("Lưu thành công");
             },
           }}
         >
           <DialogTitle>
             Sửa:{" "}
-            <span style={{ fontWeight: "bold" }}>{getClassesName.nameStr}</span>
+            <span style={{ fontWeight: "bold" }}>
+              {selectedDataGrid.nameStr}
+            </span>
           </DialogTitle>
           <DialogContent>Bạn chắc chắn muốn lưu mục này?</DialogContent>
           <DialogActions>
@@ -398,7 +390,7 @@ export default function ClassPrice() {
       >
         <div style={{ height: "73vh", flexGrow: 2 }}>
           <DataGrid
-            rows={classPriceData}
+            rows={contactData}
             columns={columns}
             pageSize={1}
             disableRowSelectionOnClick
@@ -434,73 +426,58 @@ export default function ClassPrice() {
                 flexGrow: 1,
               }}
             >
-              <Autocomplete
-                disablePortal
-                id="combo-box-demo"
-                options={classesData}
-                sx={{ marginTop: 4, marginX: 5 }}
-                renderInput={(params) => (
-                  <TextField {...params} label="Tên Class" />
-                )}
-                value={classesData.find(
-                  (classes) => classes.id === selectedDataGrid.classId
-                )}
-                onChange={(event, value) => {
-                  if (value) {
-                    const updatedSelectedDataGrid = { ...selectedDataGrid };
-                    updatedSelectedDataGrid.classId = value.id;
-                    console.log(value);
-                    setSelectedDataGrid(updatedSelectedDataGrid);
-                  }
-                }}
-                //   onChange={handleOnChange}
-              />
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  label="Ngày áp dụng"
-                  value={dayjs(selectedDataGrid?.dateEffected)}
-                  onChange={(newValue) => {
-                    const updatedSelectedDataGrid = { ...selectedDataGrid };
-                    console.log(newValue);
-                    updatedSelectedDataGrid.dateEffected = newValue.format(
-                      "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
-                    );
-                    setSelectedDataGrid(updatedSelectedDataGrid);
-                  }}
-                  sx={{ marginTop: 2, marginX: 5 }}
-                />
-              </LocalizationProvider>
-
               <TextField
-                id="price"
+                id="nameStr"
                 variant="outlined"
-                label="Giá thành"
-                type="number"
+                label="Tên liên hệ"
                 sx={{ marginTop: 2, marginX: 5 }}
-                value={selectedDataGrid?.price}
+                value={selectedDataGrid?.nameStr}
                 onChange={(event) => {
                   const updatedSelectedDataGrid = { ...selectedDataGrid };
-                  updatedSelectedDataGrid.price = Number(event.target.value);
+                  updatedSelectedDataGrid.nameStr = event.target.value;
+
+                  setSelectedDataGrid(updatedSelectedDataGrid);
+                }}
+              />
+              <TextField
+                id="handPhone"
+                variant="outlined"
+                label="Số điện thoại"
+                sx={{ marginTop: 2, marginX: 5 }}
+                value={selectedDataGrid?.handPhone}
+                onChange={(event) => {
+                  const updatedSelectedDataGrid = { ...selectedDataGrid };
+                  updatedSelectedDataGrid.handPhone = event.target.value;
+
+                  setSelectedDataGrid(updatedSelectedDataGrid);
+                }}
+              />
+              <TextField
+                id="email"
+                variant="outlined"
+                label="Email"
+                sx={{ marginTop: 2, marginX: 5 }}
+                value={selectedDataGrid?.email}
+                onChange={(event) => {
+                  const updatedSelectedDataGrid = { ...selectedDataGrid };
+                  updatedSelectedDataGrid.email = event.target.value;
 
                   setSelectedDataGrid(updatedSelectedDataGrid);
                 }}
               />
               <Autocomplete
-                disablePortal
-                id="combo-box-demo"
-                options={measurementData}
+                options={partnerData}
                 sx={{ marginY: 2, marginX: 5 }}
                 renderInput={(params) => (
-                  <TextField {...params} label="Đơn vị mặc định" />
+                  <TextField {...params} label="Đối tác" />
                 )}
-                value={measurementData.find(
-                  (measurement) =>
-                    measurement.id === selectedDataGrid?.defaultMeas
+                value={partnerData.find(
+                  (partner) => partner.id === selectedDataGrid?.partnersID
                 )}
                 onChange={(event, value) => {
                   if (value) {
                     const updatedSelectedDataGrid = { ...selectedDataGrid };
-                    updatedSelectedDataGrid.defaultMeas = value?.id;
+                    updatedSelectedDataGrid.partnersID = value?.id;
                     console.log(value);
                     setSelectedDataGrid(updatedSelectedDataGrid);
                   }

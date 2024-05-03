@@ -113,6 +113,7 @@ export const mnu = {
   ],
   business: [
     { title: "Danh sách đối tác", link: "/business/partner" },
+    { title: "Danh sách liên hệ", link: "/business/contact" },
     { title: "Bán hàng", link: "/business/order" },
     { title: "Lịch giao hàng", link: "/business/orderDelivery" },
     { title: "Công nợ theo nhân viên", link: "/business/debtByEmployee" },

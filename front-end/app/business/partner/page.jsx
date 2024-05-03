@@ -16,7 +16,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Fab from "@mui/material/Fab";
-import Link from "@mui/material/Link";
+import Link from "next/link";
 import TextField from "@mui/material/TextField";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
@@ -78,18 +78,20 @@ export default function Partner() {
 
       renderCell: (params) => {
         return (
-          <Link
+          <Box
             underline="hover"
             key={params.row.id}
-            color="inherit"
-            variant="body1"
-            sx={{ textOverflow: "ellipsis", overflow: "hidden" }}
+            sx={{
+              textOverflow: "ellipsis",
+              overflow: "hidden",
+              cursor: "pointer",
+            }}
             onClick={() => {
               setSelectedDataGrid(params.row);
             }}
           >
             {params.row.nameStr} <br /> {params.row.address}
-          </Link>
+          </Box>
         );
       },
     },
@@ -100,9 +102,11 @@ export default function Partner() {
       renderCell: (params) => {
         return (
           <div>
-            <IconButton color="primary" aria-label="add an alarm">
-              <PhoneIcon />
-            </IconButton>
+            <Link underline="hover" key={params.row.id} href="">
+              <IconButton color="primary" aria-label="add an alarm">
+                <PhoneIcon />
+              </IconButton>
+            </Link>
           </div>
         );
       },
