@@ -506,7 +506,8 @@ export default function Contact() {
                 return item;
               });
               setContactData(updatedData);
-
+              const selectedContactRelationLabel =
+                selectedContactRelation.label;
               delete selectedContactRelation.label;
               selectedContactRelation.relData = JSON.stringify(selectedRelData);
               const respone2 = putData(
@@ -516,6 +517,7 @@ export default function Contact() {
               );
               const updatedContactRelation = contactRelation.map((item) => {
                 if (item.id === selectedContactRelation.id) {
+                  selectedContactRelation.label = selectedContactRelationLabel;
                   return selectedContactRelation;
                 }
                 return item;
