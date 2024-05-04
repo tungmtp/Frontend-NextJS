@@ -9,15 +9,15 @@ import ProductAddDialog from "../dialog/productDialog/ProductAddDialog";
 
 export default function SelectProduct(props) {
   const [openAddProduct, setOpenAddProduct] = useState(false);
-  const [openAddDialogMeas, setOpenAddDialogMeas] = useState(false);
-  const [openAddDialogSegment, setOpenAddDialogSegment] = useState(false);
-  const [openAddDialogClassPrice, setOpenAddDialogClassPrice] = useState(false);
+  // const [openAddDialogMeas, setOpenAddDialogMeas] = useState(false);
+  // const [openAddDialogSegment, setOpenAddDialogSegment] = useState(false);
+  // const [openAddDialogClassPrice, setOpenAddDialogClassPrice] = useState(false);
 
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
   const [inputValue, setInputValue] = useState("");
-  const [selectedValue, setSelectedValue] = useState("");
-  const [firstCall, setfirstCall] = useState(true);
+  const [selectedValue, setSelectedValue] = useState(null);
+  const [firstCall, setFirstCall] = useState(true);
   const handleOpenAddproduct = () => {
     setOpenAddProduct(true);
   };
@@ -25,9 +25,9 @@ export default function SelectProduct(props) {
     setOpenAddProduct(false);
   };
   const handleSelectionChange = (event, value) => {
-    setSelectedValue(value ? value.Id : "");
+    setSelectedValue(value);
     if (props.emitParent !== undefined) {
-      props.emitParent(value ? value.Id : "");
+      props.emitParent(value ? value.id : "");
     }
   };
   const fetchOptions = async (query) => {
@@ -41,14 +41,6 @@ export default function SelectProduct(props) {
     }
   };
 
-  // const fetchOptions = async (query) => {
-  //   // Replace with your actual API call logic
-  //   return fetch(
-  //     `${process.env.NEXT_PUBLIC_DB_HOST}/product-service/product/byNameStr/${query}`
-  //   )
-  //     .then((response) => response.json())
-  //     .then((data) => data.items);
-  // };
 
   const fetchFirstCall = async (id) => {
     try {
@@ -58,29 +50,28 @@ export default function SelectProduct(props) {
       console.error("Error fetching data:", err);
     }
   };
-  // const fetchFirstCall = async (id) => {
-  //   return fetch(
-  //     `${process.env.NEXT_PUBLIC_DB_HOST}/product-service/product/firstCall/${id}`
-  //   )
-  //     .then((response) => response.json())
-  //     .then((data) => data.items);
-  // };
 
-  // Debounce the API call
   const debouncedFetchOptions = debounce((query) => {
-    fetchOptions(query).then((items) => {
-      setOptions(items);
-    });
-  }, 600); // Delay in ms
-
-  useEffect(() => {
-    if (props.currenProduct && firstCall) {
-      fetchFirstCall(props.currenProduct).then((items) => {
-        setfirstCall(false);
+    const findQuery = options.find(item => item.nameStr == query);
+    console.log("query:", query);
+    console.log("findQuery:", findQuery);
+    if (findQuery == undefined) {
+      fetchOptions(query).then((items) => {
         setOptions(items);
       });
     }
+  }, 600); // Delay in ms
 
+  useEffect(() => {
+    if (props.currentProduct) {
+      fetchFirstCall(props.currentProduct).then((items) => {
+        setOptions(items);
+        setSelectedValue(items.find((item) => item.id == props.currentProduct))
+      });
+    }
+  }, [props.currentProduct])
+
+  useEffect(() => {
     switch (inputValue.toUpperCase()) {
       case "":
         setOptions([]);
@@ -94,13 +85,6 @@ export default function SelectProduct(props) {
       default:
         debouncedFetchOptions(inputValue);
     }
-    // if (inputValue === '') {
-    //     setOptions([]);
-    // } else {
-    //     debouncedFetchOptions(inputValue);
-    // }
-
-    // Clean up function to cancel the debounce on unmount
     return () => {
       debouncedFetchOptions.cancel();
     };
@@ -120,11 +104,13 @@ export default function SelectProduct(props) {
         onInputChange={(event, newInputValue) => {
           setInputValue(newInputValue);
         }}
-        // onChange={handleSelectionChange}
+        onChange={handleSelectionChange}
+        isOptionEqualToValue={(option, value) => option.id === value.id}
+        value={selectedValue}
         renderInput={(params) => (
           <TextField
             {...params}
-            label="Search input"
+            label={props.lblinput ? props.lblinput : "Search input"}
             variant="outlined"
             InputProps={{
               ...params.InputProps,

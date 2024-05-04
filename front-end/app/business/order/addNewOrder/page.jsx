@@ -35,7 +35,7 @@ import dayjs from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import SelectProduct from "@/components/select/selectProduct";
+import SelectProduct from "@/components/select/SelectProduct";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import OrderDetail from "@/components/orderDetail/OrderDetail";
 const calcType = {
@@ -238,7 +238,7 @@ export default function AddNewOrder(props) {
           height: "100%",
           overflow: "auto",
         }}
-        // onSubmit={handleOpenConfirm}
+      // onSubmit={handleOpenConfirm}
       >
         <Box
           sx={{
@@ -290,12 +290,12 @@ export default function AddNewOrder(props) {
             )}
             value={
               employeeData.length > 0 &&
-              employeeData.find(
-                (employee) => employee.id === selectedDataGrid.staffControl
-              )
+                employeeData.find(
+                  (employee) => employee.id === selectedDataGrid.staffControl
+                )
                 ? employeeData.find(
-                    (employee) => employee.id === selectedDataGrid.staffControl
-                  )
+                  (employee) => employee.id === selectedDataGrid.staffControl
+                )
                 : ""
             }
             onChange={(event, value) => {
@@ -305,7 +305,7 @@ export default function AddNewOrder(props) {
                 setSelectedDataGrid(updatedSelectedDataGrid);
               }
             }}
-            //   onChange={handleOnChange}
+          //   onChange={handleOnChange}
           />
           <Autocomplete
             size="small"
@@ -316,12 +316,12 @@ export default function AddNewOrder(props) {
             renderInput={(params) => <TextField {...params} label="Đối tác" />}
             value={
               partnerData.length > 0 &&
-              partnerData.find(
-                (partner) => partner.id === selectedDataGrid.partnersID
-              )
+                partnerData.find(
+                  (partner) => partner.id === selectedDataGrid.partnersID
+                )
                 ? partnerData.find(
-                    (partner) => partner.id === selectedDataGrid.partnersID
-                  )
+                  (partner) => partner.id === selectedDataGrid.partnersID
+                )
                 : ""
             }
             onChange={(event, value) => {
@@ -331,7 +331,7 @@ export default function AddNewOrder(props) {
                 setSelectedDataGrid(updatedSelectedDataGrid);
               }
             }}
-            //   onChange={handleOnChange}
+          //   onChange={handleOnChange}
           />
           <Autocomplete
             disablePortal
@@ -344,12 +344,12 @@ export default function AddNewOrder(props) {
             )}
             value={
               contactData.length > 0 &&
-              contactData.find(
-                (contact) => contact.id === selectedDataGrid.contactID
-              )
+                contactData.find(
+                  (contact) => contact.id === selectedDataGrid.contactID
+                )
                 ? contactData.find(
-                    (contact) => contact.id === selectedDataGrid.contactID
-                  )
+                  (contact) => contact.id === selectedDataGrid.contactID
+                )
                 : ""
             }
             onChange={(event, value) => {
@@ -363,7 +363,7 @@ export default function AddNewOrder(props) {
                 setSelectedDataGrid(updatedSelectedDataGrid);
               }
             }}
-            //   onChange={handleOnChange}
+          //   onChange={handleOnChange}
           />
 
           <FormControl
