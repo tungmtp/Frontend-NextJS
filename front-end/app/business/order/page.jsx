@@ -32,6 +32,8 @@ import { deleteData, getData, postData, putData } from "@/hook/Hook";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import CustomNoRowsOverlay from "@/components/general/CustomNoRowsOverlay";
+import OrderInfo from "@/components/order/OrderInfo";
+import OrderDetailTable from "@/components/order/OrderDetailTable";
 const measureCategory = {
   1: "Diện tích",
   2: "Chiều dài",
@@ -64,7 +66,7 @@ export default function Order() {
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
   const [openFixDialog, setOpenFixDialog] = React.useState(false);
 
-  console.log(partnerData);
+  console.log(ordersData);
   useEffect(() => {
     const getOrdersData = async () => {
       try {
@@ -98,7 +100,7 @@ export default function Order() {
     {
       field: "partnersID",
       headerName: "Đối tác",
-      width: 200,
+      width: 250,
 
       renderCell: (params) => {
         const partnerName = partnerData.find(
@@ -112,18 +114,13 @@ export default function Order() {
             color="inherit"
             variant="body1"
             onClick={() => {
-              // setSelectedDataGrid(params.row);
+              setSelectedDataGrid(params.row);
             }}
           >
             {partnerName}
           </Link>
         );
       },
-    },
-    {
-      field: "createdBy",
-      headerName: "Người tạo đơn mua hàng",
-      width: 200,
     },
   ];
   const handleButtonClick = (value) => {
@@ -308,6 +305,7 @@ export default function Order() {
       </React.Fragment>
     );
   }
+
   //tạo 1 func để truyền vào dataGird vì hàm trong dataGird không nhận prop truyền vào
   const NoRowsOverlay = () => {
     return <CustomNoRowsOverlay title="Chưa có đơn hàng ngày hôm nay !!!" />;
@@ -324,49 +322,13 @@ export default function Order() {
         justifyContent: "space-between",
       }}
     >
-      {/* <ButtonGroup
-        variant="outlined"
-        aria-label="Basic button group"
-        sx={{ marginY: 2, marginX: 4 }}
-      >
-        <Button
-          onClick={() => handleButtonClick(1)}
-          variant={selectedButtonGroup === 1 ? "contained" : "outlined"}
-        >
-          Diện tích
-        </Button>
-        <Button
-          onClick={() => handleButtonClick(2)}
-          variant={selectedButtonGroup === 2 ? "contained" : "outlined"}
-        >
-          Chiều dài
-        </Button>
-        <Button
-          onClick={() => handleButtonClick(3)}
-          variant={selectedButtonGroup === 3 ? "contained" : "outlined"}
-        >
-          Khối lượng
-        </Button>
-        <Button
-          onClick={() => handleButtonClick(4)}
-          variant={selectedButtonGroup === 4 ? "contained" : "outlined"}
-        >
-          Đơn lẻ (unit)
-        </Button>
-        <Button
-          onClick={() => handleButtonClick(5)}
-          variant={selectedButtonGroup === 5 ? "contained" : "outlined"}
-        >
-          Thể tích
-        </Button>
-      </ButtonGroup> */}
-      <div style={{ display: "flex", margin: "24px" }}>
+      <div style={{ display: "flex", margin: "8px" }}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker
-            label="Ngày áp dụng"
+            label="Ngày Order"
             value={dayjs(orderDate)}
             onChange={(newValue) => {
-              setOrderDate(newValue.format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"));
+              setOrderDate(newValue.format("YYYY-MM-DD"));
             }}
             sx={{ width: "250px" }}
           />
@@ -402,14 +364,12 @@ export default function Order() {
           height: "73vh",
         }}
       >
-        <div style={{ height: "100%", flexGrow: 2 }}>
+        <div style={{ height: "50%", width: "310px" }}>
           <DataGrid
             rows={ordersData}
             columns={columns}
             pageSize={1}
-            disableRowSelectionOnClick
             slots={{
-              toolbar: GridToolbar,
               noRowsOverlay: NoRowsOverlay,
             }}
             initialState={{
@@ -418,87 +378,28 @@ export default function Order() {
                   id: false,
                 },
               },
+              pagination: {
+                paginationModel: {
+                  pageSize: 5,
+                },
+              },
             }}
+            pageSizeOptions={[5]}
           />
         </div>
         <Box
           elevation={1}
           sx={{
             paddingX: 4,
-            py: 2,
+
             flexGrow: 3,
           }}
         >
           {selectedDataGrid ? (
-            <Paper
-              elevation={3}
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                flexDirection: "column",
-                paddingY: "8px",
-                maxWidth: "447px",
-                flexGrow: 1,
-              }}
-            >
-              <TextField
-                id="nameStr"
-                variant="outlined"
-                label="Tên Class"
-                required
-                value={selectedDataGrid?.nameStr}
-                onChange={(event) => {
-                  const updatedSelectedDataGrid = { ...selectedDataGrid };
-                  updatedSelectedDataGrid.nameStr = event.target.value;
-                  setSelectedDataGrid(updatedSelectedDataGrid);
-                }}
-                sx={{ marginTop: 4, marginX: 5 }}
-              />
-              <TextField
-                id="classType"
-                variant="outlined"
-                label="Loại Class"
-                sx={{ marginY: 2, marginX: 5 }}
-                value={selectedDataGrid?.classType}
-                onChange={(event) => {
-                  const updatedSelectedDataGrid = { ...selectedDataGrid };
-                  updatedSelectedDataGrid.classType = event.target.value;
-
-                  setSelectedDataGrid(updatedSelectedDataGrid);
-                }}
-              />
-
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  paddingBottom: 6,
-                }}
-              >
-                <Button
-                  variant="contained"
-                  sx={{ marginX: 2 }}
-                  onClick={() => {
-                    setSelectedDataGrid(null);
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button variant="contained" onClick={handleOpenFix}>
-                  Save
-                </Button>
-                <FormFixDialog open={openFixDialog} />
-                <Button
-                  color="error"
-                  variant="contained"
-                  sx={{ marginX: 2 }}
-                  onClick={handleOpenDelete}
-                >
-                  Delete
-                </Button>
-                <FormDeleteDialog open={openDeleteDialog} />
-              </div>
-            </Paper>
+            <>
+              <OrderInfo />
+              <OrderDetailTable />
+            </>
           ) : (
             <></>
           )}

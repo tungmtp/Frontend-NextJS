@@ -296,7 +296,7 @@ export default function AddNewOrder(props) {
                 ? employeeData.find(
                     (employee) => employee.id === selectedDataGrid.staffControl
                   )
-                : ""
+                : null
             }
             onChange={(event, value) => {
               if (value) {
@@ -322,7 +322,7 @@ export default function AddNewOrder(props) {
                 ? partnerData.find(
                     (partner) => partner.id === selectedDataGrid.partnersID
                   )
-                : ""
+                : null
             }
             onChange={(event, value) => {
               if (value) {
@@ -350,7 +350,7 @@ export default function AddNewOrder(props) {
                 ? contactData.find(
                     (contact) => contact.id === selectedDataGrid.contactID
                   )
-                : ""
+                : null
             }
             onChange={(event, value) => {
               if (value && value != "None") {

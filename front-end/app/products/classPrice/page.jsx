@@ -89,7 +89,7 @@ export default function ClassPrice() {
     {
       field: "classId",
       headerName: "Tên Class",
-      width: 300,
+      width: 260,
 
       renderCell: (params) => {
         const className = classesData.find(
@@ -114,7 +114,7 @@ export default function ClassPrice() {
     {
       field: "dateEffected",
       headerName: "Ngày áp dụng",
-      width: 180,
+      width: 140,
 
       renderCell: (params) => {
         const formattedDate = format(
@@ -141,7 +141,7 @@ export default function ClassPrice() {
     {
       field: "defaultMeas",
       headerName: "Đơn vị mặc định",
-      width: 120,
+      width: 200,
 
       renderCell: (params) => {
         const measName = measurementData.find(
