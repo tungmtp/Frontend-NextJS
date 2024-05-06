@@ -667,7 +667,7 @@ export default function Contact() {
                 value={
                   contactRelation.length > 0 && selectedContactRelation !== null
                     ? selectedContactRelation
-                    : ""
+                    : null
                 }
                 onChange={(event, value) => {
                   if (value) {
