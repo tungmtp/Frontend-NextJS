@@ -236,12 +236,17 @@ export default function ChildCategory(parentProp) {
   );
 
   return (
-    <Paper elevation={6} sx={{ paddingTop: 1, height: "84vh" }}>
+    <Paper
+      elevation={6}
+      sx={{ paddingTop: 1, height: "84vh", overflow: "auto" }}
+    >
       <div
         style={{
           display: "flex",
           flexDirection: "column",
           height: "100%",
+
+          paddingBottom: "10px",
         }}
       >
         <div
@@ -308,6 +313,7 @@ export default function ChildCategory(parentProp) {
               rowGap: "16px",
               paddingLeft: "30px",
               justifyContent: "flex-start",
+              paddingBottom: 3,
             }}
           >
             {childCategories.map((category) => (
@@ -332,7 +338,12 @@ export default function ChildCategory(parentProp) {
                     dispatch(setSelectedCategory(category.id));
                   }}
                 >
-                  <Tooltip title={category[parentProp.title]} arrow>
+                  <Tooltip
+                    followCursor
+                    title={category[parentProp.title]}
+                    arrow
+                    sx={{ overflow: "auto", display: "none" }}
+                  >
                     <Box
                       sx={{
                         display: "flex",
