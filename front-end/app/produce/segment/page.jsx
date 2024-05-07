@@ -1,49 +1,33 @@
 "use client";
-import {
-  selectCategoryProducts,
-  setSelectedCategory,
-} from "@/redux/categoryProductRedux";
 import Paper from "@mui/material/Paper";
-import Grid from "@mui/material/Grid";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import Box from "@mui/material/Box";
-import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Button from "@mui/material/Button";
-import ButtonGroup from "@mui/material/ButtonGroup";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import Fab from "@mui/material/Fab";
 import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
-import Tooltip from "@mui/material/Tooltip";
-import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
-import FolderOpenTwoToneIcon from "@mui/icons-material/FolderOpenTwoTone";
-
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import { deleteData, getData, postData, putData } from "@/hook/Hook";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import { format } from "date-fns";
-import Autocomplete from "@mui/material/Autocomplete";
-import dayjs from "dayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { NotifySnackbar } from "@/components/general/notifySnackbar/NotifySnackbar";
+import { useSnackbar } from "notistack";
+import Cookies from "js-cookie";
 
+const username = Cookies.get("username");
 export default function Segment() {
   const [segmentData, setSegmentData] = useState([]);
-  const [classesData, setClassesData] = useState([]);
-  const [measurementData, setMeasurementData] = useState([]);
+  // const [classesData, setClassesData] = useState([]);
+  // const [measurementData, setMeasurementData] = useState([]);
   const [selectedDataGrid, setSelectedDataGrid] = useState(null);
   const [openAddDialog, setOpenAddDialog] = React.useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
   const [openFixDialog, setOpenFixDialog] = React.useState(false);
-  console.log(selectedDataGrid);
+  const { enqueueSnackbar } = useSnackbar();
+  const [arrayLength, setArrayLength] = React.useState(0);
+
   useEffect(() => {
     let arrayLenghtFirstRender;
     const getSegmentData = async () => {
@@ -54,6 +38,7 @@ export default function Segment() {
           index: index + 1,
         }));
         setSegmentData(resultWithIndex);
+        setArrayLength(result.length);
         arrayLenghtFirstRender = resultWithIndex.length;
       } catch (err) {
         console.error("Error fetching data:", err);
@@ -61,21 +46,23 @@ export default function Segment() {
     };
     getSegmentData();
 
-    console.log("rendering again");
-
     const handleNewDataFromEventSource = (event) => {
       const dataFromEventSource = event.detail;
       console.log("Received new data from eventSource: ", dataFromEventSource);
 
       if (dataFromEventSource.headers.RequestType[0] != undefined) {
-        if (dataFromEventSource.headers.RequestType[0] == "ADD_SEGMENT") {
+        if (
+          dataFromEventSource.headers.RequestType[0] == "ADD_SEGMENT" &&
+          username !== dataFromEventSource.headers.UserName[0]
+        ) {
           const addSegment = dataFromEventSource.body;
           addSegment.index = arrayLenghtFirstRender + 1;
           arrayLenghtFirstRender += 1;
 
           setSegmentData((prevState) => [...prevState, addSegment]);
         } else if (
-          dataFromEventSource.headers.RequestType[0] == "UPDATE_SEGMENT"
+          dataFromEventSource.headers.RequestType[0] == "UPDATE_SEGMENT" &&
+          username !== dataFromEventSource.headers.UserName[0]
         ) {
           const updateSegment = dataFromEventSource.body;
           setSegmentData((prevState) =>
@@ -87,7 +74,6 @@ export default function Segment() {
               return item;
             })
           );
-          console.log(selectedDataGrid);
 
           setSelectedDataGrid((prevState) => {
             if (prevState.id === updateSegment.id) {
@@ -95,7 +81,8 @@ export default function Segment() {
             }
           });
         } else if (
-          dataFromEventSource.headers.RequestType[0] == "DELETE_SEGMENT"
+          dataFromEventSource.headers.RequestType[0] == "DELETE_SEGMENT" &&
+          username !== dataFromEventSource.headers.UserName[0]
         ) {
           const deleteSegmentId = dataFromEventSource.body;
           setSegmentData((prevState) =>
@@ -116,8 +103,9 @@ export default function Segment() {
       window.removeEventListener("newDataEvent", handleNewDataFromEventSource);
     };
   }, []);
-
-  // console.log(selectedDataGrid);
+  const handleRowClick = (params) => {
+    setSelectedDataGrid(params.row);
+  };
   const columns = [
     { field: "index", headerName: "STT", width: 10 },
     { field: "id", headerName: "id", width: 1 },
@@ -134,9 +122,9 @@ export default function Segment() {
             key={params.row.id}
             color="inherit"
             variant="body1"
-            onClick={() => {
-              setSelectedDataGrid(params.row);
-            }}
+            // onClick={() => {
+            //   setSelectedDataGrid(params.row);
+            // }}
           >
             {params.row.segmentName}
           </Link>
@@ -161,9 +149,9 @@ export default function Segment() {
     setOpenAddDialog(false);
   };
   function FormAddDialog(open) {
-    let selectedClassId = "";
-    let selectedDefaultMeas = "";
-    let selectedDateEffected = "";
+    // let selectedClassId = "";
+    // let selectedDefaultMeas = "";
+    // let selectedDateEffected = "";
     return (
       <React.Fragment>
         <Dialog
@@ -186,7 +174,6 @@ export default function Segment() {
                 orderLevel: orderLevel,
                 subCATID: subCATID,
               };
-              console.log(addData);
 
               const postSegment = async () => {
                 try {
@@ -195,16 +182,24 @@ export default function Segment() {
                     addData
                   );
                   const addData2 = result;
-                  addData2.index = arrayLenght + 1;
-                  setArrayLenght(arrayLenght + 1);
+                  addData2.index = arrayLength + 1;
+                  setArrayLength(arrayLength + 1);
                   setSegmentData((prevState) => [...prevState, addData2]);
+                  NotifySnackbar(
+                    enqueueSnackbar,
+                    "thêm sản phẩm thành công",
+                    "success"
+                  );
                 } catch (err) {
+                  NotifySnackbar(
+                    enqueueSnackbar,
+                    "Lỗi mạng! Vui lòng kiểm tra đường truyền",
+                    "error"
+                  );
                   console.error("Error fetching data:", err);
                 }
               };
               postSegment();
-
-              alert("Thêm thành công !!!");
               handleClose(event);
             },
           }}
@@ -261,17 +256,29 @@ export default function Segment() {
             component: "form",
             onSubmit: (event) => {
               event.preventDefault();
-              const respone = deleteData(
-                "/produce-service/segment",
-                selectedDataGrid.id
-              );
-              console.log(respone);
-              const updatedData = segmentData.filter(
-                (item) => item.id !== selectedDataGrid.id
-              );
-              setSegmentData(updatedData);
-              setSelectedDataGrid(null);
-              handleCloseDelete();
+              const deleteSegment = async () => {
+                try {
+                  const respone = await deleteData(
+                    "/produce-service/segment",
+                    selectedDataGrid.id
+                  );
+                  const updatedData = segmentData.filter(
+                    (item) => item.id !== selectedDataGrid.id
+                  );
+                  setSegmentData(updatedData);
+                  setSelectedDataGrid(null);
+                  handleCloseDelete();
+                  NotifySnackbar(enqueueSnackbar, "Xóa thành công", "success");
+                } catch (err) {
+                  NotifySnackbar(
+                    enqueueSnackbar,
+                    "Lỗi mạng! Vui lòng kiểm tra đường truyền",
+                    "error"
+                  );
+                  console.error("Error fetching data:", err);
+                }
+              };
+              deleteSegment();
             },
           }}
         >
@@ -291,58 +298,92 @@ export default function Segment() {
       </React.Fragment>
     );
   }
-  const handleOpenFix = (event) => {
-    setOpenFixDialog(true);
-    // setAddCategory({ isChildOf: selectedSingleNode });
-  };
-  const handleCloseFix = (event) => {
-    event.preventDefault();
-    setOpenFixDialog(false);
-  };
-  function FormFixDialog(open) {
-    return (
-      <React.Fragment>
-        <Dialog
-          open={open.open}
-          onClose={handleCloseFix}
-          PaperProps={{
-            component: "form",
-            onSubmit: (event) => {
-              event.preventDefault();
-              const respone = putData(
-                "/produce-service/segment",
-                selectedDataGrid.id,
-                selectedDataGrid
-              );
-              console.log(respone);
-              const updatedData = segmentData.map((item) => {
-                if (item.id === selectedDataGrid.id) {
-                  return selectedDataGrid;
-                }
-                return item;
-              });
-              setSegmentData(updatedData);
 
-              handleCloseFix(event);
-              alert("Lưu thành công");
-            },
-          }}
-        >
-          <DialogTitle>
-            Sửa:{" "}
-            <span style={{ fontWeight: "bold" }}>
-              {selectedDataGrid.segmentName}
-            </span>
-          </DialogTitle>
-          <DialogContent>Bạn chắc chắn muốn lưu mục này?</DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseFix}>Cancel</Button>
-            <Button type="submit">Confirm</Button>
-          </DialogActions>
-        </Dialog>
-      </React.Fragment>
-    );
-  }
+  // ** FIX DIALOG**
+
+  // const handleOpenFix = (event) => {
+  //   setOpenFixDialog(true);
+  //   // setAddCategory({ isChildOf: selectedSingleNode });
+  // };
+  // const handleCloseFix = (event) => {
+  //   event.preventDefault();
+  //   setOpenFixDialog(false);
+  // };
+  // function FormFixDialog(open) {
+  //   return (
+  //     <React.Fragment>
+  //       <Dialog
+  //         open={open.open}
+  //         onClose={handleCloseFix}
+  //         PaperProps={{
+  //           component: "form",
+  //           onSubmit: (event) => {
+  //             event.preventDefault();
+
+  //             const respone = putData(
+  //               "/produce-service/segment",
+  //               selectedDataGrid.id,
+  //               selectedDataGrid
+  //             );
+
+  //             const updatedData = segmentData.map((item) => {
+  //               if (item.id === selectedDataGrid.id) {
+  //                 return selectedDataGrid;
+  //               }
+  //               return item;
+  //             });
+  //             setSegmentData(updatedData);
+
+  //             handleCloseFix(event);
+  //             alert("Lưu thành công");
+  //           },
+  //         }}
+  //       >
+  //         <DialogTitle>
+  //           Sửa:{" "}
+  //           <span style={{ fontWeight: "bold" }}>
+  //             {selectedDataGrid.segmentName}
+  //           </span>
+  //         </DialogTitle>
+  //         <DialogContent>Bạn chắc chắn muốn lưu mục này?</DialogContent>
+  //         <DialogActions>
+  //           <Button onClick={handleCloseFix}>Cancel</Button>
+  //           <Button type="submit">Confirm</Button>
+  //         </DialogActions>
+  //       </Dialog>
+  //     </React.Fragment>
+  //   );
+  // }
+  const fixSubmit = (event) => {
+    event.preventDefault();
+    const putSegment = async () => {
+      try {
+        const respone = await putData(
+          "/produce-service/segment",
+          selectedDataGrid.id,
+          selectedDataGrid
+        );
+
+        const updatedData = segmentData.map((item) => {
+          if (item.id === selectedDataGrid.id) {
+            return selectedDataGrid;
+          }
+          return item;
+        });
+        setSegmentData(updatedData);
+        NotifySnackbar(enqueueSnackbar, "Sửa thành công", "success");
+      } catch (err) {
+        NotifySnackbar(
+          enqueueSnackbar,
+          "Lỗi mạng! Vui lòng kiểm tra đường truyền",
+          "error"
+        );
+        console.error("Error fetching data:", err);
+      }
+    };
+    putSegment();
+  };
+
   return (
     <Paper elevation={6} sx={{ paddingTop: 1, paddingLeft: 1, height: "84vh" }}>
       <Button
@@ -364,6 +405,7 @@ export default function Segment() {
       >
         <div style={{ height: "73vh", flexGrow: 2 }}>
           <DataGrid
+            onRowClick={handleRowClick}
             rows={segmentData}
             columns={columns}
             pageSize={1}
@@ -452,28 +494,6 @@ export default function Segment() {
                   setSelectedDataGrid(updatedSelectedDataGrid);
                 }}
               />
-              {/* <Autocomplete
-                disablePortal
-                id="combo-box-demo"
-                options={measurementData}
-                sx={{ marginY: 2, marginX: 5 }}
-                renderInput={(params) => (
-                  <TextField {...params} label="Đơn vị mặc định" />
-                )}
-                value={measurementData.find(
-                  (measurement) =>
-                    measurement.id === selectedDataGrid?.defaultMeas
-                )}
-                onChange={(event, value) => {
-                  if (value) {
-                    const updatedSelectedDataGrid = { ...selectedDataGrid };
-                    updatedSelectedDataGrid.defaultMeas = value?.id;
-                    console.log(value);
-                    setSelectedDataGrid(updatedSelectedDataGrid);
-                  }
-                }}
-              /> */}
-
               <div
                 style={{
                   display: "flex",
@@ -490,10 +510,10 @@ export default function Segment() {
                 >
                   Cancel
                 </Button>
-                <Button variant="contained" onClick={handleOpenFix}>
+                <Button variant="contained" onClick={fixSubmit}>
                   Save
                 </Button>
-                <FormFixDialog open={openFixDialog} />
+                {/* <FormFixDialog open={openFixDialog} /> */}
                 <Button
                   color="error"
                   variant="contained"

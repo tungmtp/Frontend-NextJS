@@ -292,7 +292,7 @@ export default function TreeViewComp(PropData) {
               // };
               // postCategoryProduct();
               addCategoryProduct(addCategory1, dispatch, PropData.serviceURL);
-              alert("Thêm thành công !!!");
+
               handleClose();
               //window.location.reload(false);
             },

@@ -14,6 +14,7 @@ import Box from "@mui/material/Box";
 import { styled, useTheme } from "@mui/material/styles";
 import { usePathname } from "next/navigation";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { SnackbarProvider } from "notistack";
 // import { useRouter } from "next/navigation";
 
 // export const metadata = {
@@ -96,34 +97,39 @@ export default function RootLayout({ children }) {
       <body>
         {/* {!isLoginPage && <Sidebar />} */}
         <ReduxProvider>
-          <ThemeProvider theme={theme}>
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              {" "}
-              {pathSplit != "login" && (
-                <TopBar
-                  open={open}
-                  handleDrawerOpen={handleDrawerOpen}
-                  handleDrawerClose={handleDrawerClose}
-                />
-              )}
-              <div style={{ display: "flex" }}>
+          <SnackbarProvider
+            maxSnack={3}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          >
+            <ThemeProvider theme={theme}>
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                {" "}
                 {pathSplit != "login" && (
-                  <SideBar
+                  <TopBar
                     open={open}
                     handleDrawerOpen={handleDrawerOpen}
                     handleDrawerClose={handleDrawerClose}
                   />
                 )}
-                <Box
-                  component="main"
-                  sx={{ flexGrow: 1, p: 3, height: "664px" }}
-                >
-                  <DrawerHeader />
-                  {children}
-                </Box>
+                <div style={{ display: "flex" }}>
+                  {pathSplit != "login" && (
+                    <SideBar
+                      open={open}
+                      handleDrawerOpen={handleDrawerOpen}
+                      handleDrawerClose={handleDrawerClose}
+                    />
+                  )}
+                  <Box
+                    component="main"
+                    sx={{ flexGrow: 1, p: 3, height: "664px" }}
+                  >
+                    <DrawerHeader />
+                    {children}
+                  </Box>
+                </div>
               </div>
-            </div>
-          </ThemeProvider>
+            </ThemeProvider>
+          </SnackbarProvider>
         </ReduxProvider>
       </body>
     </html>

@@ -1,60 +1,28 @@
 "use client";
-import {
-  selectCategoryProducts,
-  setSelectedCategory,
-} from "@/redux/categoryProductRedux";
 import Paper from "@mui/material/Paper";
-import Grid from "@mui/material/Grid";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import Box from "@mui/material/Box";
-import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Button from "@mui/material/Button";
-import ButtonGroup from "@mui/material/ButtonGroup";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import Fab from "@mui/material/Fab";
 import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
-import Tooltip from "@mui/material/Tooltip";
-import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
-import FolderOpenTwoToneIcon from "@mui/icons-material/FolderOpenTwoTone";
-
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import { deleteData, getData, postData, putData } from "@/hook/Hook";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-const measureCategory = {
-  1: "Diện tích",
-  2: "Chiều dài",
-  3: "Khối lượng",
-  4: "Đơn lẻ (unit)",
-  5: "Thể tích",
-};
-
-const getMeasCateName = (selectedButtonGroup) => {
-  return measureCategory[selectedButtonGroup];
-};
-const rows = [
-  {
-    id: 16576556757,
-    col1: "CL.C23.TRANG.08770-6.R7.2000  Phào trắng 10",
-    col2: "Cây 2.0",
-  },
-];
+import { NotifySnackbar } from "@/components/general/notifySnackbar/NotifySnackbar";
+import { useSnackbar } from "notistack";
 
 export default function Classes() {
   const [classesData, setClassesData] = useState([]);
-  const [selectedButtonGroup, setSelectedButtonGroup] = useState(1);
   const [selectedDataGrid, setSelectedDataGrid] = useState(null);
   const [openAddDialog, setOpenAddDialog] = React.useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
-  const [openFixDialog, setOpenFixDialog] = React.useState(false);
-
+  // const [openFixDialog, setOpenFixDialog] = React.useState(false);
+  const { enqueueSnackbar } = useSnackbar();
+  const [arrayLength, setArrayLength] = React.useState(0);
   useEffect(() => {
     const getClassesData = async () => {
       try {
@@ -64,22 +32,28 @@ export default function Classes() {
           index: index + 1,
         }));
         setClassesData(resultWithIndex);
+        setArrayLength(result.length);
       } catch (err) {
+        NotifySnackbar(
+          enqueueSnackbar,
+          "Lỗi mạng! Vui lòng kiểm tra đường truyền",
+          "error"
+        );
         console.error("Error fetching data:", err);
       }
     };
     getClassesData();
-    console.log("rendering again");
   }, []);
-
-  console.log(selectedDataGrid);
+  const handleRowClick = (params) => {
+    setSelectedDataGrid(params.row);
+  };
   const columns = [
     { field: "index", headerName: "STT", width: 10 },
     { field: "id", headerName: "id", width: 1 },
     {
       field: "nameStr",
       headerName: "Tên Class",
-      width: 300,
+      width: 350,
 
       renderCell: (params) => {
         return (
@@ -88,22 +62,17 @@ export default function Classes() {
             key={params.row.id}
             color="inherit"
             variant="body1"
-            onClick={() => {
-              setSelectedDataGrid(params.row);
-            }}
+            // onClick={() => {
+            //   setSelectedDataGrid(params.row);
+            // }}
           >
             {params.row.nameStr}
           </Link>
         );
       },
     },
-    { field: "classType", headerName: "Loại Class", width: 100 },
+    { field: "classType", headerName: "Loại Class", width: 150 },
   ];
-  const handleButtonClick = (value) => {
-    setSelectedDataGrid(null);
-    setSelectedButtonGroup(value);
-  };
-
   const handleOpenAdd = (event) => {
     event.preventDefault();
     setOpenAddDialog(true);
@@ -132,32 +101,32 @@ export default function Classes() {
                 classType: classType,
               };
 
-              const postMeasurement = async () => {
+              const postClasses = async () => {
                 try {
                   const result = await postData(
-                    "/product-service/classes",
+                    "/product-service/classess",
                     addClass
                   );
-                  //        const addClass = {
-                  //     nameStr: result.nameStr,
-                  //     classType: result.classType,
-
-                  //   };
                   const addClass2 = result;
-
-                  console.log(addClass2);
-                  // const updatedMeasurementData = measurementData;
-                  // updatedMeasurementData.push(addMeasurement2);
-
-                  // setMeasurementData(updatedMeasurementData);
+                  addClass2.index = arrayLength + 1;
+                  setArrayLength(arrayLength + 1);
                   setClassesData((prevState) => [...prevState, addClass2]);
+                  NotifySnackbar(
+                    enqueueSnackbar,
+                    "thêm sản phẩm thành công",
+                    "success"
+                  );
                 } catch (err) {
+                  NotifySnackbar(
+                    enqueueSnackbar,
+                    "Lỗi mạng! Vui lòng kiểm tra đường truyền",
+                    "error"
+                  );
                   console.error("Error fetching data:", err);
                 }
               };
-              postMeasurement();
+              postClasses();
 
-              alert("Thêm thành công !!!");
               handleClose(event);
               //window.location.reload(false);
             },
@@ -176,7 +145,6 @@ export default function Classes() {
               name="classType"
               variant="outlined"
               label="Loại Class"
-              required
               sx={{ margin: 2 }}
             />
           </DialogContent>
@@ -205,18 +173,35 @@ export default function Classes() {
             component: "form",
             onSubmit: (event) => {
               event.preventDefault();
-              const respone = deleteData(
-                "/product-service/classes",
-                selectedDataGrid.id
-              );
-              console.log(respone);
-              const updatedData = classesData.filter(
-                (item) => item.id !== selectedDataGrid.id
-              );
-              setClassesData(updatedData);
-              setSelectedDataGrid(null);
-              handleCloseDelete();
-              alert("Xóa thành công");
+              const deleteClasses = async () => {
+                try {
+                  const respone = await deleteData(
+                    "/product-service/classes",
+                    selectedDataGrid.id
+                  );
+
+                  const updatedData = classesData.filter(
+                    (item) => item.id !== selectedDataGrid.id
+                  );
+                  setClassesData(updatedData);
+                  setSelectedDataGrid(null);
+                  handleCloseDelete();
+
+                  NotifySnackbar(
+                    enqueueSnackbar,
+                    "Xóa class thành công",
+                    "success"
+                  );
+                } catch (err) {
+                  NotifySnackbar(
+                    enqueueSnackbar,
+                    "Lỗi mạng! Vui lòng kiểm tra đường truyền",
+                    "error"
+                  );
+                  console.error("Error fetching data:", err);
+                }
+              };
+              deleteClasses();
             },
           }}
         >
@@ -230,57 +215,77 @@ export default function Classes() {
       </React.Fragment>
     );
   }
-  const handleOpenFix = (event) => {
-    setOpenFixDialog(true);
-    // setAddCategory({ isChildOf: selectedSingleNode });
-  };
-  const handleCloseFix = () => {
-    setOpenFixDialog(false);
-  };
-  function FormFixDialog(open) {
-    return (
-      <React.Fragment>
-        <Dialog
-          open={open.open}
-          onClose={handleClose}
-          PaperProps={{
-            component: "form",
-            onSubmit: (event) => {
-              event.preventDefault();
-              const respone = putData(
-                "/product-service/classes",
-                selectedDataGrid.id,
-                selectedDataGrid
-              );
-              console.log(respone);
-              const updatedData = classesData.map((item) => {
-                if (item.id === selectedDataGrid.id) {
-                  return selectedDataGrid;
-                }
-                return item;
-              });
-              setClassesData(updatedData);
-              setSelectedDataGrid(null);
-              handleCloseFix();
-              alert("Lưu thành công");
-            },
-          }}
-        >
-          <DialogTitle>
-            Sửa:{" "}
-            <span style={{ fontWeight: "bold" }}>
-              {selectedDataGrid.nameStr}
-            </span>
-          </DialogTitle>
-          <DialogContent>Bạn chắc chắn muốn lưu mục này?</DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseFix}>Cancel</Button>
-            <Button type="submit">Confirm</Button>
-          </DialogActions>
-        </Dialog>
-      </React.Fragment>
+
+  // **confirm Dialog**
+
+  // const handleOpenFix = (event) => {
+  //   setOpenFixDialog(true);
+  //   // setAddCategory({ isChildOf: selectedSingleNode });
+  // };
+  // const handleCloseFix = () => {
+  //   setOpenFixDialog(false);
+  // };
+
+  // function FormFixDialog(open) {
+  //   return (
+  //     <React.Fragment>
+  //       <Dialog
+  //         open={open.open}
+  //         onClose={handleClose}
+  //         PaperProps={{
+  //           component: "form",
+  //           onSubmit: (event) => {
+  //             event.preventDefault();
+  //             const respone = putData(
+  //               "/product-service/classes",
+  //               selectedDataGrid.id,
+  //               selectedDataGrid
+  //             );
+  //             console.log(respone);
+  //             const updatedData = classesData.map((item) => {
+  //               if (item.id === selectedDataGrid.id) {
+  //                 return selectedDataGrid;
+  //               }
+  //               return item;
+  //             });
+  //             setClassesData(updatedData);
+  //             setSelectedDataGrid(null);
+  //             handleCloseFix();
+  //             NotifySnackbar(enqueueSnackbar, "Lưu thành công", "success");
+  //           },
+  //         }}
+  //       >
+  //         <DialogTitle>
+  //           Sửa:{" "}
+  //           <span style={{ fontWeight: "bold" }}>
+  //             {selectedDataGrid.nameStr}
+  //           </span>
+  //         </DialogTitle>
+  //         <DialogContent>Bạn chắc chắn muốn lưu mục này?</DialogContent>
+  //         <DialogActions>
+  //           <Button onClick={handleCloseFix}>Cancel</Button>
+  //           <Button type="submit">Confirm</Button>
+  //         </DialogActions>
+  //       </Dialog>
+  //     </React.Fragment>
+  //   );
+  // }
+  const fixSubmit = (event) => {
+    event.preventDefault();
+    const respone = putData(
+      "/product-service/classes",
+      selectedDataGrid.id,
+      selectedDataGrid
     );
-  }
+    const updatedData = classesData.map((item) => {
+      if (item.id === selectedDataGrid.id) {
+        return selectedDataGrid;
+      }
+      return item;
+    });
+    setClassesData(updatedData);
+    NotifySnackbar(enqueueSnackbar, "Lưu thành công", "success");
+  };
   return (
     <Paper
       elevation={6}
@@ -293,42 +298,6 @@ export default function Classes() {
         justifyContent: "space-between",
       }}
     >
-      {/* <ButtonGroup
-        variant="outlined"
-        aria-label="Basic button group"
-        sx={{ marginY: 2, marginX: 4 }}
-      >
-        <Button
-          onClick={() => handleButtonClick(1)}
-          variant={selectedButtonGroup === 1 ? "contained" : "outlined"}
-        >
-          Diện tích
-        </Button>
-        <Button
-          onClick={() => handleButtonClick(2)}
-          variant={selectedButtonGroup === 2 ? "contained" : "outlined"}
-        >
-          Chiều dài
-        </Button>
-        <Button
-          onClick={() => handleButtonClick(3)}
-          variant={selectedButtonGroup === 3 ? "contained" : "outlined"}
-        >
-          Khối lượng
-        </Button>
-        <Button
-          onClick={() => handleButtonClick(4)}
-          variant={selectedButtonGroup === 4 ? "contained" : "outlined"}
-        >
-          Đơn lẻ (unit)
-        </Button>
-        <Button
-          onClick={() => handleButtonClick(5)}
-          variant={selectedButtonGroup === 5 ? "contained" : "outlined"}
-        >
-          Thể tích
-        </Button>
-      </ButtonGroup> */}
       <Button
         size="small"
         color="primary"
@@ -349,6 +318,7 @@ export default function Classes() {
       >
         <div style={{ height: "100%", flexGrow: 2 }}>
           <DataGrid
+            onRowClick={handleRowClick}
             rows={classesData}
             columns={columns}
             pageSize={1}
@@ -370,7 +340,7 @@ export default function Classes() {
           sx={{
             paddingX: 4,
             py: 2,
-            flexGrow: 3,
+            flexGrow: 1,
           }}
         >
           {selectedDataGrid ? (
@@ -382,7 +352,7 @@ export default function Classes() {
                 flexDirection: "column",
                 paddingY: "8px",
                 maxWidth: "447px",
-                flexGrow: 1,
+                flexGrow: 2,
               }}
             >
               <TextField
@@ -403,7 +373,7 @@ export default function Classes() {
                 variant="outlined"
                 label="Loại Class"
                 sx={{ marginY: 2, marginX: 5 }}
-                value={selectedDataGrid?.classType}
+                value={selectedDataGrid?.classType || ""}
                 onChange={(event) => {
                   const updatedSelectedDataGrid = { ...selectedDataGrid };
                   updatedSelectedDataGrid.classType = event.target.value;
@@ -428,10 +398,10 @@ export default function Classes() {
                 >
                   Cancel
                 </Button>
-                <Button variant="contained" onClick={handleOpenFix}>
+                <Button variant="contained" onClick={fixSubmit}>
                   Save
                 </Button>
-                <FormFixDialog open={openFixDialog} />
+                {/* <FormFixDialog open={openFixDialog} /> */}
                 <Button
                   color="error"
                   variant="contained"

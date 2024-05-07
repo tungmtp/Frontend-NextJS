@@ -61,6 +61,8 @@ export default function Login() {
       if (response.ok) {
         const token = await response.text();
         Cookies.set("token", token);
+        Cookies.set("username", username);
+
         window.location.href = "/products/category";
       } else {
         setLoginFail(true);

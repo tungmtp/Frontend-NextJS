@@ -225,7 +225,6 @@ export default function DetailProduct() {
               };
               postMeasurement();
 
-              alert("Thêm thành công !!!");
               handleClose(event);
             },
           }}

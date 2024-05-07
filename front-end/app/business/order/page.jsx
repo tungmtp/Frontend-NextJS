@@ -181,7 +181,6 @@ export default function Order() {
               };
               postMeasurement();
 
-              alert("Thêm thành công !!!");
               handleClose(event);
               //window.location.reload(false);
             },

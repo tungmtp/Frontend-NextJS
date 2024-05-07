@@ -180,7 +180,6 @@ export default function ProductAttribute(parentProp) {
                 postAttribute();
               }
 
-              alert("Thêm thành công !!!");
               handleClose(event);
             },
           }}
