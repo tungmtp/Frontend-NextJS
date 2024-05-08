@@ -15,6 +15,8 @@ import Checkbox from "@mui/material/Checkbox";
 import Autocomplete from "@mui/material/Autocomplete";
 import dayjs from "dayjs";
 import ProductAttribute from "../productAttribute/ProductAttribute";
+import { NotifySnackbar } from "@/components/general/notifySnackbar/NotifySnackbar";
+import { useSnackbar } from "notistack";
 export default function AddProduct(props) {
   const selectedCategory = useSelector(
     (state) => state.categoryProduct.selectedCategory
@@ -25,7 +27,6 @@ export default function AddProduct(props) {
   const [segmmentData, setSegmentData] = useState([]);
   const date = new Date();
   const currentDate = dayjs(date).format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
-
   const [selectedDataGrid, setSelectedDataGrid] = useState({
     nameStr: "",
     extraCategoryID: selectedCategory,
@@ -42,14 +43,10 @@ export default function AddProduct(props) {
     createdOn: currentDate,
     measID: "",
   });
-
   const [openConfirm, setOpenConfirm] = React.useState(false);
   const [productRelationList, setProductRelationList] = React.useState([]);
+  const { enqueueSnackbar } = useSnackbar();
 
-  const dispatch = useDispatch();
-  console.log(productRelationList);
-  console.log(selectedDataGrid);
-  // console.log(measurementData);
   useEffect(() => {
     const getClassPriceData = async () => {
       try {
@@ -60,10 +57,11 @@ export default function AddProduct(props) {
         const changeFieldName = result.map((item) => {
           const classesName = result2.find(
             (classes) => classes.id === item.classId
-          ).nameStr; // Tạo trường label từ trường nameStr
+          )?.nameStr; // Tạo trường label từ trường nameStr
+
           return {
             ...item,
-            label: classesName,
+            label: classesName || "",
           };
         });
         setClassPriceData(changeFieldName);
@@ -98,8 +96,6 @@ export default function AddProduct(props) {
       }
     };
     getClassPriceData();
-
-    console.log("rendering again");
   }, []);
   const getProductRelationList = (list) => {
     if (list.length > 0) {
@@ -135,7 +131,7 @@ export default function AddProduct(props) {
                     "/product-service/product",
                     selectedDataGrid
                   );
-                  console.log(respone);
+
                   productRelationList.map((productRelation) => {
                     productRelation.productId = respone.id;
                     delete productRelation.id;
@@ -147,20 +143,32 @@ export default function AddProduct(props) {
                         );
                       } catch (err) {
                         console.error("Error fetching data:", err);
+                        NotifySnackbar(
+                          enqueueSnackbar,
+                          "Lỗi mạng! Vui lòng kiểm tra đường truyền",
+                          "error"
+                        );
                       }
                     };
                     postAttribute();
-                    console.log(productRelation);
                   });
+
+                  NotifySnackbar(
+                    enqueueSnackbar,
+                    "thêm sản phẩm thành công",
+                    "success"
+                  );
                 } catch (err) {
                   console.error("Error fetching data:", err);
+                  NotifySnackbar(
+                    enqueueSnackbar,
+                    "Lỗi mạng! Vui lòng kiểm tra đường truyền",
+                    "error"
+                  );
                 }
               };
-
               postProduct();
-
               handleCloseConfirm(event);
-              alert("Thêm thành công");
               props.handleCloseAddproduct();
             },
           }}
@@ -255,7 +263,7 @@ export default function AddProduct(props) {
               ? segmmentData.find(
                   (segmment) => segmment.id === selectedDataGrid.segmentID
                 )
-              : null
+              : "None"
           }
           onChange={(event, value) => {
             if (value && value != "None") {
@@ -399,7 +407,6 @@ export default function AddProduct(props) {
           onChange={(event) => {
             const updatedSelectedDataGrid = { ...selectedDataGrid };
             updatedSelectedDataGrid.comment = event.target.value;
-            console.log(event.target.value);
             setSelectedDataGrid(updatedSelectedDataGrid);
           }}
         />

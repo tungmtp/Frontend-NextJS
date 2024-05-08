@@ -19,6 +19,8 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import ProductAttribute from "../productAttribute/ProductAttribute";
+import { NotifySnackbar } from "@/components/general/notifySnackbar/NotifySnackbar";
+import { useSnackbar } from "notistack";
 export default function DetailProduct() {
   const selectedProduct = useSelector(
     (state) => state.categoryProduct.selectedProduct
@@ -31,8 +33,8 @@ export default function DetailProduct() {
   const [openAddDialog, setOpenAddDialog] = React.useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
   const [openFixDialog, setOpenFixDialog] = React.useState(false);
-
   const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
 
   // console.log(selectedDataGrid);
   // console.log(measurementData);
@@ -46,10 +48,10 @@ export default function DetailProduct() {
         const changeFieldName = result.map((item) => {
           const classesName = result2.find(
             (classes) => classes.id === item.classId
-          ).nameStr; // Tạo trường label từ trường nameStr
+          )?.nameStr; // Tạo trường label từ trường nameStr
           return {
             ...item,
-            label: classesName,
+            label: classesName || "",
           };
         });
         setClassPriceData(changeFieldName);
@@ -304,18 +306,34 @@ export default function DetailProduct() {
             component: "form",
             onSubmit: (event) => {
               event.preventDefault();
-              const respone = deleteData(
-                "/product-service/product",
-                selectedDataGrid.id
-              );
-              console.log(respone);
-              // const updatedData = classPriceData.filter(
-              //   (item) => item.id !== selectedDataGrid.id
-              // );
-              // setClassPriceData(updatedData);
-              dispatch(setSelectedProduct(null));
-              handleCloseDelete();
-              alert("Xóa thành công");
+              const deleteProduct = async () => {
+                try {
+                  const respone = deleteData(
+                    "/product-service/product",
+                    selectedDataGrid.id
+                  );
+                  console.log(respone);
+                  // const updatedData = classPriceData.filter(
+                  //   (item) => item.id !== selectedDataGrid.id
+                  // );
+                  // setClassPriceData(updatedData);
+                  dispatch(setSelectedProduct(null));
+                  handleCloseDelete();
+                  NotifySnackbar(
+                    enqueueSnackbar,
+                    "Xóa sản phẩm thành công!",
+                    "success"
+                  );
+                } catch (err) {
+                  console.error("Error fetching data:", err);
+                  NotifySnackbar(
+                    enqueueSnackbar,
+                    "Lỗi mạng! Vui lòng kiểm tra đường truyền",
+                    "error"
+                  );
+                }
+              };
+              deleteProduct();
             },
           }}
         >
@@ -350,22 +368,38 @@ export default function DetailProduct() {
             component: "form",
             onSubmit: (event) => {
               event.preventDefault();
-              const respone = putData(
-                "/product-service/product",
-                selectedDataGrid.id,
-                selectedDataGrid
-              );
-              console.log(respone);
-              // const updatedData = classPriceData.map((item) => {
-              //   if (item.id === selectedDataGrid.id) {
-              //     return selectedDataGrid;
-              //   }
-              //   return item;
-              // });
-              // setClassPriceData(updatedData);
+              const putProduct = async () => {
+                try {
+                  const respone = putData(
+                    "/product-service/product",
+                    selectedDataGrid.id,
+                    selectedDataGrid
+                  );
+                  console.log(respone);
+                  // const updatedData = classPriceData.map((item) => {
+                  //   if (item.id === selectedDataGrid.id) {
+                  //     return selectedDataGrid;
+                  //   }
+                  //   return item;
+                  // });
+                  // setClassPriceData(updatedData);
 
-              handleCloseFix(event);
-              alert("Lưu thành công");
+                  handleCloseFix(event);
+                  NotifySnackbar(
+                    enqueueSnackbar,
+                    "Sửa sản phẩm thành công!",
+                    "success"
+                  );
+                } catch (e) {
+                  console.error("Error fetching data:", err);
+                  NotifySnackbar(
+                    enqueueSnackbar,
+                    "Lỗi mạng! Vui lòng kiểm tra đường truyền",
+                    "error"
+                  );
+                }
+              };
+              putProduct();
             },
           }}
         >
