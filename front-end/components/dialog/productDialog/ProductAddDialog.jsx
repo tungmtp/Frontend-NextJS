@@ -89,7 +89,7 @@ export default function ProductAddDialog(props) {
         const changeFieldName = result.map((item) => {
           const classesName = result2.find(
             (classes) => classes.id === item.classId
-          ).nameStr; // Tạo trường label từ trường nameStr
+          )?.nameStr; // Tạo trường label từ trường nameStr
           return {
             ...item,
             label: classesName,
@@ -164,7 +164,7 @@ export default function ProductAddDialog(props) {
                     "/product-service/product",
                     selectedDataGrid
                   );
-                  console.log(respone);
+
                   productRelationList.map((productRelation) => {
                     productRelation.productId = respone.id;
                     delete productRelation.id;
@@ -179,7 +179,6 @@ export default function ProductAddDialog(props) {
                       }
                     };
                     postAttribute();
-                    console.log(productRelation);
                   });
                 } catch (err) {
                   console.error("Error fetching data:", err);
@@ -256,11 +255,10 @@ export default function ProductAddDialog(props) {
                     treeviewNodeId
                   );
 
-                  console.log(result);
                   setSelectedCategory(result);
                   const updatedSelectedDataGrid = { ...selectedDataGrid };
                   updatedSelectedDataGrid.extraCategoryID = result.id;
-                  console.log(updatedSelectedDataGrid.extraCategoryID);
+
                   setSelectedDataGrid(updatedSelectedDataGrid);
                   handleClose(event);
                 } catch (err) {
@@ -536,7 +534,7 @@ export default function ProductAddDialog(props) {
           onChange={(event) => {
             const updatedSelectedDataGrid = { ...selectedDataGrid };
             updatedSelectedDataGrid.comment = event.target.value;
-            console.log(event.target.value);
+
             setSelectedDataGrid(updatedSelectedDataGrid);
           }}
         />

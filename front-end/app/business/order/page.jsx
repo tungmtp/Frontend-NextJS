@@ -338,7 +338,7 @@ export default function Order() {
           aria-label="add"
           //   onClick={handleOpenAdd}
           variant="contained"
-          sx={{ marginY: "8px", width: "140px", marginX: "24px" }}
+          sx={{ marginY: "8px", width: "150px", marginX: "24px" }}
         >
           <Link
             href={"/business/order/addNewOrder"}
@@ -351,7 +351,8 @@ export default function Order() {
               textDecoration: "none",
             }}
           >
-            <AddIcon /> New Order
+            <AddIcon />
+            đơn hàng mới
           </Link>
         </Button>
       </div>
@@ -396,7 +397,10 @@ export default function Order() {
         >
           {selectedDataGrid ? (
             <>
-              <OrderInfo />
+              <OrderInfo
+                selectedOder={selectedDataGrid}
+                partnerData={partnerData}
+              />
               <OrderDetailTable />
             </>
           ) : (

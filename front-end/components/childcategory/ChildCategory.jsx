@@ -115,7 +115,7 @@ export default function ChildCategory(parentProp) {
       getProductData();
     }
 
-    console.log("rendering again");
+    // console.log("rendering again");
   }, [selectedCategory, selectedProduct, parentProp.openAddProduct]);
   //xu ly mo component add product
   // const handleOpenAddproduct = () => {
@@ -156,7 +156,7 @@ export default function ChildCategory(parentProp) {
   const handleClick = (id) => {
     dispatch(setSelectedCategory(id));
     dispatch(setSelectedProduct(null));
-    parentProp.handleCloseAddproduct();
+    if (parentProp?.handleCloseAddproduct) parentProp?.handleCloseAddproduct();
   };
   // const breadcrumbs = [
   //   <Link
@@ -281,7 +281,7 @@ export default function ChildCategory(parentProp) {
         </div>
         {parentProp.openAddProduct ? (
           <AddProduct
-            handleCloseAddproduct={parentProp.handleCloseAddproduct}
+            handleCloseAddproduct={parentProp?.handleCloseAddproduct}
           />
         ) : selectedProduct != null ? (
           <DetailProduct />
