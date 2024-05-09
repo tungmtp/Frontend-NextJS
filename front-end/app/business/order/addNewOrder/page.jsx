@@ -238,7 +238,7 @@ export default function AddNewOrder(props) {
           height: "100%",
           overflow: "auto",
         }}
-      // onSubmit={handleOpenConfirm}
+        // onSubmit={handleOpenConfirm}
       >
         <Box
           sx={{
@@ -290,13 +290,13 @@ export default function AddNewOrder(props) {
             )}
             value={
               employeeData.length > 0 &&
-                employeeData.find(
-                  (employee) => employee.id === selectedDataGrid.staffControl
-                )
+              employeeData.find(
+                (employee) => employee.id === selectedDataGrid.staffControl
+              )
                 ? employeeData.find(
-                  (employee) => employee.id === selectedDataGrid.staffControl
-                )
-                : ""
+                    (employee) => employee.id === selectedDataGrid.staffControl
+                  )
+                : null
             }
             onChange={(event, value) => {
               if (value) {
@@ -305,7 +305,7 @@ export default function AddNewOrder(props) {
                 setSelectedDataGrid(updatedSelectedDataGrid);
               }
             }}
-          //   onChange={handleOnChange}
+            //   onChange={handleOnChange}
           />
           <Autocomplete
             size="small"
@@ -316,13 +316,13 @@ export default function AddNewOrder(props) {
             renderInput={(params) => <TextField {...params} label="Đối tác" />}
             value={
               partnerData.length > 0 &&
-                partnerData.find(
-                  (partner) => partner.id === selectedDataGrid.partnersID
-                )
+              partnerData.find(
+                (partner) => partner.id === selectedDataGrid.partnersID
+              )
                 ? partnerData.find(
-                  (partner) => partner.id === selectedDataGrid.partnersID
-                )
-                : ""
+                    (partner) => partner.id === selectedDataGrid.partnersID
+                  )
+                : null
             }
             onChange={(event, value) => {
               if (value) {
@@ -331,7 +331,7 @@ export default function AddNewOrder(props) {
                 setSelectedDataGrid(updatedSelectedDataGrid);
               }
             }}
-          //   onChange={handleOnChange}
+            //   onChange={handleOnChange}
           />
           <Autocomplete
             disablePortal
@@ -344,13 +344,13 @@ export default function AddNewOrder(props) {
             )}
             value={
               contactData.length > 0 &&
-                contactData.find(
-                  (contact) => contact.id === selectedDataGrid.contactID
-                )
+              contactData.find(
+                (contact) => contact.id === selectedDataGrid.contactID
+              )
                 ? contactData.find(
-                  (contact) => contact.id === selectedDataGrid.contactID
-                )
-                : ""
+                    (contact) => contact.id === selectedDataGrid.contactID
+                  )
+                : null
             }
             onChange={(event, value) => {
               if (value && value != "None") {
@@ -363,7 +363,7 @@ export default function AddNewOrder(props) {
                 setSelectedDataGrid(updatedSelectedDataGrid);
               }
             }}
-          //   onChange={handleOnChange}
+            //   onChange={handleOnChange}
           />
 
           <FormControl

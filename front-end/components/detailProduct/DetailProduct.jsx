@@ -1,41 +1,26 @@
 "use client";
-import {
-  selectCategoryProducts,
-  setSelectedCategory,
-  setSelectedProduct,
-} from "@/redux/categoryProductRedux";
-import Paper from "@mui/material/Paper";
-import Grid from "@mui/material/Grid";
+import { setSelectedProduct } from "@/redux/categoryProductRedux";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Box from "@mui/material/Box";
-import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Button from "@mui/material/Button";
-import ButtonGroup from "@mui/material/ButtonGroup";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import Fab from "@mui/material/Fab";
 import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
-import Tooltip from "@mui/material/Tooltip";
-import Typography from "@mui/material/Typography";
-import AddIcon from "@mui/icons-material/Add";
-import FolderOpenTwoToneIcon from "@mui/icons-material/FolderOpenTwoTone";
-
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import { deleteData, getData, postData, putData } from "@/hook/Hook";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { format } from "date-fns";
 import Autocomplete from "@mui/material/Autocomplete";
-import dayjs from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import ProductAttribute from "../productAttribute/ProductAttribute";
+import { NotifySnackbar } from "@/components/general/notifySnackbar/NotifySnackbar";
+import { useSnackbar } from "notistack";
 export default function DetailProduct() {
   const selectedProduct = useSelector(
     (state) => state.categoryProduct.selectedProduct
@@ -48,8 +33,8 @@ export default function DetailProduct() {
   const [openAddDialog, setOpenAddDialog] = React.useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
   const [openFixDialog, setOpenFixDialog] = React.useState(false);
-
   const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
 
   // console.log(selectedDataGrid);
   // console.log(measurementData);
@@ -63,10 +48,10 @@ export default function DetailProduct() {
         const changeFieldName = result.map((item) => {
           const classesName = result2.find(
             (classes) => classes.id === item.classId
-          ).nameStr; // Tạo trường label từ trường nameStr
+          )?.nameStr; // Tạo trường label từ trường nameStr
           return {
             ...item,
-            label: classesName,
+            label: classesName || "",
           };
         });
         setClassPriceData(changeFieldName);
@@ -188,10 +173,10 @@ export default function DetailProduct() {
     },
   ];
 
-  const handleOpenAdd = (event) => {
-    event.preventDefault();
-    setOpenAddDialog(true);
-  };
+  // const handleOpenAdd = (event) => {
+  //   event.preventDefault();
+  //   setOpenAddDialog(true);
+  // };
   const handleClose = (event) => {
     event.preventDefault();
     setOpenAddDialog(false);
@@ -242,7 +227,6 @@ export default function DetailProduct() {
               };
               postMeasurement();
 
-              alert("Thêm thành công !!!");
               handleClose(event);
             },
           }}
@@ -322,18 +306,34 @@ export default function DetailProduct() {
             component: "form",
             onSubmit: (event) => {
               event.preventDefault();
-              const respone = deleteData(
-                "/product-service/product",
-                selectedDataGrid.id
-              );
-              console.log(respone);
-              // const updatedData = classPriceData.filter(
-              //   (item) => item.id !== selectedDataGrid.id
-              // );
-              // setClassPriceData(updatedData);
-              dispatch(setSelectedProduct(null));
-              handleCloseDelete();
-              alert("Xóa thành công");
+              const deleteProduct = async () => {
+                try {
+                  const respone = deleteData(
+                    "/product-service/product",
+                    selectedDataGrid.id
+                  );
+                  console.log(respone);
+                  // const updatedData = classPriceData.filter(
+                  //   (item) => item.id !== selectedDataGrid.id
+                  // );
+                  // setClassPriceData(updatedData);
+                  dispatch(setSelectedProduct(null));
+                  handleCloseDelete();
+                  NotifySnackbar(
+                    enqueueSnackbar,
+                    "Xóa sản phẩm thành công!",
+                    "success"
+                  );
+                } catch (err) {
+                  console.error("Error fetching data:", err);
+                  NotifySnackbar(
+                    enqueueSnackbar,
+                    "Lỗi mạng! Vui lòng kiểm tra đường truyền",
+                    "error"
+                  );
+                }
+              };
+              deleteProduct();
             },
           }}
         >
@@ -368,22 +368,38 @@ export default function DetailProduct() {
             component: "form",
             onSubmit: (event) => {
               event.preventDefault();
-              const respone = putData(
-                "/product-service/product",
-                selectedDataGrid.id,
-                selectedDataGrid
-              );
-              console.log(respone);
-              // const updatedData = classPriceData.map((item) => {
-              //   if (item.id === selectedDataGrid.id) {
-              //     return selectedDataGrid;
-              //   }
-              //   return item;
-              // });
-              // setClassPriceData(updatedData);
+              const putProduct = async () => {
+                try {
+                  const respone = putData(
+                    "/product-service/product",
+                    selectedDataGrid.id,
+                    selectedDataGrid
+                  );
+                  console.log(respone);
+                  // const updatedData = classPriceData.map((item) => {
+                  //   if (item.id === selectedDataGrid.id) {
+                  //     return selectedDataGrid;
+                  //   }
+                  //   return item;
+                  // });
+                  // setClassPriceData(updatedData);
 
-              handleCloseFix(event);
-              alert("Lưu thành công");
+                  handleCloseFix(event);
+                  NotifySnackbar(
+                    enqueueSnackbar,
+                    "Sửa sản phẩm thành công!",
+                    "success"
+                  );
+                } catch (e) {
+                  console.error("Error fetching data:", err);
+                  NotifySnackbar(
+                    enqueueSnackbar,
+                    "Lỗi mạng! Vui lòng kiểm tra đường truyền",
+                    "error"
+                  );
+                }
+              };
+              putProduct();
             },
           }}
         >
@@ -435,16 +451,19 @@ export default function DetailProduct() {
         <Autocomplete
           id=""
           options={measurementData}
-          sx={{ marginTop: 2, marginX: 5, width: "91%" }}
+          sx={{ marginTop: 2, marginLeft: 5, width: "450px" }}
           renderInput={(params) => (
             <TextField {...params} label="Đơn vị quy chuẩn" />
           )}
           value={
-            measurementData.length > 0
+            measurementData.length > 0 &&
+            measurementData.find(
+              (measurement) => measurement.id === selectedDataGrid.measID
+            )
               ? measurementData.find(
                   (measurement) => measurement.id === selectedDataGrid.measID
                 )
-              : ""
+              : null
           }
           onChange={(event, value) => {
             if (value) {
@@ -456,16 +475,20 @@ export default function DetailProduct() {
           }}
           //   onChange={handleOnChange}
         />
+
         <Autocomplete
           id=""
           options={["None", ...segmmentData]}
           isOptionEqualToValue={(option, value) => option.id === value?.id}
-          sx={{ marginTop: 2, marginX: 5, width: "91%" }}
+          sx={{ marginTop: 2, marginX: 5, width: "calc(91% - 490px)" }}
           renderInput={(params) => (
             <TextField {...params} label="Công đoạn sản xuất" />
           )}
           value={
-            segmmentData.length > 0
+            segmmentData.length > 0 &&
+            segmmentData.find(
+              (segmment) => segmment.id === selectedDataGrid.segmentID
+            )
               ? segmmentData.find(
                   (segmment) => segmment.id === selectedDataGrid.segmentID
                 )
@@ -489,7 +512,7 @@ export default function DetailProduct() {
           variant="outlined"
           label="Tồn kho tối thiểu"
           type="number"
-          sx={{ marginTop: 2, marginLeft: 5, width: "30%" }}
+          sx={{ marginTop: 2, marginLeft: 5, width: "300px" }}
           value={selectedDataGrid?.minimumStock}
           onChange={(event) => {
             const updatedSelectedDataGrid = { ...selectedDataGrid };
@@ -501,12 +524,15 @@ export default function DetailProduct() {
         <Autocomplete
           id="combo-box-demo"
           options={classPriceData}
-          sx={{ marginTop: 2, marginX: 5, width: "57%" }}
+          sx={{ marginTop: 2, marginX: 5, width: "calc(91% - 340px)" }}
           renderInput={(params) => (
             <TextField {...params} label="Class giá hạch toán" />
           )}
           value={
-            classPriceData.length > 0
+            classPriceData.length > 0 &&
+            classPriceData.find(
+              (classPrice) => classPrice.id === selectedDataGrid.classPriceID
+            )
               ? classPriceData.find(
                   (classPrice) =>
                     classPrice.id === selectedDataGrid.classPriceID

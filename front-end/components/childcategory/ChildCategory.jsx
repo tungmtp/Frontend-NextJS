@@ -115,7 +115,7 @@ export default function ChildCategory(parentProp) {
       getProductData();
     }
 
-    console.log("rendering again");
+    // console.log("rendering again");
   }, [selectedCategory, selectedProduct, parentProp.openAddProduct]);
   //xu ly mo component add product
   // const handleOpenAddproduct = () => {
@@ -156,7 +156,7 @@ export default function ChildCategory(parentProp) {
   const handleClick = (id) => {
     dispatch(setSelectedCategory(id));
     dispatch(setSelectedProduct(null));
-    parentProp.handleCloseAddproduct();
+    if (parentProp?.handleCloseAddproduct) parentProp?.handleCloseAddproduct();
   };
   // const breadcrumbs = [
   //   <Link
@@ -236,12 +236,17 @@ export default function ChildCategory(parentProp) {
   );
 
   return (
-    <Paper elevation={6} sx={{ paddingTop: 1, height: "84vh" }}>
+    <Paper
+      elevation={6}
+      sx={{ paddingTop: 1, height: "84vh", overflow: "auto" }}
+    >
       <div
         style={{
           display: "flex",
           flexDirection: "column",
           height: "100%",
+
+          paddingBottom: "10px",
         }}
       >
         <div
@@ -276,7 +281,7 @@ export default function ChildCategory(parentProp) {
         </div>
         {parentProp.openAddProduct ? (
           <AddProduct
-            handleCloseAddproduct={parentProp.handleCloseAddproduct}
+            handleCloseAddproduct={parentProp?.handleCloseAddproduct}
           />
         ) : selectedProduct != null ? (
           <DetailProduct />
@@ -308,6 +313,7 @@ export default function ChildCategory(parentProp) {
               rowGap: "16px",
               paddingLeft: "30px",
               justifyContent: "flex-start",
+              paddingBottom: 3,
             }}
           >
             {childCategories.map((category) => (
@@ -332,7 +338,12 @@ export default function ChildCategory(parentProp) {
                     dispatch(setSelectedCategory(category.id));
                   }}
                 >
-                  <Tooltip title={category[parentProp.title]} arrow>
+                  <Tooltip
+                    followCursor
+                    title={category[parentProp.title]}
+                    arrow
+                    sx={{ overflow: "auto", display: "none" }}
+                  >
                     <Box
                       sx={{
                         display: "flex",

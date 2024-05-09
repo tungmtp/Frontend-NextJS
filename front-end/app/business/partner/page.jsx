@@ -1,36 +1,23 @@
 "use client";
-import {
-  selectCategoryProducts,
-  setSelectedCategory,
-} from "@/redux/categoryProductRedux";
 import Paper from "@mui/material/Paper";
-import Grid from "@mui/material/Grid";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import Box from "@mui/material/Box";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Button from "@mui/material/Button";
-import ButtonGroup from "@mui/material/ButtonGroup";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import Fab from "@mui/material/Fab";
 import Link from "next/link";
 import TextField from "@mui/material/TextField";
-import Tooltip from "@mui/material/Tooltip";
-import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
-import FolderOpenTwoToneIcon from "@mui/icons-material/FolderOpenTwoTone";
 import IconButton from "@mui/material/IconButton";
 import PhoneIcon from "@mui/icons-material/Phone";
 import WorkOutlineTwoToneIcon from "@mui/icons-material/WorkOutlineTwoTone";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import { deleteData, getData, postData, putData } from "@/hook/Hook";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import ContactList from "@/components/partner/ContactList";
 const partnerType = {
   1: "Khách hàng",
   2: "Nhà cung cấp",
@@ -44,12 +31,12 @@ const getPartnerTypeName = (selectedPartnerType) => {
 
 export default function Partner() {
   const [partnerData, setPartnerData] = useState([]);
-  const [selectedButtonGroup, setSelectedButtonGroup] = useState(1);
+  const [selectedContact, setSelectedContact] = useState(null);
   const [selectedDataGrid, setSelectedDataGrid] = useState(null);
   const [openAddDialog, setOpenAddDialog] = React.useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
   const [openFixDialog, setOpenFixDialog] = React.useState(false);
-  console.log(partnerData);
+  console.log(selectedContact);
   useEffect(() => {
     const getPartnerData = async () => {
       try {
@@ -66,8 +53,11 @@ export default function Partner() {
     getPartnerData();
     console.log("rendering again");
   }, []);
+  const handleRowClick = (params) => {
+    setSelectedDataGrid(params.row);
+    setSelectedContact(null);
+  };
 
-  console.log(selectedDataGrid);
   const columns = [
     { field: "index", headerName: "STT", width: 10 },
     { field: "id", headerName: "id", width: 1 },
@@ -79,16 +69,16 @@ export default function Partner() {
       renderCell: (params) => {
         return (
           <Box
-            underline="hover"
             key={params.row.id}
             sx={{
               textOverflow: "ellipsis",
               overflow: "hidden",
               cursor: "pointer",
+              ":hover": " underline",
             }}
-            onClick={() => {
-              setSelectedDataGrid(params.row);
-            }}
+            // onClick={() => {
+            //   setSelectedDataGrid(params.row);
+            // }}
           >
             {params.row.nameStr} <br /> {params.row.address}
           </Box>
@@ -103,7 +93,16 @@ export default function Partner() {
         return (
           <div>
             <Link underline="hover" key={params.row.id} href="">
-              <IconButton color="primary" aria-label="add an alarm">
+              <IconButton
+                color="primary"
+                aria-label="add an alarm"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  event.preventDefault();
+                  setSelectedContact(params.row.id);
+                  setSelectedDataGrid(null);
+                }}
+              >
                 <PhoneIcon />
               </IconButton>
             </Link>
@@ -352,49 +351,12 @@ export default function Partner() {
       sx={{
         paddingTop: 1,
         paddingLeft: 1,
-        height: "100%",
+        height: "84vh",
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
       }}
     >
-      {/* <ButtonGroup
-        variant="outlined"
-        aria-label="Basic button group"
-        sx={{ marginY: 2, marginX: 4 }}
-      >
-        <Button
-          onClick={() => handleButtonClick(1)}
-          variant={selectedButtonGroup === 1 ? "contained" : "outlined"}
-        >
-          Diện tích
-        </Button>
-        <Button
-          onClick={() => handleButtonClick(2)}
-          variant={selectedButtonGroup === 2 ? "contained" : "outlined"}
-        >
-          Chiều dài
-        </Button>
-        <Button
-          onClick={() => handleButtonClick(3)}
-          variant={selectedButtonGroup === 3 ? "contained" : "outlined"}
-        >
-          Khối lượng
-        </Button>
-        <Button
-          onClick={() => handleButtonClick(4)}
-          variant={selectedButtonGroup === 4 ? "contained" : "outlined"}
-        >
-          Đơn lẻ (unit)
-        </Button>
-        <Button
-          onClick={() => handleButtonClick(5)}
-          variant={selectedButtonGroup === 5 ? "contained" : "outlined"}
-        >
-          Thể tích
-        </Button>
-      </ButtonGroup> */}
-
       <div
         style={{
           display: "flex",
@@ -415,10 +377,10 @@ export default function Partner() {
         <FormAddDialog open={openAddDialog} />
         <div style={{ height: "100%", flexGrow: 2 }}>
           <DataGrid
+            onRowClick={handleRowClick}
             rows={partnerData}
             columns={columns}
             pageSize={1}
-            disableRowSelectionOnClick
             slots={{
               toolbar: GridToolbar,
             }}
@@ -440,7 +402,9 @@ export default function Partner() {
           flexGrow: 3,
         }}
       >
-        {selectedDataGrid ? (
+        {selectedContact ? (
+          <ContactList selectedContact={selectedContact} />
+        ) : selectedDataGrid ? (
           <Paper
             elevation={3}
             sx={{

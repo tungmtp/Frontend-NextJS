@@ -30,7 +30,7 @@ export default function OrderDetail() {
         const resultWithIndex = result.map((row, index) => ({
           ...row,
           index: index + 1,
-          label: measName,
+          label: row.measName,
         }));
         setMeasurementData(resultWithIndex);
       } catch (err) {
@@ -51,7 +51,8 @@ export default function OrderDetail() {
       <Box sx={{ marginTop: 2, marginLeft: 5 }}>
         <SelectProduct />
       </Box>
-      <FormControl
+
+      {/* <FormControl
         sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
         size="small"
       >
@@ -73,19 +74,21 @@ export default function OrderDetail() {
             </MenuItem>
           ))}
         </Select>
-      </FormControl>
+
+      </FormControl> */}
+
       <TextField
         id=""
         label="Sản lượng bán ra"
         size="small"
         sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
-      //   value={selectedDataGrid?.comment}
-      // onChange={(event) => {
-      //   const updatedSelectedDataGrid = { ...selectedDataGrid };
-      //   updatedSelectedDataGrid.comment = event.target.value;
-      //   console.log(event.target.value);
-      //   setSelectedDataGrid(updatedSelectedDataGrid);
-      // }}
+        //   value={selectedDataGrid?.comment}
+        // onChange={(event) => {
+        //   const updatedSelectedDataGrid = { ...selectedDataGrid };
+        //   updatedSelectedDataGrid.comment = event.target.value;
+        //   console.log(event.target.value);
+        //   setSelectedDataGrid(updatedSelectedDataGrid);
+        // }}
       />
       <Autocomplete
         disabled
@@ -95,26 +98,27 @@ export default function OrderDetail() {
         options={measurementData}
         sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
         renderInput={(params) => <TextField {...params} label="DVT gốc" />}
-      // value={
-      //   measurementData.length > 0 &&
-      //   measurementData.find(
-      //     (measurement) => measurement.id === selectedDataGrid.partnersID
-      //   )
-      //     ? partnerData.find(
-      //         (partner) => partner.id === selectedDataGrid.partnersID
-      //       )
-      //     : ""
-      // }
-      // onChange={(event, value) => {
-      //   if (value) {
-      //     const updatedSelectedDataGrid = { ...selectedDataGrid };
-      //     updatedSelectedDataGrid.partnersID = value.id;
-      //     setSelectedDataGrid(updatedSelectedDataGrid);
-      //   }
-      // }}
-      //   onChange={handleOnChange}
+        // value={
+        //   measurementData.length > 0 &&
+        //   measurementData.find(
+        //     (measurement) => measurement.id === selectedDataGrid.partnersID
+        //   )
+        //     ? partnerData.find(
+        //         (partner) => partner.id === selectedDataGrid.partnersID
+        //       )
+        //     : ""
+        // }
+        // onChange={(event, value) => {
+        //   if (value) {
+        //     const updatedSelectedDataGrid = { ...selectedDataGrid };
+        //     updatedSelectedDataGrid.partnersID = value.id;
+        //     setSelectedDataGrid(updatedSelectedDataGrid);
+        //   }
+        // }}
+        //   onChange={handleOnChange}
       />
-      <Autocomplete
+
+      {/* <Autocomplete
         disabled
         disablePortal
         id=""
@@ -143,32 +147,33 @@ export default function OrderDetail() {
       //     setSelectedDataGrid(updatedSelectedDataGrid);
       //   }
       // }}
-      />
+      /> */}
+
       <TextField
         id=""
         label="SL quy đổi"
         size="small"
         sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
-      //   value={selectedDataGrid?.comment}
-      // onChange={(event) => {
-      //   const updatedSelectedDataGrid = { ...selectedDataGrid };
-      //   updatedSelectedDataGrid.comment = event.target.value;
-      //   console.log(event.target.value);
-      //   setSelectedDataGrid(updatedSelectedDataGrid);
-      // }}
+        //   value={selectedDataGrid?.comment}
+        // onChange={(event) => {
+        //   const updatedSelectedDataGrid = { ...selectedDataGrid };
+        //   updatedSelectedDataGrid.comment = event.target.value;
+        //   console.log(event.target.value);
+        //   setSelectedDataGrid(updatedSelectedDataGrid);
+        // }}
       />
       <TextField
         id=""
         label="Giá bán"
         size="small"
         sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
-      //   value={selectedDataGrid?.comment}
-      // onChange={(event) => {
-      //   const updatedSelectedDataGrid = { ...selectedDataGrid };
-      //   updatedSelectedDataGrid.comment = event.target.value;
-      //   console.log(event.target.value);
-      //   setSelectedDataGrid(updatedSelectedDataGrid);
-      // }}
+        //   value={selectedDataGrid?.comment}
+        // onChange={(event) => {
+        //   const updatedSelectedDataGrid = { ...selectedDataGrid };
+        //   updatedSelectedDataGrid.comment = event.target.value;
+        //   console.log(event.target.value);
+        //   setSelectedDataGrid(updatedSelectedDataGrid);
+        // }}
       />
     </Box>
   );

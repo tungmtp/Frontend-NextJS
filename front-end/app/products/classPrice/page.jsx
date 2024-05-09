@@ -80,7 +80,7 @@ export default function ClassPrice() {
     getClassPriceData();
     console.log("rendering again");
   }, []);
-
+  console.log(classesData);
   console.log(selectedDataGrid);
   const columns = [
     { field: "index", headerName: "STT", width: 10 },
@@ -89,7 +89,7 @@ export default function ClassPrice() {
     {
       field: "classId",
       headerName: "Tên Class",
-      width: 300,
+      width: 260,
 
       renderCell: (params) => {
         const className = classesData.find(
@@ -114,7 +114,7 @@ export default function ClassPrice() {
     {
       field: "dateEffected",
       headerName: "Ngày áp dụng",
-      width: 180,
+      width: 140,
 
       renderCell: (params) => {
         const formattedDate = format(
@@ -141,7 +141,7 @@ export default function ClassPrice() {
     {
       field: "defaultMeas",
       headerName: "Đơn vị mặc định",
-      width: 120,
+      width: 200,
 
       renderCell: (params) => {
         const measName = measurementData.find(
@@ -219,7 +219,6 @@ export default function ClassPrice() {
               };
               postMeasurement();
 
-              alert("Thêm thành công !!!");
               handleClose(event);
             },
           }}
@@ -314,7 +313,7 @@ export default function ClassPrice() {
             },
           }}
         >
-          <DialogTitle>Xóa {getClassesName.nameStr}</DialogTitle>
+          <DialogTitle>Xóa {getClassesName?.nameStr}</DialogTitle>
           <DialogContent>Bạn chắc chắn muốn xóa thư mục này?</DialogContent>
           <DialogActions>
             <Button onClick={handleCloseDelete}>Cancel</Button>
@@ -336,6 +335,7 @@ export default function ClassPrice() {
     const getClassesName = classesData.find(
       (classes) => classes.id === selectedDataGrid.classId
     );
+
     return (
       <React.Fragment>
         <Dialog
@@ -366,7 +366,9 @@ export default function ClassPrice() {
         >
           <DialogTitle>
             Sửa:{" "}
-            <span style={{ fontWeight: "bold" }}>{getClassesName.nameStr}</span>
+            <span style={{ fontWeight: "bold" }}>
+              {getClassesName?.nameStr}
+            </span>
           </DialogTitle>
           <DialogContent>Bạn chắc chắn muốn lưu mục này?</DialogContent>
           <DialogActions>
@@ -401,7 +403,6 @@ export default function ClassPrice() {
             rows={classPriceData}
             columns={columns}
             pageSize={1}
-            disableRowSelectionOnClick
             slots={{
               toolbar: GridToolbar,
             }}

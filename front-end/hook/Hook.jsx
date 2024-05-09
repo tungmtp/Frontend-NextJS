@@ -3,6 +3,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 const token = Cookies.get("token");
+const username = Cookies.get("username");
 
 export const verifyToken = async (token, TestTokenUrl) => {
   try {
@@ -31,7 +32,7 @@ export const verifyToken = async (token, TestTokenUrl) => {
 export async function getData(serviceURL) {
   try {
     const config = {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${token}`, UserName: username },
     };
     const url = `${process.env.NEXT_PUBLIC_DB_HOST}${serviceURL}`;
     const response = await fetch(url, {
@@ -90,6 +91,7 @@ export async function postData(serviceURL, data) {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
+        UserName: username,
       },
     };
     const url = `${process.env.NEXT_PUBLIC_DB_HOST}${serviceURL}`;
@@ -122,6 +124,7 @@ export async function putData(serviceURL, id, data) {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
+        UserName: username,
       },
     };
 
@@ -154,6 +157,7 @@ export async function deleteData(serviceURL, id) {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
+        UserName: username,
       },
     };
 

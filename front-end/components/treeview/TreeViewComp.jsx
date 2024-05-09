@@ -1,4 +1,3 @@
-import { deleteData, getData, postData, putData } from "@/hook/Hook";
 import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 import Box from "@mui/material/Box";
@@ -6,18 +5,10 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { TreeView } from "@mui/x-tree-view/TreeView";
 import { TreeItem, useTreeItem } from "@mui/x-tree-view/TreeItem";
-import {
-  Button,
-  Checkbox,
-  Dialog,
-  IconButton,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Button, Dialog, IconButton, Typography } from "@mui/material";
 import AddBoxTwoToneIcon from "@mui/icons-material/AddBoxTwoTone";
 import AccountTreeTwoToneIcon from "@mui/icons-material/AccountTreeTwoTone";
 import DeleteForeverTwoToneIcon from "@mui/icons-material/DeleteForeverTwoTone";
-import Divider from "@mui/material/Divider";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -35,7 +26,9 @@ import {
   setSelectedCategory,
   setSelectedProduct,
 } from "@/redux/categoryProductRedux";
-
+import { NotifySnackbar } from "@/components/general/notifySnackbar/NotifySnackbar";
+import { useSnackbar } from "notistack";
+import Tooltip from "@mui/material/Tooltip";
 export default function TreeViewComp(PropData) {
   const [selectedNodes, setSelectedNodes] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
@@ -48,6 +41,7 @@ export default function TreeViewComp(PropData) {
     isChildOf: "",
   });
   const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
   const selectedCategory = useSelector(
     (state) => state.categoryProduct.selectedCategory
   );
@@ -231,7 +225,11 @@ export default function TreeViewComp(PropData) {
   const handleOpenAddChild = (event) => {
     if (!selectedSingleNode) {
       event.preventDefault();
-      alert("Bạn chưa chọn vị trí thư mục");
+      NotifySnackbar(
+        enqueueSnackbar,
+        "Bạn chưa chọn thư mục cần thêm!!",
+        "warning"
+      );
     } else {
       setOpenAddDialog(true);
       setAddCategory({ isChildOf: selectedSingleNode });
@@ -292,7 +290,7 @@ export default function TreeViewComp(PropData) {
               // };
               // postCategoryProduct();
               addCategoryProduct(addCategory1, dispatch, PropData.serviceURL);
-              alert("Thêm thành công !!!");
+
               handleClose();
               //window.location.reload(false);
             },
@@ -329,7 +327,11 @@ export default function TreeViewComp(PropData) {
   const handleOpenFix = (event) => {
     if (!selectedSingleNode) {
       event.preventDefault();
-      alert("Bạn chưa chọn vị trí thư mục");
+      NotifySnackbar(
+        enqueueSnackbar,
+        "Bạn chưa chọn thư mục cần sửa!!",
+        "warning"
+      );
     } else {
       setOpenFixDialog(true);
     }
@@ -409,7 +411,11 @@ export default function TreeViewComp(PropData) {
   const handleOpenDelete = (event) => {
     if (!selectedSingleNode) {
       event.preventDefault();
-      alert("Bạn chưa chọn vị trí thư mục");
+      NotifySnackbar(
+        enqueueSnackbar,
+        "Bạn chưa chọn thư mục cần xóa!!",
+        "warning"
+      );
     } else {
       setOpenDeleteDialog(true);
       // setAddCategory({ isChildOf: selectedSingleNode });
@@ -446,7 +452,7 @@ export default function TreeViewComp(PropData) {
                 PropData.serviceURL
               );
               handleCloseDelete();
-              alert("Xóa thành công");
+              NotifySnackbar(enqueueSnackbar, "Xóa thành công!!", "success");
             },
           }}
         >
@@ -475,28 +481,44 @@ export default function TreeViewComp(PropData) {
             marginBottom: "16px",
           }}
         >
-          <IconButton aria-label="add" onClick={handleOpenAdd} color="primary">
-            <AddBoxTwoToneIcon />
-          </IconButton>
-          <IconButton
-            aria-label="addChild"
-            onClick={handleOpenAddChild}
-            color="primary"
-          >
-            <AccountTreeTwoToneIcon />
-          </IconButton>
+          <Tooltip title="Thêm thư mục gốc" arrow>
+            <IconButton
+              aria-label="add"
+              onClick={handleOpenAdd}
+              color="primary"
+            >
+              <AddBoxTwoToneIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Thêm thư mục con" arrow>
+            <IconButton
+              aria-label="addChild"
+              onClick={handleOpenAddChild}
+              color="primary"
+            >
+              <AccountTreeTwoToneIcon />
+            </IconButton>
+          </Tooltip>
           <FormAddDialog open={openAddDialog} />
-          <IconButton aria-label="fix" onClick={handleOpenFix} color="warning">
-            <BorderColorTwoToneIcon />
-          </IconButton>
+          <Tooltip title="Đổi tên thư mục" arrow>
+            <IconButton
+              aria-label="fix"
+              onClick={handleOpenFix}
+              color="warning"
+            >
+              <BorderColorTwoToneIcon />
+            </IconButton>
+          </Tooltip>
           <FormFixdDialog open={openFixDialog} />
-          <IconButton
-            aria-label="delete"
-            onClick={handleOpenDelete}
-            color="error"
-          >
-            <DeleteForeverTwoToneIcon />
-          </IconButton>
+          <Tooltip title="Xóa thư mục" arrow>
+            <IconButton
+              aria-label="delete"
+              onClick={handleOpenDelete}
+              color="error"
+            >
+              <DeleteForeverTwoToneIcon />
+            </IconButton>
+          </Tooltip>
           <FormDeleteDialog open={openDeleteDialog} />
         </div>
         <div style={{ overflow: "auto", height: "79vh" }}>

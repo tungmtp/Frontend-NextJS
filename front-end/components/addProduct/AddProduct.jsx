@@ -1,41 +1,22 @@
 "use client";
-import {
-  selectCategoryProducts,
-  setSelectedCategory,
-  setSelectedProduct,
-} from "@/redux/categoryProductRedux";
-import Paper from "@mui/material/Paper";
-import Grid from "@mui/material/Grid";
+
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Box from "@mui/material/Box";
-import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Button from "@mui/material/Button";
-import ButtonGroup from "@mui/material/ButtonGroup";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import Fab from "@mui/material/Fab";
-import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
-import Tooltip from "@mui/material/Tooltip";
-import Typography from "@mui/material/Typography";
-import AddIcon from "@mui/icons-material/Add";
-import FolderOpenTwoToneIcon from "@mui/icons-material/FolderOpenTwoTone";
-
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import { deleteData, getData, postData, putData } from "@/hook/Hook";
+import { getData, postData } from "@/hook/Hook";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-import { format } from "date-fns";
 import Autocomplete from "@mui/material/Autocomplete";
 import dayjs from "dayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import ProductAttribute from "../productAttribute/ProductAttribute";
+import { NotifySnackbar } from "@/components/general/notifySnackbar/NotifySnackbar";
+import { useSnackbar } from "notistack";
 export default function AddProduct(props) {
   const selectedCategory = useSelector(
     (state) => state.categoryProduct.selectedCategory
@@ -46,7 +27,6 @@ export default function AddProduct(props) {
   const [segmmentData, setSegmentData] = useState([]);
   const date = new Date();
   const currentDate = dayjs(date).format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
-
   const [selectedDataGrid, setSelectedDataGrid] = useState({
     nameStr: "",
     extraCategoryID: selectedCategory,
@@ -63,14 +43,10 @@ export default function AddProduct(props) {
     createdOn: currentDate,
     measID: "",
   });
-
   const [openConfirm, setOpenConfirm] = React.useState(false);
   const [productRelationList, setProductRelationList] = React.useState([]);
+  const { enqueueSnackbar } = useSnackbar();
 
-  const dispatch = useDispatch();
-  console.log(productRelationList);
-  console.log(selectedDataGrid);
-  // console.log(measurementData);
   useEffect(() => {
     const getClassPriceData = async () => {
       try {
@@ -81,10 +57,11 @@ export default function AddProduct(props) {
         const changeFieldName = result.map((item) => {
           const classesName = result2.find(
             (classes) => classes.id === item.classId
-          ).nameStr; // Tạo trường label từ trường nameStr
+          )?.nameStr; // Tạo trường label từ trường nameStr
+
           return {
             ...item,
-            label: classesName,
+            label: classesName || "",
           };
         });
         setClassPriceData(changeFieldName);
@@ -119,8 +96,6 @@ export default function AddProduct(props) {
       }
     };
     getClassPriceData();
-
-    console.log("rendering again");
   }, []);
   const getProductRelationList = (list) => {
     if (list.length > 0) {
@@ -156,7 +131,7 @@ export default function AddProduct(props) {
                     "/product-service/product",
                     selectedDataGrid
                   );
-                  console.log(respone);
+
                   productRelationList.map((productRelation) => {
                     productRelation.productId = respone.id;
                     delete productRelation.id;
@@ -168,20 +143,32 @@ export default function AddProduct(props) {
                         );
                       } catch (err) {
                         console.error("Error fetching data:", err);
+                        NotifySnackbar(
+                          enqueueSnackbar,
+                          "Lỗi mạng! Vui lòng kiểm tra đường truyền",
+                          "error"
+                        );
                       }
                     };
                     postAttribute();
-                    console.log(productRelation);
                   });
+
+                  NotifySnackbar(
+                    enqueueSnackbar,
+                    "thêm sản phẩm thành công",
+                    "success"
+                  );
                 } catch (err) {
                   console.error("Error fetching data:", err);
+                  NotifySnackbar(
+                    enqueueSnackbar,
+                    "Lỗi mạng! Vui lòng kiểm tra đường truyền",
+                    "error"
+                  );
                 }
               };
-
               postProduct();
-
               handleCloseConfirm(event);
-              alert("Thêm thành công");
               props.handleCloseAddproduct();
             },
           }}
@@ -242,11 +229,14 @@ export default function AddProduct(props) {
             <TextField {...params} label="Đơn vị quy chuẩn" />
           )}
           value={
-            measurementData.length > 0
+            measurementData.length > 0 &&
+            measurementData.find(
+              (measurement) => measurement.id === selectedDataGrid.measID
+            )
               ? measurementData.find(
                   (measurement) => measurement.id === selectedDataGrid.measID
                 )
-              : ""
+              : null
           }
           onChange={(event, value) => {
             if (value) {
@@ -266,11 +256,14 @@ export default function AddProduct(props) {
             <TextField {...params} label="Công đoạn sản xuất" />
           )}
           value={
-            segmmentData.length > 0
+            segmmentData.length > 0 &&
+            segmmentData.find(
+              (segmment) => segmment.id === selectedDataGrid.segmentID
+            )
               ? segmmentData.find(
                   (segmment) => segmment.id === selectedDataGrid.segmentID
                 )
-              : ""
+              : "None"
           }
           onChange={(event, value) => {
             if (value && value != "None") {
@@ -310,12 +303,15 @@ export default function AddProduct(props) {
             <TextField {...params} label="Class giá hạch toán" />
           )}
           value={
-            classPriceData.length > 0
+            classPriceData.length > 0 &&
+            classPriceData.find(
+              (classPrice) => classPrice.id === selectedDataGrid.classPriceID
+            )
               ? classPriceData.find(
                   (classPrice) =>
                     classPrice.id === selectedDataGrid.classPriceID
                 )
-              : ""
+              : null
           }
           onChange={(event, value) => {
             if (value) {
@@ -411,7 +407,6 @@ export default function AddProduct(props) {
           onChange={(event) => {
             const updatedSelectedDataGrid = { ...selectedDataGrid };
             updatedSelectedDataGrid.comment = event.target.value;
-            console.log(event.target.value);
             setSelectedDataGrid(updatedSelectedDataGrid);
           }}
         />
