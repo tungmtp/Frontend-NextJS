@@ -60,6 +60,48 @@ export default function Measurement() {
         (measurement) => measurement.measCatId === selectedButtonGroup
       )
     : measurementData;
+  const getRootMeas = selectedButtonGroup
+    ? measurementData.filter(
+        (measurement) =>
+          measurement.isRoot === true &&
+          measurement.measCatId === selectedButtonGroup
+      )
+    : measurementData;
+  const calculateRateInRoot = (item) => {
+    if (item) {
+      switch (selectedButtonGroup) {
+        case 1:
+          {
+            return (
+              (item.length * item.width * item.upc) /
+              (getRootMeas[0].length * getRootMeas[0].width)
+            );
+          }
+          break;
+        case 2:
+          {
+            return (item.length * item.upc) / getRootMeas[0].length;
+          }
+          break;
+        case 3:
+          {
+            return item.rateInRoot;
+          }
+          break;
+        case 4:
+          {
+            return 0;
+          }
+          break;
+        case 5:
+          {
+            return item.rateInRoot;
+          }
+          break;
+      }
+    }
+  };
+  console.log(calculateRateInRoot(selectedDataGrid));
   console.log(selectedDataGrid);
   // console.log(measurementData);
   useEffect(() => {
@@ -165,6 +207,51 @@ export default function Measurement() {
     setOpenAddDialog(false);
   };
   function FormAddDialog(open) {
+    const [rateInRoot, setRateInRoot] = useState("");
+
+    const calculateRateInRootChange = (event) => {
+      event.preventDefault();
+
+      const length = document.querySelector('input[name="length"]').value;
+      const width = document.querySelector('input[name="width"]').value;
+      const height = document.querySelector('input[name="height"]').value;
+      const upc = document.querySelector('input[name="upc"]').value;
+      switch (selectedButtonGroup) {
+        case 1:
+          {
+            return setRateInRoot(
+              (length * width * upc) /
+                (getRootMeas[0].length * getRootMeas[0].width)
+            );
+          }
+          break;
+        case 2:
+          {
+            return setRateInRoot((length * upc) / getRootMeas[0].length);
+          }
+          break;
+        case 3:
+          {
+            return 0;
+          }
+          break;
+        case 4:
+          {
+            return 0;
+          }
+          break;
+        case 5:
+          {
+            return setRateInRoot(
+              (length * width * height * upc) /
+                (getRootMeas[0].length *
+                  getRootMeas[0].width *
+                  getRootMeas[0].height)
+            );
+          }
+          break;
+      }
+    };
     return (
       <React.Fragment>
         <Dialog
@@ -180,7 +267,7 @@ export default function Measurement() {
               const length = formJson.length;
               const width = formJson.width;
               const height = formJson.height;
-              const rateInRoot = formJson.rateInRoot;
+              // const rateInRoot = formJson.rateInRoot;
               const upc = formJson.upc;
               const isRoot = formJson.isRoot ? true : false;
 
@@ -249,33 +336,40 @@ export default function Measurement() {
             <TextField
               name="length"
               variant="outlined"
-              label="Chiều dài"
+              label="Chiều dài (mm)"
               sx={{ margin: 2 }}
+              onChange={calculateRateInRootChange}
             />
             <TextField
               name="width"
               variant="outlined"
-              label="Chiều rộng"
+              label="Chiều rộng (mm)"
               sx={{ margin: 2 }}
+              onChange={calculateRateInRootChange}
             />
             <TextField
               name="height"
               variant="outlined"
-              label="Chiều cao"
+              label="Chiều cao (mm)"
               sx={{ margin: 2 }}
+              onChange={calculateRateInRootChange}
             />
-
-            <TextField
-              name="rateInRoot"
-              variant="outlined"
-              label="Tỉ lệ so với đơn vị gốc"
-              sx={{ margin: 2 }}
-            />
+            {selectedButtonGroup !== 4 && (
+              <TextField
+                name="rateInRoot"
+                variant="outlined"
+                label="Tỉ lệ so với đơn vị gốc"
+                value={rateInRoot}
+                onChange={(event) => setRateInRoot(event.target.value)}
+                sx={{ margin: 2 }}
+              />
+            )}
             <TextField
               name="upc"
               variant="outlined"
               label="Đóng gói"
               sx={{ margin: 2 }}
+              onChange={calculateRateInRootChange}
             />
             <FormControlLabel
               control={<Checkbox name="isRoot" />}
@@ -496,7 +590,7 @@ export default function Measurement() {
                 id="standard-basic"
                 variant="outlined"
                 type="number"
-                label="Chiều dài"
+                label="Chiều dài (mm)"
                 sx={{ marginTop: 2, marginX: 5 }}
                 value={selectedDataGrid?.length}
                 onChange={(event) => {
@@ -510,8 +604,8 @@ export default function Measurement() {
                 id="standard-basic"
                 variant="outlined"
                 type="number"
-                label="Chiều rộng"
-                value={selectedDataGrid?.width}
+                label="Chiều rộng (mm)"
+                value={selectedDataGrid?.width || ""}
                 onChange={(event) => {
                   const updatedSelectedDataGrid = { ...selectedDataGrid };
                   updatedSelectedDataGrid.width = Number(event.target.value);
@@ -523,7 +617,7 @@ export default function Measurement() {
                 id="standard-basic"
                 variant="outlined"
                 type="number"
-                label="Chiều cao"
+                label="Chiều cao (mm)"
                 value={selectedDataGrid?.height}
                 onChange={(event) => {
                   const updatedSelectedDataGrid = { ...selectedDataGrid };
@@ -544,21 +638,23 @@ export default function Measurement() {
                 }}
               />
 
-              <TextField
-                id="standard-basic"
-                variant="outlined"
-                type="number"
-                label="Tỉ lệ so với đơn vị gốc"
-                sx={{ marginY: 2, marginX: 5 }}
-                value={selectedDataGrid?.rateInRoot}
-                onChange={(event) => {
-                  const updatedSelectedDataGrid = { ...selectedDataGrid };
-                  updatedSelectedDataGrid.rateInRoot = Number(
-                    event.target.value
-                  );
-                  setSelectedDataGrid(updatedSelectedDataGrid);
-                }}
-              />
+              {selectedButtonGroup !== 4 && (
+                <TextField
+                  id="standard-basic"
+                  variant="outlined"
+                  type="number"
+                  label="Tỉ lệ so với đơn vị gốc"
+                  sx={{ marginY: 2, marginX: 5 }}
+                  value={calculateRateInRoot(selectedDataGrid)}
+                  onChange={(event) => {
+                    const updatedSelectedDataGrid = { ...selectedDataGrid };
+                    updatedSelectedDataGrid.rateInRoot = Number(
+                      event.target.value
+                    );
+                    setSelectedDataGrid(updatedSelectedDataGrid);
+                  }}
+                />
+              )}
               <TextField
                 id="standard-basic"
                 variant="outlined"
