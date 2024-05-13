@@ -1,17 +1,13 @@
 "use client";
 import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  useRef,
+  useEffect, useRef
 } from "react";
 import "./globals.css";
 import ReduxProvider from "@/redux/ReduxProvider";
 import TopBar from "@/components/topbar/Topbar";
 import SideBar from "@/components/sidebar/Sidebar";
 import Box from "@mui/material/Box";
-import { styled, useTheme } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import { usePathname } from "next/navigation";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { SnackbarProvider } from "notistack";
@@ -96,6 +92,7 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         {/* {!isLoginPage && <Sidebar />} */}
+        <input type="hidden" name="globalData" value={Date.now()} />
         <ReduxProvider>
           <SnackbarProvider
             maxSnack={3}

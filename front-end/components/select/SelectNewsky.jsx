@@ -3,24 +3,23 @@ import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import debounce from "lodash.debounce";
 import { getData } from "@/hook/Hook";
-import ProductAddDialog from "../dialog/productDialog/ProductAddDialog";
+// import ItemAddDialog from "../dialog/productDialog/ProductAddDialog";
 
-export default function SelectProduct(props) {
-  const [openAddProduct, setOpenAddProduct] = useState(false);
-  // const [openAddDialogMeas, setOpenAddDialogMeas] = useState(false);
-  // const [openAddDialogSegment, setOpenAddDialogSegment] = useState(false);
-  // const [openAddDialogClassPrice, setOpenAddDialogClassPrice] = useState(false);
+export default function SelectNewsky(props) {
+  // byNameStr =  /product-service/Measurement/byNameStr
+  // firstCall = /product-service/measurement/firstCall
+  const [openAddItem, setOpenAddItem] = useState(false);
 
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [selectedValue, setSelectedValue] = useState(null);
-  const [firstCall, setFirstCall] = useState(true);
-  const handleOpenAddproduct = () => {
-    setOpenAddProduct(true);
+
+  const handleOpenAddItem = () => {
+    setOpenAddItem(true);
   };
-  const handleCloseAddproduct = () => {
-    setOpenAddProduct(false);
+  const handleCloseAddItem = () => {
+    setOpenAddItem(false);
   };
   const handleSelectionChange = (event, value) => {
     setSelectedValue(value);
@@ -30,46 +29,58 @@ export default function SelectProduct(props) {
   };
   const fetchOptions = async (query) => {
     try {
-      const result = await getData(
-        `/product-service/product/byNameStr/${query}`
-      );
+      const result = await getData(`${props.byNameStr}/${query}`);
       return result;
     } catch (err) {
       console.error("Error fetching data:", err);
     }
   };
 
-  console.log("currentProduct:", props.currentProduct)
-
   const fetchFirstCall = async (id) => {
     try {
-      const result = await getData(`/product-service/product/firstCall/${id}`);
+      const result = await getData(`${props.firstCall}/${id}`);
       return result;
+    } catch (err) {
+      console.error("Error fetching data:", err);
+    }
+  };
+
+  const fetchSelectedItem = async (id) => {
+    try {
+      const result = await getData(`${props.currentItemLink}/${id}`);
+      if (!result.error) {
+        setSelectedValue(result);
+      }
+      // return result;
     } catch (err) {
       console.error("Error fetching data:", err);
     }
   };
 
   const debouncedFetchOptions = debounce((query) => {
-    const findQuery = options.find(item => item.nameStr == query);
-    console.log("query:", query);
-    console.log("findQuery:", findQuery);
-    if (findQuery == undefined) {
+    // const findQuery = options.find(item => item.nameStr == query);
+    // console.log("query:", query);
+    // console.log("findQuery:", findQuery);
+    if (query !== selectedValue?.nameStr) {
       fetchOptions(query).then((items) => {
+        console.log("items:", items);
         setOptions(items);
       });
     }
   }, 600); // Delay in ms
+  // console.log("CurrentItem: ", props.currentItem);
 
   useEffect(() => {
-    if (props.currentProduct) {
-      console.log("currentProduct:", props.currentProduct)
-      fetchFirstCall(props.currentProduct).then((items) => {
+    if (props.currentItem) {
+      fetchSelectedItem(props.currentItem);
+      fetchFirstCall(props.currentItem).then((items) => {
+        // console.log("items:", items);
         setOptions(items);
-        setSelectedValue(items.find((item) => item.id == props.currentProduct))
+        // setSelectedValue(items.find((item) => item.id == props.currentItem))
+        // console.log("selectedItem", selectedValue);
       });
     }
-  }, [props.currentProduct])
+  }, [props.currentItem]);
 
   useEffect(() => {
     switch (inputValue.toUpperCase()) {
@@ -77,7 +88,8 @@ export default function SelectProduct(props) {
         setOptions([]);
         break;
       case "++":
-        setOpenAddProduct(true);
+        // setOpenAddItem(true);
+        alert("Sẽ mở dialog thêm sản phẩm");
         break;
       case "FF":
         alert("Sẽ mở dialog lọc sản phẩm");
@@ -105,8 +117,8 @@ export default function SelectProduct(props) {
           setInputValue(newInputValue);
         }}
         onChange={handleSelectionChange}
-        isOptionEqualToValue={(option, value) => option.id === value.id}
         value={selectedValue}
+        isOptionEqualToValue={(option, value) => option?.id === value?.id}
         renderInput={(params) => (
           <TextField
             {...params}
@@ -123,10 +135,10 @@ export default function SelectProduct(props) {
           />
         )}
       />
-      <ProductAddDialog
-        open={openAddProduct}
-        handleCloseAddproduct={handleCloseAddproduct}
-      />
+      {/* <ItemAddDialog
+        open={openAddItem}
+        handleCloseAddItem={handleCloseAddItem}
+      /> */}
     </div>
   );
 }

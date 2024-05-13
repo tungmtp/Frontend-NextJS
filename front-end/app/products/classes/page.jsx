@@ -62,9 +62,9 @@ export default function Classes() {
             key={params.row.id}
             color="inherit"
             variant="body1"
-            // onClick={() => {
-            //   setSelectedDataGrid(params.row);
-            // }}
+          // onClick={() => {
+          //   setSelectedDataGrid(params.row);
+          // }}
           >
             {params.row.nameStr}
           </Link>
