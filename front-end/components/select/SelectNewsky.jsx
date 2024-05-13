@@ -5,7 +5,7 @@ import debounce from "lodash.debounce";
 import { getData } from "@/hook/Hook";
 // import ItemAddDialog from "../dialog/productDialog/ProductAddDialog";
 
-export default function SelectMeasurement(props) {
+export default function SelectNewsky(props) {
   // byNameStr =  /product-service/Measurement/byNameStr
   // firstCall = /product-service/measurement/firstCall
   const [openAddItem, setOpenAddItem] = useState(false);
@@ -29,15 +29,12 @@ export default function SelectMeasurement(props) {
   };
   const fetchOptions = async (query) => {
     try {
-      const result = await getData(
-        `${props.byNameStr}/${query}`
-      );
+      const result = await getData(`${props.byNameStr}/${query}`);
       return result;
     } catch (err) {
       console.error("Error fetching data:", err);
     }
   };
-
 
   const fetchFirstCall = async (id) => {
     try {
@@ -83,7 +80,7 @@ export default function SelectMeasurement(props) {
         // console.log("selectedItem", selectedValue);
       });
     }
-  }, [props.currentItem])
+  }, [props.currentItem]);
 
   useEffect(() => {
     switch (inputValue.toUpperCase()) {
@@ -122,7 +119,6 @@ export default function SelectMeasurement(props) {
         onChange={handleSelectionChange}
         value={selectedValue}
         isOptionEqualToValue={(option, value) => option?.id === value?.id}
-
         renderInput={(params) => (
           <TextField
             {...params}
