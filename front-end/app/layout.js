@@ -47,6 +47,19 @@ const theme = createTheme({
         },
       },
     },
+    MuiFormControl: {
+      defaultProps: {
+        size: "small", // Set default size to small
+      },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        root: {
+          paddingTop: "2px", // Adjust top padding
+          paddingBottom: "2px", // Adjust bottom padding
+        },
+      },
+    },
     // Add other components here with similar overrides if needed
   },
 });

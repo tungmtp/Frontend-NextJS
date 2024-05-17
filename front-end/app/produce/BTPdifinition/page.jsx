@@ -40,7 +40,7 @@ export default function BTPdifinition() {
         byNameStr="/business-service/partner/byNameStr"
         firstCall="/business-service/partner/firstCall"
         currentItemLink="/business-service/partner/oneForSelect"
-      />
+      />*/}
       <Box sx={{ marginTop: 3 }}> </Box>
       <SelectNewsky
         lblinput="Sản phẩm"
@@ -49,7 +49,7 @@ export default function BTPdifinition() {
         byNameStr="/product-service/product/byNameStr"
         firstCall="/product-service/product/firstCall"
         currentItemLink="/product-service/product/oneForSelect"
-      /> */}
+      />
 
       <Box sx={{ marginTop: 3 }}> </Box>
       <SelectNewsky

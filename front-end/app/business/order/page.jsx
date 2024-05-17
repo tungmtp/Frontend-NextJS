@@ -34,6 +34,8 @@ import Checkbox from "@mui/material/Checkbox";
 import CustomNoRowsOverlay from "@/components/general/CustomNoRowsOverlay";
 import OrderInfo from "@/components/order/OrderInfo";
 import OrderDetailTable from "@/components/order/OrderDetailTable";
+import CollectMoneyTable from "@/components/order/CollectMoneyTable";
+import OrderPaymentTable from "@/components/order/OrderPaymentTable";
 const measureCategory = {
   1: "Diện tích",
   2: "Chiều dài",
@@ -65,8 +67,7 @@ export default function Order() {
   const [openAddDialog, setOpenAddDialog] = React.useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
   const [openFixDialog, setOpenFixDialog] = React.useState(false);
-
-  console.log(ordersData);
+  console.log(selectedDataGrid);
   useEffect(() => {
     const getOrdersData = async () => {
       try {
@@ -93,7 +94,6 @@ export default function Order() {
     console.log("rendering again");
   }, [orderDate]);
 
-  console.log(selectedDataGrid);
   const columns = [
     { field: "index", headerName: "STT", width: 10 },
     { field: "id", headerName: "id", width: 1 },
@@ -315,10 +315,11 @@ export default function Order() {
       sx={{
         paddingTop: 1,
         paddingLeft: 1,
-        height: "100%",
+        height: "84vh",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
+        overflow: "auto",
       }}
     >
       <div style={{ display: "flex", margin: "8px" }}>
@@ -332,13 +333,12 @@ export default function Order() {
             sx={{ width: "250px" }}
           />
         </LocalizationProvider>
-        <Button
+        <Fab
           size="small"
           color="primary"
           aria-label="add"
           //   onClick={handleOpenAdd}
-          variant="contained"
-          sx={{ marginY: "8px", width: "150px", marginX: "24px" }}
+          sx={{ marginY: "8px", marginX: "24px" }}
         >
           <Link
             href={"/business/order/addNewOrder"}
@@ -352,9 +352,8 @@ export default function Order() {
             }}
           >
             <AddIcon />
-            đơn hàng mới
           </Link>
-        </Button>
+        </Fab>
       </div>
       <FormAddDialog open={openAddDialog} />
       <div
@@ -402,6 +401,8 @@ export default function Order() {
                 partnerData={partnerData}
               />
               <OrderDetailTable />
+              <CollectMoneyTable />
+              <OrderPaymentTable />
             </>
           ) : (
             <></>

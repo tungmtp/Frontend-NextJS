@@ -76,7 +76,7 @@ export default function ProductAddDialog(props) {
   const [productRelationList, setProductRelationList] = React.useState([]);
 
   const dispatch = useDispatch();
-  // console.log(productRelationList);
+  console.log(productRelationList);
   // console.log(selectedDataGrid);
   // console.log(measurementData);
   useEffect(() => {

@@ -99,10 +99,11 @@ export default function ProductAttribute(parentProp) {
         getProductRelation();
       }
       getCategoryAttribute();
+      if (parentProp.getProductRelationList != undefined) {
+        parentProp.getProductRelationList(productRelation);
+      }
     }
-
-    console.log("rendering again");
-  }, [selectedProduct]);
+  }, []);
   //xu ly mo component add product
   // const handleOpenAddproduct = () => {
   //   setOpenAddProduct(true);
@@ -116,9 +117,7 @@ export default function ProductAttribute(parentProp) {
     // dispatch(setSelectedProduct(null));
   };
   // console.log(parentProp.getProductRelationList);
-  if (parentProp.getProductRelationList != undefined) {
-    parentProp.getProductRelationList(productRelation);
-  }
+
   const handleOpenAdd = (event) => {
     event.preventDefault();
     setOpenAddDialog(true);
@@ -128,7 +127,7 @@ export default function ProductAttribute(parentProp) {
     setOpenAddDialog(false);
   };
   function FormAddDialog(open) {
-    const [attributeRelId, setAttributeRelId] = React.useState();
+    const [attributeRelId, setAttributeRelId] = React.useState(null);
     let attributeRelId1 = attributeRelId;
 
     let relTable = "productAttribute";
@@ -160,7 +159,11 @@ export default function ProductAttribute(parentProp) {
 
               console.log(addAttribute);
               if (parentProp.status == "add") {
-                setProductRelation((prevState) => [...prevState, addAttribute]);
+                if (addAttribute.relId !== null)
+                  setProductRelation((prevState) => [
+                    ...prevState,
+                    addAttribute,
+                  ]);
               } else {
                 const postAttribute = async () => {
                   try {

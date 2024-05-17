@@ -39,7 +39,7 @@ export default function SelectProduct(props) {
     }
   };
 
-  console.log("currentProduct:", props.currentProduct)
+  console.log("currentProduct:", props.currentProduct);
 
   const fetchFirstCall = async (id) => {
     try {
@@ -51,7 +51,7 @@ export default function SelectProduct(props) {
   };
 
   const debouncedFetchOptions = debounce((query) => {
-    const findQuery = options.find(item => item.nameStr == query);
+    const findQuery = options.find((item) => item.nameStr == query);
     console.log("query:", query);
     console.log("findQuery:", findQuery);
     if (findQuery == undefined) {
@@ -63,13 +63,13 @@ export default function SelectProduct(props) {
 
   useEffect(() => {
     if (props.currentProduct) {
-      console.log("currentProduct:", props.currentProduct)
+      console.log("currentProduct:", props.currentProduct);
       fetchFirstCall(props.currentProduct).then((items) => {
         setOptions(items);
-        setSelectedValue(items.find((item) => item.id == props.currentProduct))
+        setSelectedValue(items.find((item) => item.id == props.currentProduct));
       });
     }
-  }, [props.currentProduct])
+  }, [props.currentProduct]);
 
   useEffect(() => {
     switch (inputValue.toUpperCase()) {
@@ -99,7 +99,14 @@ export default function SelectProduct(props) {
         open={open}
         onOpen={() => setOpen(true)}
         onClose={() => setOpen(false)}
-        getOptionLabel={(option) => option.nameStr || ""} // Adjust based on your data
+        // getOptionLabel={(option) => option.nameStr || ""} // Adjust based on your data
+        renderOption={(props, option) => {
+          return (
+            <li {...props} key={option.id}>
+              {option.name}
+            </li>
+          );
+        }}
         options={options && options?.status != 404 ? options : []}
         onInputChange={(event, newInputValue) => {
           setInputValue(newInputValue);

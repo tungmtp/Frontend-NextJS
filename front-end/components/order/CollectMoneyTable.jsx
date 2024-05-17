@@ -14,38 +14,21 @@ import Link from "next/link";
 import Divider from "@mui/material/Divider";
 import ProductAddDialog from "../dialog/productDialog/ProductAddDialog";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import dayjs from "dayjs";
 
 const columns = [
   { field: "id", headerName: "id", width: 70 },
   { field: "index", headerName: "STT", width: 30 },
   {
-    field: "itemName",
-    headerName: "Sản phẩm",
-    width: 380,
-    renderCell: (params) => {
-      return (
-        <Link
-          href=""
-          key={params.row.id}
-          sx={{
-            textOverflow: "ellipsis",
-            overflow: "hidden",
-            cursor: "pointer",
-            ":hover": " underline",
-          }}
-          // onClick={() => {
-          //   setSelectedDataGrid(params.row);
-          // }}
-        >
-          {params.row.itemName}
-        </Link>
-      );
-    },
+    field: "ngayThu",
+    headerName: "Ngày thu",
+    type: "date",
+    width: 180,
+    valueFormatter: (params) => dayjs(params?.value).format("DD/MM/YYYY"),
   },
-  { field: "quality", headerName: "CL", width: 50 },
-  { field: "quantity", headerName: "Số lượng", width: 300 },
-  { field: "price", headerName: "Giá bán", width: 100, type: "number" },
-  { field: "total", headerName: "Thành tiền", width: 150, type: "number" },
+  { field: "noiDung", headerName: "Nội dung", width: 450 },
+  { field: "soTien", headerName: "Số tiền", width: 150, type: "number" },
+  { field: "quy", headerName: "Quỹ", width: 250 },
 ];
 
 // Define the data for the DataGrid
@@ -53,23 +36,23 @@ const rows = [
   {
     id: 1,
     index: 1,
-    itemName: "	DG2-9-STD.TĐ-X8.V10.8211.AL3.3D.S.NEWSKY",
-    quality: 1,
+    ngayThu: "2024-05-12",
+    noiDung: "Anh B nộp công nợ của KHÁCH LẺ LA VTB = 22.000.000đ",
+    soTien: 639928,
     quantity: "96 hộp 147 1208*123*12 = 199.70 m2",
-    price: 275400,
-    total: 54996525,
+    quy: "LAN ANH VTB 102870409761",
   },
   {
     id: 2,
     index: 2,
-    itemName: "PS2-9-STD.TĐ-X8.V10.8211.AL3.3D.S.NEWSKY",
-    quality: 1,
-    quantity: "2 tấm PS 1208*123*12mm = 0.30 m2",
-    price: 275400,
-    total: 81840,
+    ngayThu: "2024-05-12",
+    noiDung: "Anh C nộp công nợ của KHÁCH LẺ LA VTB = 22.000.000đ",
+    soTien: 639928,
+    quantity: "96 hộp 147 1208*123*12 = 199.70 m2",
+    quy: "LAN ANH VTB 102870409761",
   },
 ];
-export default function OrderDetailTable() {
+export default function CollectMoneyTable() {
   const [openAddProduct, setOpenAddProduct] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -99,7 +82,7 @@ export default function OrderDetailTable() {
           endIcon={<KeyboardArrowDownIcon />}
           variant="contained"
         >
-          Đặt hàng
+          Thu tiền
         </Button>
         <Menu
           id="basic-menu"
@@ -110,43 +93,36 @@ export default function OrderDetailTable() {
             "aria-labelledby": "basic-button",
           }}
         >
-          <MenuItem
-            style={{ color: "black", textDecoration: "none" }}
-            onClick={handleOpenAddproduct}
-          >
-            Thêm sản phẩm
-          </MenuItem>
-          <ProductAddDialog
-            open={openAddProduct}
-            handleCloseAddproduct={handleCloseAddproduct}
-          />
           <Link
             href={"/produce/addSupplyRequests"}
             style={{ color: "black", textDecoration: "none" }}
           >
-            <MenuItem> Lệnh cung ứng</MenuItem>
+            <MenuItem> Thu tiền mặt</MenuItem>
           </Link>
           <Link
             href={"/business/addOrderDelivery"}
             style={{ color: "black", textDecoration: "none" }}
           >
-            <MenuItem onClick={handleClose}>Lệnh giao hàng</MenuItem>
+            <MenuItem onClick={handleClose}>Thu chuyển khoản</MenuItem>
           </Link>
-          <Divider variant="middle" />
-          <Link
-            href={"/business/deliveryProcess"}
-            style={{ color: "black", textDecoration: "none" }}
-          >
-            <MenuItem onClick={handleClose}>Quá trình giao hàng</MenuItem>
-          </Link>
-          <Divider variant="middle" />
-          <MenuItem onClick={handleClose}>Nhật kí sản xuất</MenuItem>
         </Menu>
       </Box>
       <DataGrid
         rows={rows}
         columns={columns}
         autoHeight
+        getRowHeight={() => "auto"}
+        sx={{
+          "&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell": {
+            py: 1,
+          },
+          "&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell": {
+            py: "15px",
+          },
+          "&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell": {
+            py: "22px",
+          },
+        }}
         initialState={{
           columns: {
             columnVisibilityModel: {

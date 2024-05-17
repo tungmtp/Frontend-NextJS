@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import SelectProduct from "../select/SelectProduct";
 import {
   Autocomplete,
@@ -10,36 +10,58 @@ import {
   TextField,
 } from "@mui/material";
 import { getData } from "@/hook/Hook";
+import SelectQuality from "../select/SelectQuality";
+import SelectNewsky from "../select/SelectNewsky";
+import { idID } from "@mui/material/locale";
+import SelectMeasCate from "../select/SelectMeasCate";
 
-const quality = {
-  1: "Loại 1",
-  2: "Loại 2",
-  3: "Loại 3",
-};
-const getQualityName = (selectedQuality) => {
-  return quality[selectedQuality];
-};
-
-export default function OrderDetail() {
-  const [selectedOrderDetail, setSelectedOrderDetail] = useState({});
-  const [measurementData, setMeasurementData] = useState([]);
+export default function OrderDetail(Props) {
+  const [selectedOrderDetail, setSelectedOrderDetail] = useState({
+    curency: "",
+    importTax: "",
+    measID: "",
+    orderID: "",
+    price: 0,
+    productID: "",
+    quantity: 0,
+    quality: 1,
+    rate: 0,
+  });
+  // const [measurementData, setMeasurementData] = useState([]);
+  const [seLectedMeasurement, setSeLectedMeasurement] = useState("");
+  const style = { marginTop: 2, width: "640px", marginLeft: 5 };
+  const style1 = { marginTop: 2, width: "301px", marginLeft: 5 };
+  // console.log(selectedOrderDetail);
   useEffect(() => {
-    const getMeasurementData = async () => {
-      try {
-        const result = await getData("/product-service/Measurement");
-        const resultWithIndex = result.map((row, index) => ({
-          ...row,
-          index: index + 1,
-          label: row.measName,
-        }));
-        setMeasurementData(resultWithIndex);
-      } catch (err) {
-        console.error("Error fetching data:", err);
-      }
-    };
-    getMeasurementData();
-    console.log("rendering again");
+    Props.setOrderDetail(selectedOrderDetail);
+  }, [selectedOrderDetail]);
+  const fetchMeasurementByProductID = useCallback(async (id) => {
+    try {
+      const response = await getData(
+        `/product-service/product/oneForSelect/mayBeSell/${id}`
+      );
+      setSeLectedMeasurement(response[0]);
+      const updatedSelectedOrderDetail = { ...selectedOrderDetail };
+      updatedSelectedOrderDetail.productID = id;
+      updatedSelectedOrderDetail.measID = response[0].measID;
+      setSelectedOrderDetail(updatedSelectedOrderDetail);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
   }, []);
+
+  const memoizedFetchMeasurementByProductID = useMemo(
+    () => fetchMeasurementByProductID,
+    [fetchMeasurementByProductID]
+  );
+
+  const calculateQualityRate = (itemQuanlity, rateInRoot) => {
+    if (rateInRoot == 0) {
+      return itemQuanlity;
+    } else {
+      return rateInRoot * itemQuanlity;
+    }
+  };
   return (
     <Box
       sx={{
@@ -48,8 +70,35 @@ export default function OrderDetail() {
         flexWrap: "wrap",
       }}
     >
-      <Box sx={{ marginTop: 2, marginLeft: 5 }}>
-        <SelectProduct />
+      <Box>
+        {/* <SelectProduct
+          lblinput="Sản phẩm cần tạo đơn hàng"
+          emitParent={(id) => {
+            const updatedSelectedOrderDetail = {
+              ...selectedOrderDetail, // Copy existing attributes
+              ProductID: id, // Set or update the ProductID attribute
+            };
+            setSelectedOrderDetail(updatedSelectedOrderDetail);
+            memoizedFetchMeasurementByProductID(id);
+          }}
+          currentProduct={selectedOrderDetail.productID}
+        /> */}
+        <SelectNewsky
+          lblinput="Sản phẩm"
+          emitParent={(id) => {
+            // console.log("Selected Product: ", id);
+            // const updatedSelectedOrderDetail = {
+            //   ...selectedOrderDetail, // Copy existing attributes
+            //   productID: id, // Set or update the ProductID attribute
+            // };
+            // setSelectedOrderDetail(updatedSelectedOrderDetail);
+            memoizedFetchMeasurementByProductID(id);
+          }}
+          byNameStr="/product-service/product/byNameStr/mayBeSell"
+          firstCall="/product-service/product/firstCall/mayBeSell"
+          currentItemLink="/product-service/product/oneForSelect"
+          style={style}
+        />
       </Box>
 
       {/* <FormControl
@@ -76,48 +125,70 @@ export default function OrderDetail() {
         </Select>
 
       </FormControl> */}
-
+      <SelectQuality
+        getValue={(quality) => {
+          const updatedSelectedOrderDetail = {
+            ...selectedOrderDetail, // Copy existing attributes
+            quality: quality, // Set or update the ProductID attribute
+          };
+          setSelectedOrderDetail(updatedSelectedOrderDetail);
+        }}
+        currentQuality={selectedOrderDetail.quality}
+      />
       <TextField
         id=""
         label="Sản lượng bán ra"
         size="small"
+        type="number"
         sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
-        //   value={selectedDataGrid?.comment}
-        // onChange={(event) => {
-        //   const updatedSelectedDataGrid = { ...selectedDataGrid };
-        //   updatedSelectedDataGrid.comment = event.target.value;
-        //   console.log(event.target.value);
-        //   setSelectedDataGrid(updatedSelectedDataGrid);
-        // }}
+        value={selectedOrderDetail?.quantity}
+        onChange={(event) => {
+          // console.log(seLectedMeasurement.rateInRoot);
+          const updatedSelectedOrderDetail = { ...selectedOrderDetail };
+          updatedSelectedOrderDetail.quantity = Number(event.target.value);
+          if (seLectedMeasurement.rateInRoot !== undefined) {
+            updatedSelectedOrderDetail.rate = Number(
+              calculateQualityRate(
+                event.target.value,
+                seLectedMeasurement.rateInRoot
+              )
+            );
+          }
+          setSelectedOrderDetail(updatedSelectedOrderDetail);
+        }}
       />
-      <Autocomplete
-        disabled
+
+      {/* <Autocomplete
         size="small"
         disablePortal
         id=""
-        options={measurementData}
+        getOptionLabel={(option) => option.measName || ""}
+        options={[seLectedMeasurement]}
         sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
         renderInput={(params) => <TextField {...params} label="DVT gốc" />}
-        // value={
-        //   measurementData.length > 0 &&
-        //   measurementData.find(
-        //     (measurement) => measurement.id === selectedDataGrid.partnersID
-        //   )
-        //     ? partnerData.find(
-        //         (partner) => partner.id === selectedDataGrid.partnersID
-        //       )
-        //     : ""
-        // }
-        // onChange={(event, value) => {
-        //   if (value) {
-        //     const updatedSelectedDataGrid = { ...selectedDataGrid };
-        //     updatedSelectedDataGrid.partnersID = value.id;
-        //     setSelectedDataGrid(updatedSelectedDataGrid);
-        //   }
-        // }}
-        //   onChange={handleOnChange}
+        value={seLectedMeasurement}
+        onChange={(event, value) => {
+          if (value) {
+            const updatedSelectedOrderDetail = { ...selectedOrderDetail };
+            updatedSelectedOrderDetail.measID = value.id;
+            setSelectedOrderDetail(updatedSelectedOrderDetail);
+          }
+        }}
+      /> */}
+      <SelectNewsky
+        lblinput="Đơn vị tính"
+        emitParent={(id) => {
+          // console.log("Selected Measurement: ", id);
+          const updatedSelectedOrderDetail = { ...selectedOrderDetail };
+          updatedSelectedOrderDetail.measID = id;
+          setSelectedOrderDetail(updatedSelectedOrderDetail);
+        }}
+        currentItem={seLectedMeasurement?.measID}
+        byNameStr="/product-service/Measurement/byNameStr"
+        firstCall="/product-service/Measurement/firstCall"
+        currentItemLink="/product-service/Measurement/oneForSelect"
+        style={style1}
       />
-
       {/* <Autocomplete
         disabled
         disablePortal
@@ -148,32 +219,36 @@ export default function OrderDetail() {
       //   }
       // }}
       /> */}
-
+      {/* <SelectMeasCate
+        getValue={(quality) => {}}
+        currentQuality={selectedOrderDetail.quality}
+      /> */}
       <TextField
         id=""
         label="SL quy đổi"
         size="small"
         sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
-        //   value={selectedDataGrid?.comment}
-        // onChange={(event) => {
-        //   const updatedSelectedDataGrid = { ...selectedDataGrid };
-        //   updatedSelectedDataGrid.comment = event.target.value;
-        //   console.log(event.target.value);
-        //   setSelectedDataGrid(updatedSelectedDataGrid);
-        // }}
+        value={selectedOrderDetail.rate}
+        onChange={(event) => {
+          const updatedSelectedOrderDetail = { ...selectedOrderDetail };
+          updatedSelectedOrderDetail.rate = Number(event.target.value);
+          // console.log(event.target.value);
+          setSelectedOrderDetail(updatedSelectedOrderDetail);
+        }}
       />
       <TextField
         id=""
         label="Giá bán"
         size="small"
         sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
-        //   value={selectedDataGrid?.comment}
-        // onChange={(event) => {
-        //   const updatedSelectedDataGrid = { ...selectedDataGrid };
-        //   updatedSelectedDataGrid.comment = event.target.value;
-        //   console.log(event.target.value);
-        //   setSelectedDataGrid(updatedSelectedDataGrid);
-        // }}
+        type="number"
+        value={selectedOrderDetail?.price}
+        onChange={(event) => {
+          const updatedSelectedOrderDetail = { ...selectedOrderDetail };
+          updatedSelectedOrderDetail.price = Number(event.target.value);
+          // console.log(event.target.value);
+          setSelectedOrderDetail(updatedSelectedOrderDetail);
+        }}
       />
     </Box>
   );

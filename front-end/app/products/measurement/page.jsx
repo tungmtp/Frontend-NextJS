@@ -66,7 +66,7 @@ export default function Measurement() {
           measurement.isRoot === true &&
           measurement.measCatId === selectedButtonGroup
       )
-    : measurementData;
+    : null;
   const calculateRateInRoot = (item) => {
     if (item) {
       switch (selectedButtonGroup) {

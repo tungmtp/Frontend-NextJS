@@ -36,7 +36,6 @@ export default function DetailProduct() {
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
 
-  // console.log(selectedDataGrid);
   // console.log(measurementData);
   useEffect(() => {
     const getClassPriceData = async () => {
@@ -86,8 +85,6 @@ export default function DetailProduct() {
       }
     };
     getClassPriceData();
-
-    console.log("rendering again");
   }, []);
 
   const columns = [
@@ -492,7 +489,7 @@ export default function DetailProduct() {
               ? segmmentData.find(
                   (segmment) => segmment.id === selectedDataGrid.segmentID
                 )
-              : ""
+              : null
           }
           onChange={(event, value) => {
             if (value && value != "None") {
@@ -537,7 +534,7 @@ export default function DetailProduct() {
                   (classPrice) =>
                     classPrice.id === selectedDataGrid.classPriceID
                 )
-              : ""
+              : null
           }
           onChange={(event, value) => {
             if (value) {
@@ -630,7 +627,7 @@ export default function DetailProduct() {
           variant="outlined"
           label="Ghi chú"
           sx={{ marginTop: 2, marginLeft: 5, width: "91%" }}
-          value={selectedDataGrid?.comment}
+          value={selectedDataGrid?.comment ? selectedDataGrid.comment : ""}
           onChange={(event) => {
             const updatedSelectedDataGrid = { ...selectedDataGrid };
             updatedSelectedDataGrid.comment = event.target.value;

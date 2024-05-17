@@ -35,9 +35,9 @@ import dayjs from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import SelectProduct from "@/components/select/SelectProduct";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import OrderDetail from "@/components/orderDetail/OrderDetail";
+import SelectNewsky from "@/components/select/SelectNewsky";
 const calcType = {
   1: "Cung cấp vật tư",
   2: "Thi công lắp đặt",
@@ -48,19 +48,18 @@ const getcalcTypeName = (selectedcalcType) => {
 };
 
 export default function AddNewOrder(props) {
-  const [employeesData, setEmployeesData] = useState([]);
-  const [partnerData, setPartnerData] = useState([]);
   const [contactData, setContactData] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
   const date = new Date();
-  const currentDate = dayjs(date).format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
+  const currentDate = dayjs(date).format("YYYY-MM-DD");
 
-  const [selectedDataGrid, setSelectedDataGrid] = useState({
+  const [selectedOrder, setSelectedOrder] = useState({
     orderType: 0,
     orderDate: currentDate,
     endDate: currentDate,
     comment: "",
     partnersID: "",
+    //Phần project chưa làm
     projectID: "",
     contactID: "",
     staffControl: "",
@@ -74,17 +73,19 @@ export default function AddNewOrder(props) {
   });
 
   const [openConfirm, setOpenConfirm] = React.useState(false);
-  const [productRelationList, setProductRelationList] = React.useState([]);
+  const [orderDetail, setOrderDetail] = React.useState([]);
+  const style = { marginTop: 2, width: "301px", marginLeft: 5 };
+  // console.log(orderDetail);
+  console.log("selectedOrder: ", selectedOrder);
+  console.log("orderDetail: ", orderDetail);
 
-  // console.log(productRelationList);
-  console.log(selectedDataGrid);
   // console.log(contactData);
 
   useEffect(() => {
     const getClassPriceData = async () => {
       try {
         const result = await getData("/product-service/classPrice");
-        const result2 = await getData("/business-service/partner");
+
         const result3 = await getData("/business-service/contact");
         const result4 = await getData("/employee-service/employee");
         // const changeFieldName = result.map((item) => {
@@ -99,14 +100,6 @@ export default function AddNewOrder(props) {
         // setEmployeesData(changeFieldName);
 
         // Đổi tên trường nameStr thành label để phù hợp dữ liệu đầu vào autocomplete
-        const changeFieldName2 = result2.map((item) => {
-          return {
-            ...item,
-            label: item.nameStr, // Tạo trường label từ trường nameStr
-          };
-        });
-
-        setPartnerData(changeFieldName2);
 
         const changeFieldName3 = result3.map((item) => {
           return {
@@ -119,7 +112,7 @@ export default function AddNewOrder(props) {
         const changeFieldName4 = result4.map((item) => {
           return {
             ...item,
-            label: `${item.firstName} ${item.lastName} `, // Tạo trường label từ trường segmentName
+            label: `${item.firstName} ${item.lastName}`, // Tạo trường label từ trường segmentName
           };
         });
 
@@ -132,10 +125,13 @@ export default function AddNewOrder(props) {
 
     console.log("rendering again");
   }, []);
-
-  const getProductRelationList = (list) => {
+  console.log(employeeData);
+  console.log(
+    employeeData.find((employee) => employee.label === "Emily Johnson")
+  );
+  const getorderDetail = (list) => {
     if (list.length > 0) {
-      setProductRelationList(list);
+      setOrderDetail(list);
     }
   };
   const handleOpenConfirm = (event) => {
@@ -148,7 +144,7 @@ export default function AddNewOrder(props) {
   };
   function FormConfirmDialog(open) {
     // const getClassesName = classesData.find(
-    //   (classes) => classes.id === selectedDataGrid.classId
+    //   (classes) => classes.id === selectedOrder.classId
     // );
 
     return (
@@ -161,49 +157,44 @@ export default function AddNewOrder(props) {
             onSubmit: (event) => {
               event.preventDefault();
 
-              const postProduct = async () => {
+              const posOrder = async () => {
                 try {
                   const respone = await postData(
-                    "/product-service/product",
-                    selectedDataGrid
+                    "/business-service/orders",
+                    selectedOrder
                   );
                   console.log(respone);
-                  productRelationList.map((productRelation) => {
-                    productRelation.productId = respone.id;
-                    delete productRelation.id;
-                    const postAttribute = async () => {
-                      try {
-                        const result = await postData(
-                          "/product-service/productRelation",
-                          productRelation
-                        );
-                      } catch (err) {
-                        console.error("Error fetching data:", err);
-                      }
-                    };
-                    postAttribute();
-                    console.log(productRelation);
-                  });
+
+                  orderDetail.orderID = respone.id;
+
+                  const postOrderDetail = async () => {
+                    try {
+                      const result = await postData(
+                        "/business-service/orderDetail",
+                        orderDetail
+                      );
+                    } catch (err) {
+                      console.error("Error fetching data:", err);
+                    }
+                  };
+                  postOrderDetail();
+                  console.log(orderDetail);
                 } catch (err) {
                   console.error("Error fetching data:", err);
                 }
               };
 
-              postProduct();
+              posOrder();
 
               handleCloseConfirm(event);
-              alert("Thêm thành công");
-              props.handleCloseAddproduct();
             },
           }}
         >
           <DialogTitle>
-            Thêm:{" "}
-            <span style={{ fontWeight: "bold" }}>
-              {selectedDataGrid.nameStr}
-            </span>
+            Thêm đơn hàng{" "}
+            <span style={{ fontWeight: "bold" }}>{selectedOrder.nameStr}</span>
           </DialogTitle>
-          <DialogContent>Bạn chắc chắn muốn thêm sản phẩm này?</DialogContent>
+          <DialogContent>Bạn chắc chắn muốn thêm đơn hàng này?</DialogContent>
           <DialogActions>
             <Button onClick={handleCloseConfirm}>Cancel</Button>
             <Button type="submit">Confirm</Button>
@@ -251,14 +242,13 @@ export default function AddNewOrder(props) {
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 label="Ngày order"
-                value={dayjs(selectedDataGrid?.orderDate)}
+                value={dayjs(selectedOrder?.orderDate)}
                 onChange={(newValue) => {
-                  const updatedSelectedDataGrid = { ...selectedDataGrid };
+                  const updatedSelectedOrder = { ...selectedOrder };
                   console.log(newValue);
-                  updatedSelectedDataGrid.orderDate = newValue.format(
-                    "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
-                  );
-                  setSelectedDataGrid(updatedSelectedDataGrid);
+                  updatedSelectedOrder.orderDate =
+                    newValue.format("YYYY-MM-DD");
+                  setSelectedOrder(updatedSelectedOrder);
                 }}
                 sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
               />
@@ -267,14 +257,12 @@ export default function AddNewOrder(props) {
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
               label="Ngày giao hàng lần đầu"
-              value={dayjs(selectedDataGrid?.endDate)}
+              value={dayjs(selectedOrder?.endDate)}
               onChange={(newValue) => {
-                const updatedSelectedDataGrid = { ...selectedDataGrid };
+                const updatedSelectedOrder = { ...selectedOrder };
                 console.log(newValue);
-                updatedSelectedDataGrid.endDate = newValue.format(
-                  "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
-                );
-                setSelectedDataGrid(updatedSelectedDataGrid);
+                updatedSelectedOrder.endDate = newValue.format("YYYY-MM-DD");
+                setSelectedOrder(updatedSelectedOrder);
               }}
               sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
             />
@@ -291,23 +279,23 @@ export default function AddNewOrder(props) {
             value={
               employeeData.length > 0 &&
               employeeData.find(
-                (employee) => employee.id === selectedDataGrid.staffControl
+                (employee) => employee.label === selectedOrder.staffControl
               )
                 ? employeeData.find(
-                    (employee) => employee.id === selectedDataGrid.staffControl
+                    (employee) => employee.label === selectedOrder.staffControl
                   )
                 : null
             }
             onChange={(event, value) => {
               if (value) {
-                const updatedSelectedDataGrid = { ...selectedDataGrid };
-                updatedSelectedDataGrid.staffControl = value.id;
-                setSelectedDataGrid(updatedSelectedDataGrid);
+                const updatedSelectedOrder = { ...selectedOrder };
+                updatedSelectedOrder.staffControl = value.label;
+                setSelectedOrder(updatedSelectedOrder);
               }
             }}
             //   onChange={handleOnChange}
           />
-          <Autocomplete
+          {/* <Autocomplete
             size="small"
             disablePortal
             id=""
@@ -317,22 +305,36 @@ export default function AddNewOrder(props) {
             value={
               partnerData.length > 0 &&
               partnerData.find(
-                (partner) => partner.id === selectedDataGrid.partnersID
+                (partner) => partner.id === selectedOrder.partnersID
               )
                 ? partnerData.find(
-                    (partner) => partner.id === selectedDataGrid.partnersID
+                    (partner) => partner.id === selectedOrder.partnersID
                   )
                 : null
             }
             onChange={(event, value) => {
               if (value) {
-                const updatedSelectedDataGrid = { ...selectedDataGrid };
-                updatedSelectedDataGrid.partnersID = value.id;
-                setSelectedDataGrid(updatedSelectedDataGrid);
+                const updatedSelectedOrder = { ...selectedOrder };
+                updatedSelectedOrder.partnersID = value.id;
+                setSelectedOrder(updatedSelectedOrder);
               }
             }}
             //   onChange={handleOnChange}
+          /> */}
+
+          <SelectNewsky
+            lblinput="Đối tác"
+            emitParent={(id) => {
+              const updatedSelectedOrder = { ...selectedOrder };
+              updatedSelectedOrder.partnersID = id;
+              setSelectedOrder(updatedSelectedOrder);
+            }}
+            byNameStr="/business-service/partner/byNameStr"
+            firstCall="/business-service/partner/firstCall"
+            currentItemLink="/business-service/partner/oneForSelect"
+            style={style}
           />
+
           <Autocomplete
             disablePortal
             id=""
@@ -345,22 +347,22 @@ export default function AddNewOrder(props) {
             value={
               contactData.length > 0 &&
               contactData.find(
-                (contact) => contact.id === selectedDataGrid.contactID
+                (contact) => contact.id === selectedOrder.contactID
               )
                 ? contactData.find(
-                    (contact) => contact.id === selectedDataGrid.contactID
+                    (contact) => contact.id === selectedOrder.contactID
                   )
                 : null
             }
             onChange={(event, value) => {
               if (value && value != "None") {
-                const updatedSelectedDataGrid = { ...selectedDataGrid };
-                updatedSelectedDataGrid.contactID = value.id;
-                setSelectedDataGrid(updatedSelectedDataGrid);
+                const updatedSelectedOrder = { ...selectedOrder };
+                updatedSelectedOrder.contactID = value.id;
+                setSelectedOrder(updatedSelectedOrder);
               } else {
-                const updatedSelectedDataGrid = { ...selectedDataGrid };
-                updatedSelectedDataGrid.contactID = "";
-                setSelectedDataGrid(updatedSelectedDataGrid);
+                const updatedSelectedOrder = { ...selectedOrder };
+                updatedSelectedOrder.contactID = "";
+                setSelectedOrder(updatedSelectedOrder);
               }
             }}
             //   onChange={handleOnChange}
@@ -375,12 +377,12 @@ export default function AddNewOrder(props) {
               sx={{ width: "300px" }}
               labelId="partner-type-label"
               id="partner-type-select"
-              value={selectedDataGrid?.calcType}
+              value={selectedOrder?.calcType}
               label="Cách tính"
               onChange={(event) => {
-                const updatedSelectedDataGrid = { ...selectedDataGrid };
-                updatedSelectedDataGrid.calcType = Number(event.target.value);
-                setSelectedDataGrid(updatedSelectedDataGrid);
+                const updatedSelectedOrder = { ...selectedOrder };
+                updatedSelectedOrder.calcType = Number(event.target.value);
+                setSelectedOrder(updatedSelectedOrder);
               }}
             >
               {Object.keys(calcType).map((key) => (
@@ -395,19 +397,19 @@ export default function AddNewOrder(props) {
             label="Dự án"
             size="small"
             sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
-            value={selectedDataGrid?.comment}
+            value={selectedOrder?.comment}
             onChange={(event) => {
-              const updatedSelectedDataGrid = { ...selectedDataGrid };
-              updatedSelectedDataGrid.comment = event.target.value;
+              const updatedSelectedOrder = { ...selectedOrder };
+              updatedSelectedOrder.comment = event.target.value;
               console.log(event.target.value);
-              setSelectedDataGrid(updatedSelectedDataGrid);
+              setSelectedOrder(updatedSelectedOrder);
             }}
           />
           {/* <ProductAttribute
           title={"attName"}
           serviceURL={"/product-service/ProductAttribute"}
           status={"add"}
-          getProductRelationList={getProductRelationList}
+          getorderDetail={getorderDetail}
         /> */}
         </Box>
         <Box
@@ -429,7 +431,7 @@ export default function AddNewOrder(props) {
           >
             Chi tiết đơn hàng
           </Typography>
-          <OrderDetail />
+          <OrderDetail setOrderDetail={setOrderDetail} />
         </Box>
       </Box>
       <div

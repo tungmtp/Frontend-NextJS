@@ -101,17 +101,27 @@ export default function SelectNewsky(props) {
       debouncedFetchOptions.cancel();
     };
   }, [inputValue]);
-
   return (
     <div>
       <Autocomplete
         fullWidth
         size="small"
-        sx={{ width: "640px" }}
+        sx={
+          props?.style && typeof props?.style === "object"
+            ? props.style
+            : { width: "640px" }
+        }
         open={open}
         onOpen={() => setOpen(true)}
         onClose={() => setOpen(false)}
         getOptionLabel={(option) => option.nameStr || ""} // Adjust based on your data
+        renderOption={(props, option) => {
+          return (
+            <li {...props} key={option.id}>
+              {option.nameStr}
+            </li>
+          );
+        }}
         options={options && options?.status != 404 ? options : []}
         onInputChange={(event, newInputValue) => {
           setInputValue(newInputValue);

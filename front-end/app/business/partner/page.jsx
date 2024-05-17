@@ -197,7 +197,7 @@ export default function Partner() {
         >
           <DialogTitle>Thêm Đối tác</DialogTitle>
           <DialogContent>
-            <FormControl sx={{ margin: 2, width: "219px" }}>
+            <FormControl size="small" sx={{ margin: 2, width: "219px" }}>
               <InputLabel id="partner-type-label">Loại đối tác</InputLabel>
               <Select
                 required
@@ -375,7 +375,7 @@ export default function Partner() {
           <AddIcon /> Add New
         </Button>
         <FormAddDialog open={openAddDialog} />
-        <div style={{ height: "100%", flexGrow: 2 }}>
+        <div style={{ height: "73vh", flexGrow: 2 }}>
           <DataGrid
             onRowClick={handleRowClick}
             rows={partnerData}
