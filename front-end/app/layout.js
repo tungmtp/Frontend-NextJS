@@ -1,7 +1,5 @@
 "use client";
-import React, {
-  useEffect, useRef
-} from "react";
+import React, { useEffect, useRef } from "react";
 import "./globals.css";
 import ReduxProvider from "@/redux/ReduxProvider";
 import TopBar from "@/components/topbar/Topbar";
@@ -11,6 +9,10 @@ import { styled } from "@mui/material/styles";
 import { usePathname } from "next/navigation";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { SnackbarProvider } from "notistack";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import "dayjs/locale/en-gb";
+
 // import { useRouter } from "next/navigation";
 
 // export const metadata = {
@@ -112,32 +114,37 @@ export default function RootLayout({ children }) {
             anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
           >
             <ThemeProvider theme={theme}>
-              <div style={{ display: "flex", flexDirection: "column" }}>
-                {" "}
-                {pathSplit != "login" && (
-                  <TopBar
-                    open={open}
-                    handleDrawerOpen={handleDrawerOpen}
-                    handleDrawerClose={handleDrawerClose}
-                  />
-                )}
-                <div style={{ display: "flex" }}>
+              <LocalizationProvider
+                dateAdapter={AdapterDayjs}
+                adapterLocale="en-gb"
+              >
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  {" "}
                   {pathSplit != "login" && (
-                    <SideBar
+                    <TopBar
                       open={open}
                       handleDrawerOpen={handleDrawerOpen}
                       handleDrawerClose={handleDrawerClose}
                     />
                   )}
-                  <Box
-                    component="main"
-                    sx={{ flexGrow: 1, p: 3, height: "664px" }}
-                  >
-                    <DrawerHeader />
-                    {children}
-                  </Box>
+                  <div style={{ display: "flex" }}>
+                    {pathSplit != "login" && (
+                      <SideBar
+                        open={open}
+                        handleDrawerOpen={handleDrawerOpen}
+                        handleDrawerClose={handleDrawerClose}
+                      />
+                    )}
+                    <Box
+                      component="main"
+                      sx={{ flexGrow: 1, p: 3, height: "664px" }}
+                    >
+                      <DrawerHeader />
+                      {children}
+                    </Box>
+                  </div>
                 </div>
-              </div>
+              </LocalizationProvider>
             </ThemeProvider>
           </SnackbarProvider>
         </ReduxProvider>

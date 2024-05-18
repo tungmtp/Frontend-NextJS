@@ -38,7 +38,6 @@ import Checkbox from "@mui/material/Checkbox";
 import { format } from "date-fns";
 import Autocomplete from "@mui/material/Autocomplete";
 import dayjs from "dayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import ProductAttribute from "../../productAttribute/ProductAttribute";

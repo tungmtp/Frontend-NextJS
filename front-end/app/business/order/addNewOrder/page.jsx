@@ -1,43 +1,29 @@
 "use client";
-import {
-  selectCategoryProducts,
-  setSelectedCategory,
-  setSelectedProduct,
-} from "@/redux/categoryProductRedux";
+
 import Paper from "@mui/material/Paper";
-import Grid from "@mui/material/Grid";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import Box from "@mui/material/Box";
-import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Button from "@mui/material/Button";
-import ButtonGroup from "@mui/material/ButtonGroup";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import Fab from "@mui/material/Fab";
 import Link from "next/link";
 import TextField from "@mui/material/TextField";
-import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
-import AddIcon from "@mui/icons-material/Add";
-import FolderOpenTwoToneIcon from "@mui/icons-material/FolderOpenTwoTone";
-
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import { deleteData, getData, postData, putData } from "@/hook/Hook";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import { format } from "date-fns";
+import { getData, postData } from "@/hook/Hook";
 import Autocomplete from "@mui/material/Autocomplete";
 import dayjs from "dayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import OrderDetail from "@/components/orderDetail/OrderDetail";
 import SelectNewsky from "@/components/select/SelectNewsky";
+import { useRouter } from "next/navigation";
+import { NotifySnackbar } from "@/components/general/notifySnackbar/NotifySnackbar";
+import { useSnackbar } from "notistack";
+import Cookies from "js-cookie";
+import "dayjs/locale/en-gb";
+const username = Cookies.get("username");
 const calcType = {
   1: "Cung cấp vật tư",
   2: "Thi công lắp đặt",
@@ -64,10 +50,9 @@ export default function AddNewOrder(props) {
     contactID: "",
     staffControl: "",
     complete: false,
-    createdBy: "",
+    createdBy: username,
     createdOn: currentDate,
     calcType: 1,
-    lotNo: "",
     projectitemID: "",
     editBy: "",
   });
@@ -75,11 +60,10 @@ export default function AddNewOrder(props) {
   const [openConfirm, setOpenConfirm] = React.useState(false);
   const [orderDetail, setOrderDetail] = React.useState([]);
   const style = { marginTop: 2, width: "301px", marginLeft: 5 };
-  // console.log(orderDetail);
-  console.log("selectedOrder: ", selectedOrder);
-  console.log("orderDetail: ", orderDetail);
-
-  // console.log(contactData);
+  const router = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
+  // console.log("selectedOrder: ", selectedOrder);
+  // console.log("orderDetail: ", orderDetail);
 
   useEffect(() => {
     const getClassPriceData = async () => {
@@ -122,13 +106,8 @@ export default function AddNewOrder(props) {
       }
     };
     getClassPriceData();
-
-    console.log("rendering again");
   }, []);
-  console.log(employeeData);
-  console.log(
-    employeeData.find((employee) => employee.label === "Emily Johnson")
-  );
+
   const getorderDetail = (list) => {
     if (list.length > 0) {
       setOrderDetail(list);
@@ -163,10 +142,7 @@ export default function AddNewOrder(props) {
                     "/business-service/orders",
                     selectedOrder
                   );
-                  console.log(respone);
-
                   orderDetail.orderID = respone.id;
-
                   const postOrderDetail = async () => {
                     try {
                       const result = await postData(
@@ -178,9 +154,19 @@ export default function AddNewOrder(props) {
                     }
                   };
                   postOrderDetail();
-                  console.log(orderDetail);
+                  NotifySnackbar(
+                    enqueueSnackbar,
+                    "Thêm đơn hàng thành công",
+                    "success"
+                  );
+                  router.push("/business/order");
                 } catch (err) {
                   console.error("Error fetching data:", err);
+                  NotifySnackbar(
+                    enqueueSnackbar,
+                    "Lỗi mạng! Vui lòng kiểm tra đường truyền",
+                    "error"
+                  );
                 }
               };
 
@@ -209,7 +195,7 @@ export default function AddNewOrder(props) {
       elevation={6}
       sx={{
         width: "100%",
-        height: "100%",
+        height: "84vh",
         overflow: "auto",
       }}
     >
@@ -227,7 +213,6 @@ export default function AddNewOrder(props) {
         sx={{
           width: "100%",
           height: "100%",
-          overflow: "auto",
         }}
         // onSubmit={handleOpenConfirm}
       >
@@ -239,34 +224,29 @@ export default function AddNewOrder(props) {
           }}
         >
           <FormControl size="small">
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                label="Ngày order"
-                value={dayjs(selectedOrder?.orderDate)}
-                onChange={(newValue) => {
-                  const updatedSelectedOrder = { ...selectedOrder };
-                  console.log(newValue);
-                  updatedSelectedOrder.orderDate =
-                    newValue.format("YYYY-MM-DD");
-                  setSelectedOrder(updatedSelectedOrder);
-                }}
-                sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
-              />
-            </LocalizationProvider>
-          </FormControl>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
-              label="Ngày giao hàng lần đầu"
-              value={dayjs(selectedOrder?.endDate)}
+              label="Ngày order"
+              value={dayjs(selectedOrder?.orderDate)}
               onChange={(newValue) => {
                 const updatedSelectedOrder = { ...selectedOrder };
-                console.log(newValue);
-                updatedSelectedOrder.endDate = newValue.format("YYYY-MM-DD");
+                updatedSelectedOrder.orderDate = newValue.format("YYYY-MM-DD");
                 setSelectedOrder(updatedSelectedOrder);
               }}
               sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
             />
-          </LocalizationProvider>
+          </FormControl>
+
+          <DatePicker
+            label="Ngày giao hàng lần đầu"
+            value={dayjs(selectedOrder?.endDate)}
+            onChange={(newValue) => {
+              const updatedSelectedOrder = { ...selectedOrder };
+              updatedSelectedOrder.endDate = newValue.format("YYYY-MM-DD");
+              setSelectedOrder(updatedSelectedOrder);
+            }}
+            sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
+          />
+
           <Autocomplete
             size="small"
             disablePortal
@@ -401,7 +381,6 @@ export default function AddNewOrder(props) {
             onChange={(event) => {
               const updatedSelectedOrder = { ...selectedOrder };
               updatedSelectedOrder.comment = event.target.value;
-              console.log(event.target.value);
               setSelectedOrder(updatedSelectedOrder);
             }}
           />

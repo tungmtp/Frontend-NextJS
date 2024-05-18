@@ -32,8 +32,6 @@ import Checkbox from "@mui/material/Checkbox";
 import { format } from "date-fns";
 import Autocomplete from "@mui/material/Autocomplete";
 import dayjs from "dayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { FormControl, IconButton } from "@mui/material";
 export default function Contact() {
@@ -287,26 +285,24 @@ export default function Contact() {
               label="Chức vụ"
               sx={{ margin: 2 }}
             />
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                name="dateEffected"
-                label="Từ ngày"
-                sx={{ margin: 2, width: "225px" }}
-                onChange={(newValue) => {
-                  selectedDateFrom = newValue.format("YYYY-MM-DD");
-                }}
-              />
-            </LocalizationProvider>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                name="dateEffected"
-                label="Đến ngày"
-                sx={{ margin: 2, width: "225px" }}
-                onChange={(newValue) => {
-                  selectedDateTo = newValue.format("YYYY-MM-DD");
-                }}
-              />
-            </LocalizationProvider>
+
+            <DatePicker
+              name="dateEffected"
+              label="Từ ngày"
+              sx={{ margin: 2, width: "225px" }}
+              onChange={(newValue) => {
+                selectedDateFrom = newValue.format("YYYY-MM-DD");
+              }}
+            />
+
+            <DatePicker
+              name="dateEffected"
+              label="Đến ngày"
+              sx={{ margin: 2, width: "225px" }}
+              onChange={(newValue) => {
+                selectedDateTo = newValue.format("YYYY-MM-DD");
+              }}
+            />
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose}>Cancel</Button>
@@ -400,26 +396,24 @@ export default function Contact() {
               label="Chức vụ"
               sx={{ margin: 2 }}
             />
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                name="dateEffected"
-                label="Từ ngày"
-                sx={{ margin: 2, width: "225px" }}
-                onChange={(newValue) => {
-                  selectedDateFrom = newValue.format("YYYY-MM-DD");
-                }}
-              />
-            </LocalizationProvider>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                name="dateEffected"
-                label="Đến ngày"
-                sx={{ margin: 2, width: "225px" }}
-                onChange={(newValue) => {
-                  selectedDateTo = newValue.format("YYYY-MM-DD");
-                }}
-              />
-            </LocalizationProvider>
+
+            <DatePicker
+              name="dateEffected"
+              label="Từ ngày"
+              sx={{ margin: 2, width: "225px" }}
+              onChange={(newValue) => {
+                selectedDateFrom = newValue.format("YYYY-MM-DD");
+              }}
+            />
+
+            <DatePicker
+              name="dateEffected"
+              label="Đến ngày"
+              sx={{ margin: 2, width: "225px" }}
+              onChange={(newValue) => {
+                selectedDateTo = newValue.format("YYYY-MM-DD");
+              }}
+            />
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseAddContactRelation}>Cancel</Button>
@@ -713,39 +707,35 @@ export default function Contact() {
               />
             </Box>
             <FormControl size="small">
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                {selectedRelData && (
-                  <DatePicker
-                    label="Từ ngày"
-                    value={dayjs(selectedRelData?.from)}
-                    onChange={(newValue) => {
-                      const updatedSelectedRelData = { ...selectedRelData };
-                      console.log(newValue);
-                      updatedSelectedRelData.from =
-                        newValue.format("YYYY-MM-DD");
-                      setSelectedRelData(updatedSelectedRelData);
-                    }}
-                    sx={{ marginX: 5 }}
-                  />
-                )}
-              </LocalizationProvider>
-            </FormControl>
-
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
               {selectedRelData && (
                 <DatePicker
-                  label="Đến ngày"
-                  value={dayjs(selectedRelData.to)}
+                  label="Từ ngày"
+                  value={dayjs(selectedRelData?.from)}
                   onChange={(newValue) => {
                     const updatedSelectedRelData = { ...selectedRelData };
                     console.log(newValue);
-                    updatedSelectedRelData.to = newValue.format("YYYY-MM-DD");
+                    updatedSelectedRelData.from = newValue.format("YYYY-MM-DD");
                     setSelectedRelData(updatedSelectedRelData);
                   }}
-                  sx={{ marginTop: 2, marginX: 5 }}
+                  sx={{ marginX: 5 }}
                 />
               )}
-            </LocalizationProvider>
+            </FormControl>
+
+            {selectedRelData && (
+              <DatePicker
+                label="Đến ngày"
+                value={dayjs(selectedRelData.to)}
+                onChange={(newValue) => {
+                  const updatedSelectedRelData = { ...selectedRelData };
+                  console.log(newValue);
+                  updatedSelectedRelData.to = newValue.format("YYYY-MM-DD");
+                  setSelectedRelData(updatedSelectedRelData);
+                }}
+                sx={{ marginTop: 2, marginX: 5 }}
+              />
+            )}
+
             {selectedRelData && (
               <TextField
                 id="email"

@@ -23,8 +23,6 @@ import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
 import FolderOpenTwoToneIcon from "@mui/icons-material/FolderOpenTwoTone";
 import dayjs from "dayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
@@ -67,7 +65,7 @@ export default function Order() {
   const [openAddDialog, setOpenAddDialog] = React.useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
   const [openFixDialog, setOpenFixDialog] = React.useState(false);
-  console.log(selectedDataGrid);
+  // console.log(selectedDataGrid);
   useEffect(() => {
     const getOrdersData = async () => {
       try {
@@ -91,7 +89,6 @@ export default function Order() {
       }
     };
     getOrdersData();
-    console.log("rendering again");
   }, [orderDate]);
 
   const columns = [
@@ -323,16 +320,15 @@ export default function Order() {
       }}
     >
       <div style={{ display: "flex", margin: "8px" }}>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePicker
-            label="Ngày Order"
-            value={dayjs(orderDate)}
-            onChange={(newValue) => {
-              setOrderDate(newValue.format("YYYY-MM-DD"));
-            }}
-            sx={{ width: "250px" }}
-          />
-        </LocalizationProvider>
+        <DatePicker
+          label="Ngày Order"
+          value={dayjs(orderDate)}
+          onChange={(newValue) => {
+            setOrderDate(newValue.format("YYYY-MM-DD"));
+          }}
+          sx={{ width: "250px" }}
+        />
+
         <Fab
           size="small"
           color="primary"
@@ -400,7 +396,7 @@ export default function Order() {
                 selectedOder={selectedDataGrid}
                 partnerData={partnerData}
               />
-              <OrderDetailTable />
+              <OrderDetailTable orderID={selectedDataGrid.id} />
               <CollectMoneyTable />
               <OrderPaymentTable />
             </>

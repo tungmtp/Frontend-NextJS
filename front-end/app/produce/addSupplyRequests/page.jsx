@@ -14,13 +14,13 @@ import {
   GridActionsCellItem,
   GridRowEditStopReasons,
 } from "@mui/x-data-grid";
-import dayjs from "dayjs";
 import { format } from "date-fns";
 import { Typography } from "@mui/material";
 import Link from "next/link";
 import { NotifySnackbar } from "@/components/general/notifySnackbar/NotifySnackbar";
 import { useSnackbar } from "notistack";
-
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
 const initialRows = [
   {
     id: 1,
@@ -124,10 +124,21 @@ export default function FullFeaturedCrudGrid() {
     {
       field: "ngayGiao",
       headerName: "Ngày giao",
-      type: "date",
       width: 180,
       editable: true,
       valueFormatter: (params) => dayjs(params?.value).format("DD/MM/YYYY"),
+      renderEditCell: (params) => (
+        <DatePicker
+          value={dayjs(params.value)}
+          onChange={(newValue) =>
+            params.api.setEditCellValue({
+              id: params.id,
+              field: params.field,
+              value: newValue.format("YYYY-MM-DD"),
+            })
+          }
+        />
+      ),
     },
     { field: "ghiChu", headerName: "Ghi chú", width: 300, editable: true },
     {

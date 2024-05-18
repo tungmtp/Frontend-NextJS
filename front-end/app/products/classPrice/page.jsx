@@ -31,8 +31,6 @@ import Checkbox from "@mui/material/Checkbox";
 import { format } from "date-fns";
 import Autocomplete from "@mui/material/Autocomplete";
 import dayjs from "dayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 export default function ClassPrice() {
@@ -250,18 +248,17 @@ export default function ClassPrice() {
                 selectedDefaultMeas = value.id;
               }}
             />
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                name="dateEffected"
-                label="Ngày áp dụng"
-                sx={{ margin: 2 }}
-                onChange={(newValue) => {
-                  selectedDateEffected = newValue.format(
-                    "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
-                  );
-                }}
-              />
-            </LocalizationProvider>
+
+            <DatePicker
+              name="dateEffected"
+              label="Ngày áp dụng"
+              sx={{ margin: 2 }}
+              onChange={(newValue) => {
+                selectedDateEffected = newValue.format(
+                  "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
+                );
+              }}
+            />
 
             <TextField
               name="price"
@@ -456,21 +453,20 @@ export default function ClassPrice() {
                 }}
                 //   onChange={handleOnChange}
               />
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  label="Ngày áp dụng"
-                  value={dayjs(selectedDataGrid?.dateEffected)}
-                  onChange={(newValue) => {
-                    const updatedSelectedDataGrid = { ...selectedDataGrid };
-                    console.log(newValue);
-                    updatedSelectedDataGrid.dateEffected = newValue.format(
-                      "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
-                    );
-                    setSelectedDataGrid(updatedSelectedDataGrid);
-                  }}
-                  sx={{ marginTop: 2, marginX: 5 }}
-                />
-              </LocalizationProvider>
+
+              <DatePicker
+                label="Ngày áp dụng"
+                value={dayjs(selectedDataGrid?.dateEffected)}
+                onChange={(newValue) => {
+                  const updatedSelectedDataGrid = { ...selectedDataGrid };
+                  console.log(newValue);
+                  updatedSelectedDataGrid.dateEffected = newValue.format(
+                    "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
+                  );
+                  setSelectedDataGrid(updatedSelectedDataGrid);
+                }}
+                sx={{ marginTop: 2, marginX: 5 }}
+              />
 
               <TextField
                 id="price"
