@@ -19,6 +19,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import ProductAttribute from "../productAttribute/ProductAttribute";
 import { NotifySnackbar } from "@/components/general/notifySnackbar/NotifySnackbar";
 import { useSnackbar } from "notistack";
+import { Grid } from "@mui/material";
 export default function DetailProduct() {
   const selectedProduct = useSelector(
     (state) => state.categoryProduct.selectedProduct
@@ -427,120 +428,137 @@ export default function DetailProduct() {
           flexWrap: "wrap",
         }}
       >
-        <TextField
-          id="nameStr"
-          variant="outlined"
-          label="Tên sản phẩm"
-          sx={{ marginTop: 2, width: "91%", marginLeft: 5 }}
-          value={selectedDataGrid?.nameStr}
-          onChange={(event) => {
-            const updatedSelectedDataGrid = { ...selectedDataGrid };
-            updatedSelectedDataGrid.nameStr = event.target.value;
+        <Grid container spacing={1}>
+          <Grid item xs={11}>
+            <TextField
+              fullWidth
+              id="nameStr"
+              variant="outlined"
+              label="Tên sản phẩm"
+              sx={{ marginTop: 2, marginLeft: 5 }}
+              value={selectedDataGrid?.nameStr}
+              onChange={(event) => {
+                const updatedSelectedDataGrid = { ...selectedDataGrid };
+                updatedSelectedDataGrid.nameStr = event.target.value;
 
-            setSelectedDataGrid(updatedSelectedDataGrid);
-          }}
-        />
-        <Autocomplete
-          id=""
-          options={measurementData}
-          sx={{ marginTop: 2, marginLeft: 5, width: "450px" }}
-          renderInput={(params) => (
-            <TextField {...params} label="Đơn vị quy chuẩn" />
-          )}
-          value={
-            measurementData.length > 0 &&
-            measurementData.find(
-              (measurement) => measurement.id === selectedDataGrid.measID
-            )
-              ? measurementData.find(
+                setSelectedDataGrid(updatedSelectedDataGrid);
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <Autocomplete
+              id=""
+              options={measurementData}
+              sx={{ marginTop: 2, marginLeft: 5 }}
+              renderInput={(params) => (
+                <TextField {...params} label="Đơn vị quy chuẩn" />
+              )}
+              value={
+                measurementData.length > 0 &&
+                measurementData.find(
                   (measurement) => measurement.id === selectedDataGrid.measID
                 )
-              : null
-          }
-          onChange={(event, value) => {
-            if (value) {
-              const updatedSelectedDataGrid = { ...selectedDataGrid };
-              updatedSelectedDataGrid.measID = value.id;
-              console.log(value);
-              setSelectedDataGrid(updatedSelectedDataGrid);
-            }
-          }}
-          //   onChange={handleOnChange}
-        />
-
-        <Autocomplete
-          id=""
-          options={["None", ...segmmentData]}
-          isOptionEqualToValue={(option, value) => option.id === value?.id}
-          sx={{ marginTop: 2, marginX: 5, width: "calc(91% - 490px)" }}
-          renderInput={(params) => (
-            <TextField {...params} label="Công đoạn sản xuất" />
-          )}
-          value={
-            segmmentData.length > 0 &&
-            segmmentData.find(
-              (segmment) => segmment.id === selectedDataGrid.segmentID
-            )
-              ? segmmentData.find(
+                  ? measurementData.find(
+                      (measurement) =>
+                        measurement.id === selectedDataGrid.measID
+                    )
+                  : null
+              }
+              onChange={(event, value) => {
+                if (value) {
+                  const updatedSelectedDataGrid = { ...selectedDataGrid };
+                  updatedSelectedDataGrid.measID = value.id;
+                  console.log(value);
+                  setSelectedDataGrid(updatedSelectedDataGrid);
+                }
+              }}
+              //   onChange={handleOnChange}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <Autocomplete
+              id=""
+              options={["None", ...segmmentData]}
+              isOptionEqualToValue={(option, value) => option.id === value?.id}
+              sx={{ marginTop: 2, marginRight: 5 }}
+              renderInput={(params) => (
+                <TextField {...params} label="Công đoạn sản xuất" />
+              )}
+              value={
+                segmmentData.length > 0 &&
+                segmmentData.find(
                   (segmment) => segmment.id === selectedDataGrid.segmentID
                 )
-              : null
-          }
-          onChange={(event, value) => {
-            if (value && value != "None") {
-              const updatedSelectedDataGrid = { ...selectedDataGrid };
-              updatedSelectedDataGrid.segmentID = value.id;
-              setSelectedDataGrid(updatedSelectedDataGrid);
-            } else {
-              const updatedSelectedDataGrid = { ...selectedDataGrid };
-              updatedSelectedDataGrid.segmentID = "";
-              setSelectedDataGrid(updatedSelectedDataGrid);
-            }
-          }}
-          //   onChange={handleOnChange}
-        />
-        <TextField
-          id="minimumStock"
-          variant="outlined"
-          label="Tồn kho tối thiểu"
-          type="number"
-          sx={{ marginTop: 2, marginLeft: 5, width: "300px" }}
-          value={selectedDataGrid?.minimumStock}
-          onChange={(event) => {
-            const updatedSelectedDataGrid = { ...selectedDataGrid };
-            updatedSelectedDataGrid.minimumStock = Number(event.target.value);
+                  ? segmmentData.find(
+                      (segmment) => segmment.id === selectedDataGrid.segmentID
+                    )
+                  : null
+              }
+              onChange={(event, value) => {
+                if (value && value != "None") {
+                  const updatedSelectedDataGrid = { ...selectedDataGrid };
+                  updatedSelectedDataGrid.segmentID = value.id;
+                  setSelectedDataGrid(updatedSelectedDataGrid);
+                } else {
+                  const updatedSelectedDataGrid = { ...selectedDataGrid };
+                  updatedSelectedDataGrid.segmentID = "";
+                  setSelectedDataGrid(updatedSelectedDataGrid);
+                }
+              }}
+              //   onChange={handleOnChange}
+            />
+          </Grid>
+          <Grid item xs={4}>
+            <TextField
+              fullWidth
+              id="minimumStock"
+              variant="outlined"
+              label="Tồn kho tối thiểu"
+              type="number"
+              sx={{ marginTop: 2, marginLeft: 5 }}
+              value={selectedDataGrid?.minimumStock}
+              onChange={(event) => {
+                const updatedSelectedDataGrid = { ...selectedDataGrid };
+                updatedSelectedDataGrid.minimumStock = Number(
+                  event.target.value
+                );
 
-            setSelectedDataGrid(updatedSelectedDataGrid);
-          }}
-        />
-        <Autocomplete
-          id="combo-box-demo"
-          options={classPriceData}
-          sx={{ marginTop: 2, marginX: 5, width: "calc(91% - 340px)" }}
-          renderInput={(params) => (
-            <TextField {...params} label="Class giá hạch toán" />
-          )}
-          value={
-            classPriceData.length > 0 &&
-            classPriceData.find(
-              (classPrice) => classPrice.id === selectedDataGrid.classPriceID
-            )
-              ? classPriceData.find(
+                setSelectedDataGrid(updatedSelectedDataGrid);
+              }}
+            />
+          </Grid>
+          <Grid item xs={8}>
+            <Autocomplete
+              id="combo-box-demo"
+              options={classPriceData}
+              sx={{ marginTop: 2, marginX: 5 }}
+              renderInput={(params) => (
+                <TextField {...params} label="Class giá hạch toán" />
+              )}
+              value={
+                classPriceData.length > 0 &&
+                classPriceData.find(
                   (classPrice) =>
                     classPrice.id === selectedDataGrid.classPriceID
                 )
-              : null
-          }
-          onChange={(event, value) => {
-            if (value) {
-              const updatedSelectedDataGrid = { ...selectedDataGrid };
-              updatedSelectedDataGrid.classPriceID = value.id;
-              console.log(value);
-              setSelectedDataGrid(updatedSelectedDataGrid);
-            }
-          }}
-          //   onChange={handleOnChange}
-        />
+                  ? classPriceData.find(
+                      (classPrice) =>
+                        classPrice.id === selectedDataGrid.classPriceID
+                    )
+                  : null
+              }
+              onChange={(event, value) => {
+                if (value) {
+                  const updatedSelectedDataGrid = { ...selectedDataGrid };
+                  updatedSelectedDataGrid.classPriceID = value.id;
+                  console.log(value);
+                  setSelectedDataGrid(updatedSelectedDataGrid);
+                }
+              }}
+              //   onChange={handleOnChange}
+            />
+          </Grid>
+        </Grid>
         <FormControlLabel
           control={
             <Checkbox

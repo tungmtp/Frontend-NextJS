@@ -286,7 +286,7 @@ export default function ChildCategory(parentProp) {
         ) : selectedProduct != null ? (
           <DetailProduct />
         ) : !hasChildren(selectedCategory) ? (
-          <div style={{ height: "100%" }}>
+          <div style={{ height: "91%" }}>
             <DataGrid
               rows={productData}
               columns={columns}

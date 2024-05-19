@@ -490,7 +490,7 @@ export default function Measurement() {
           <ButtonGroup
             variant="outlined"
             aria-label="Basic button group"
-            sx={{ marginY: 2, marginX: 4 }}
+            sx={{ marginY: 2, marginLeft: 4, marginRight: 1 }}
           >
             <Button
               onClick={() => handleButtonClick(1)}

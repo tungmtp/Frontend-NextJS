@@ -472,10 +472,8 @@ export default function TreeViewComp(PropData) {
   return (
     <div>
       <Box sx={{ minHeight: 110 }}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-around",
+        <Box
+          sx={{
             boxShadow: "0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)",
             borderRadius: 7,
             marginBottom: "16px",
@@ -520,7 +518,7 @@ export default function TreeViewComp(PropData) {
             </IconButton>
           </Tooltip>
           <FormDeleteDialog open={openDeleteDialog} />
-        </div>
+        </Box>
         <div style={{ overflow: "auto", height: "79vh" }}>
           <TreeView
             aria-label="rich object"
