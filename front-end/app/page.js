@@ -18,11 +18,12 @@ export default function LandingPage() {
         handleDrawerOpen={handleDrawerOpen}
         handleDrawerClose={handleDrawerClose}
       />
-      <SideBar
+      Trang chủ
+      {/* <SideBar
         open={open}
         handleDrawerOpen={handleDrawerOpen}
         handleDrawerClose={handleDrawerClose}
-      />
+      /> */}
     </>
   );
 }
