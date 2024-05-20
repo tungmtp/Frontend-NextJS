@@ -1,5 +1,6 @@
 {
     "workbench.tree.indent": 22,
+    "editor.formatOnSave": true,
     // "editor.codeActionsOnSave": {
     //     "source.removeUnusedImports": "explicit"
     // }
