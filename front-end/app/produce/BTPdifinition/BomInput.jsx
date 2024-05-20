@@ -4,7 +4,7 @@ import Paper from '@mui/material/Paper';
 import { getData } from "@/hook/Hook";
 
 export const BomInput = (props) => {
-    console.log(props.key, props.bomId);
+    // console.log(props.key, props.bomId);
     const [listBomInput, setListBomInput] = useState([])
     const getListBomInput = async (id) => {
         console.log(`/produce-service/bom/input/${id}`)
@@ -15,7 +15,7 @@ export const BomInput = (props) => {
         }
     }
     useEffect(() => {
-        console.log("bomId in useEffect: ", props.bomId)
+        // console.log("bomId in useEffect: ", props.bomId)
         getListBomInput(props.bomId);
     }, [props.bomId])
     return (
@@ -42,7 +42,7 @@ export const BomInput = (props) => {
                     <TableBody>
                         {listBomInput.map((bom, index) => (
                             // <BomInputRow key={index} bom={bom} />
-                            <TableRow hover>
+                            <TableRow key={index} hover>
                                 <TableCell align="left" sx={{ border: 1 }}>{bom.productName}</TableCell>
                                 <TableCell align="left">{bom.measName}</TableCell>
                                 <TableCell align="right">{bom.quantity}</TableCell>

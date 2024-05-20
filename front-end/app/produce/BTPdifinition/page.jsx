@@ -45,9 +45,9 @@ export default function BTPdifinition() {
       </Grid>
       <Grid item xs={8}>
         {bomList.map((bom, index) => (
-          <Fragment>
+          <Fragment key={index}>
             <BomOutput key={bom.id} bom={bom} />
-            <BomInput key={index} bomId={bom.id} />
+            <BomInput bomId={bom.id} />
           </Fragment>
         ))}
       </Grid>
