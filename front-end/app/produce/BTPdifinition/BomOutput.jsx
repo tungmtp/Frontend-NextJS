@@ -28,11 +28,11 @@ export const BomOutput = (props) => {
                 id="tableTitle"
                 component="div"
             >
-                Đầu ra
+                Đầu ra {props.bom.bomCode}
             </Typography>
 
             <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-labelledby="tableTile" size="small">
+                <Table sx={{ minWidth: 650 }} aria-labelledby="tableTitle" size="small">
                     <TableHead>
                         <TableRow>
                             <TableCell align="center" sx={{ border: 1 }}><b>Sản phẩm</b></TableCell>

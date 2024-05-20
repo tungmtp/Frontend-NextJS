@@ -1,9 +1,10 @@
 "use client";
 import SelectNewsky from "@/components/select/SelectNewsky";
 import { Box, Button, Grid } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Fragment } from "react";
 import { BomOutput } from "./BomOutput";
 import { getData } from "@/hook/Hook";
+import { BomInput } from "./BomInput";
 
 
 export default function BTPdifinition() {
@@ -43,8 +44,11 @@ export default function BTPdifinition() {
         <Button variant="contained" color="primary">{productId}</Button>
       </Grid>
       <Grid item xs={8}>
-        {bomList.map((bom) => (
-          <BomOutput key={bom.id} bom={bom} />
+        {bomList.map((bom, index) => (
+          <Fragment>
+            <BomOutput key={bom.id} bom={bom} />
+            <BomInput key={index} bomId={bom.id} />
+          </Fragment>
         ))}
       </Grid>
       <Grid item xs={4}>
