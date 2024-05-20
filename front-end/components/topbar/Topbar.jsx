@@ -272,7 +272,6 @@ export default function Topbar(ParentProp) {
                 </Link>
               ))}
             <Menu
-              dense
               anchorEl={anchorEl}
               open={Boolean(anchorEl)}
               onClose={handleClose}

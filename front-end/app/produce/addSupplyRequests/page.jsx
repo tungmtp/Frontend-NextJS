@@ -13,14 +13,17 @@ import {
   GridToolbarContainer,
   GridActionsCellItem,
   GridRowEditStopReasons,
+  GridToolbar,
 } from "@mui/x-data-grid";
 import { format } from "date-fns";
-import { Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import Link from "next/link";
 import { NotifySnackbar } from "@/components/general/notifySnackbar/NotifySnackbar";
 import { useSnackbar } from "notistack";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
+import { useRouter, useSearchParams } from "next/navigation";
+import { getData, postData } from "@/hook/Hook";
 const initialRows = [
   {
     id: 1,
@@ -60,12 +63,76 @@ const initialRows = [
 //     </GridToolbarContainer>
 //   );
 // }
-
+//     ordersID: "",
+//     orderDetailID: "",
+//     quantity: 0,
+//     reqDate: null,
+//     comment: "",
+//     generated: false,
+//     markDone: false,
 export default function FullFeaturedCrudGrid() {
   const { enqueueSnackbar } = useSnackbar();
-  const [rows, setRows] = React.useState(initialRows);
+  const [ordersProduceList, setOrdersProduceList] = React.useState([]);
+  const [rows, setRows] = React.useState([]);
   const [rowModesModel, setRowModesModel] = React.useState({});
+
+  const date = new Date();
+  const currentDate = dayjs(date).format("YYYY-MM-DD");
+  const searchParams = useSearchParams();
+  let orderID = searchParams.get("id");
+  let orderName = searchParams.get("name");
+  const router = useRouter();
+  console.log(orderID);
+  console.log("ordersProduceList: ", rows);
   //   console.log(dayjs(rows[0].ngayGiao).format("YYYY-MM-DD"));
+  React.useEffect(() => {
+    const getOrderDetailData = async () => {
+      try {
+        const result = await getData(
+          `/business-service/orderDetail/byOrderID/${orderID}`
+        );
+
+        // Map through the results and fetch product names
+        const resultWithIndex = await Promise.all(
+          result.map(async (row, index) => {
+            try {
+              const productResult = await getData(
+                `/product-service/product/oneForSelect/mayBeSell/${row.productID}`
+              );
+              // console.log(productResult);
+              return {
+                ordersID: row.orderID,
+                orderDetailID: row.id,
+                id: row.id,
+                reqDate: currentDate,
+                quantity: row.quantity,
+                comment: "",
+                index: index + 1,
+                nameStr: productResult[0].nameStr,
+              };
+            } catch (err) {
+              console.error("Error fetching product data:", err);
+              return {
+                ordersID: row.ordersID,
+                orderDetailID: row.orderDetailID,
+                reqDate: currentDate,
+                quantity: row.quantity,
+                comment: "",
+                index: index + 1,
+                nameStr: "Unknown Product",
+              };
+            }
+          })
+        );
+
+        setRows(resultWithIndex);
+      } catch (err) {
+        console.error("Error fetching order detail data:", err);
+      }
+    };
+
+    getOrderDetailData();
+  }, []);
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
       event.defaultMuiPrevented = true;
@@ -91,13 +158,14 @@ export default function FullFeaturedCrudGrid() {
     });
 
     const editedRow = rows.find((row) => row.id === id);
-    if (editedRow.isNew) {
-      setRows(rows.filter((row) => row.id !== id));
-    }
+    // if (editedRow.isNew) {
+    //   setRows(rows.filter((row) => row.id !== id));
+    // }
   };
 
   const processRowUpdate = (newRow) => {
-    const updatedRow = { ...newRow, isNew: false };
+    const updatedRow = { ...newRow };
+    // const updatedRow = { ...newRow, isNew: false };
     setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
     return updatedRow;
   };
@@ -106,25 +174,31 @@ export default function FullFeaturedCrudGrid() {
     setRowModesModel(newRowModesModel);
   };
 
+  function getRowId(row) {
+    return row.orderDetailID;
+  }
   const columns = [
-    { field: "id", headerName: "STT", width: 80, editable: true },
+    { field: "index", headerName: "STT", flex: 1 },
+    { field: "id", headerName: "STT", width: 10 },
+
     {
-      field: "sanPham",
+      field: "nameStr",
       headerName: "Sản phẩm",
-      width: 400,
-      editable: true,
+      minWidth: 150,
+      flex: 8,
     },
     {
-      field: "ycCu",
+      field: "quantity",
       headerName: "YC cũ",
-      width: 120,
+      flex: 2,
       editable: true,
       type: "number",
     },
     {
-      field: "ngayGiao",
+      field: "reqDate",
       headerName: "Ngày giao",
-      width: 180,
+      minWidth: 100,
+      flex: 4,
       editable: true,
       valueFormatter: (params) => dayjs(params?.value).format("DD/MM/YYYY"),
       renderEditCell: (params) => (
@@ -140,7 +214,7 @@ export default function FullFeaturedCrudGrid() {
         />
       ),
     },
-    { field: "ghiChu", headerName: "Ghi chú", width: 300, editable: true },
+    { field: "comment", headerName: "Ghi chú", flex: 8, editable: true },
     {
       field: "actions",
       type: "actions",
@@ -191,51 +265,86 @@ export default function FullFeaturedCrudGrid() {
   const isAnyRowInEditMode = Object.values(rowModesModel).some(
     (row) => row.mode === GridRowModes.Edit
   );
-
+  const handleSubmit = () => {
+    if (isAnyRowInEditMode) {
+      NotifySnackbar(
+        enqueueSnackbar,
+        "Vui lòng lưu lại các trường trong bảng!!",
+        "warning"
+      );
+    } else {
+      try {
+        rows.map((row) => {
+          delete row.nameStr;
+          delete row.id;
+          delete row.index;
+          const result = postData("/produce-service/ordersProduce", row);
+          console.log(row);
+        });
+        NotifySnackbar(enqueueSnackbar, "Thêm thành công", "success");
+        router.push("/business/order");
+      } catch (err) {
+        console.error("Error post ordersProduce :", err);
+        NotifySnackbar(enqueueSnackbar, "Có lỗi xảy ra!!", "error");
+      }
+    }
+  };
   return (
-    <Box>
-      <Typography variant="h5" gutterBottom>
-        Yêu cầu cung ứng cho HỘI AN - DANA VISION
-      </Typography>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        editMode="row"
-        rowModesModel={rowModesModel}
-        onRowModesModelChange={handleRowModesModelChange}
-        onRowEditStop={handleRowEditStop}
-        processRowUpdate={processRowUpdate}
-        // slots={{
-        //   toolbar: EditToolbar,
-        // }}
-        slotProps={{
-          toolbar: { setRows, setRowModesModel },
-        }}
-      />
-      <Box mt={2} display="flex" justifyContent="flex-start">
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{ mr: 2 }}
-          onClick={() => {
-            if (isAnyRowInEditMode) {
-              NotifySnackbar(
-                enqueueSnackbar,
-                "Vui lòng lưu lại các trường trong bảng!!",
-                "warning"
-              );
-            } else {
-              NotifySnackbar(enqueueSnackbar, "Thêm thành công", "success");
-            }
-            console.log(isAnyRowInEditMode);
+    <Grid container justifyContent="center">
+      <Grid item xs={12}>
+        <Typography variant="h5" gutterBottom>
+          Yêu cầu cung ứng cho {orderName}
+        </Typography>
+      </Grid>
+      <Grid item xs={9}>
+        <DataGrid
+          sx={{
+            "&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell": {
+              py: "4px",
+            },
+            "&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell": {
+              py: "8px",
+            },
+            "&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell": {
+              py: "11px",
+            },
           }}
-        >
-          Save
-        </Button>
-        <Link href="/business/order">
-          <Button variant="outlined">Cancel</Button>
-        </Link>
-      </Box>
-    </Box>
+          rows={rows}
+          columns={columns}
+          editMode="row"
+          rowModesModel={rowModesModel}
+          onRowModesModelChange={handleRowModesModelChange}
+          onRowEditStop={handleRowEditStop}
+          processRowUpdate={processRowUpdate}
+          getRowHeight={() => "auto"}
+          autoHeight
+          slotProps={{
+            toolbar: { setRows, setRowModesModel },
+          }}
+          initialState={{
+            columns: {
+              columnVisibilityModel: {
+                id: false,
+              },
+            },
+          }}
+        />
+      </Grid>
+      <Grid item xs={9}>
+        <Box mt={2} display="flex" justifyContent="flex-start">
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ mr: 2 }}
+            onClick={handleSubmit}
+          >
+            Save
+          </Button>
+          <Link href="/business/order">
+            <Button variant="outlined">Cancel</Button>
+          </Link>
+        </Box>
+      </Grid>
+    </Grid>
   );
 }

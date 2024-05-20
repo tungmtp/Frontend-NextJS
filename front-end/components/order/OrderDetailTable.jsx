@@ -27,6 +27,7 @@ export default function OrderDetailTable(props) {
   const [selectedOrderDeatail, setSelectedOrderDetail] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [seLectedMeasurement, setSeLectedMeasurement] = useState(null);
+
   const measureCategory = {
     1: "m2",
     2: "md",
@@ -34,6 +35,7 @@ export default function OrderDetailTable(props) {
     4: "",
     5: "Lít",
   };
+
   // console.log("orderDeatailList: ", orderDeatailList);
   useEffect(() => {
     const getOrderDetailData = async () => {
@@ -209,7 +211,14 @@ export default function OrderDetailTable(props) {
             orderID={props.orderID}
           />
           <Link
-            href={"/produce/addSupplyRequests"}
+            // href={"/produce/addSupplyRequests"}
+            href={{
+              pathname: `/produce/addSupplyRequests`,
+              query: {
+                name: props.partnerName,
+                id: props.orderID,
+              },
+            }}
             style={{ color: "black", textDecoration: "none" }}
           >
             <MenuItem onClick={handleClose}> Lệnh cung ứng</MenuItem>

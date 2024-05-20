@@ -65,7 +65,11 @@ export default function Order() {
   const [openAddDialog, setOpenAddDialog] = React.useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
   const [openFixDialog, setOpenFixDialog] = React.useState(false);
-  // console.log(selectedDataGrid);
+  const partnerName = partnerData?.find(
+    (item) => item.id === selectedDataGrid?.partnersID
+  )?.nameStr;
+  console.log(partnerName);
+
   useEffect(() => {
     const getOrdersData = async () => {
       try {
@@ -120,187 +124,191 @@ export default function Order() {
       },
     },
   ];
-  const handleButtonClick = (value) => {
-    setSelectedDataGrid(null);
-    setSelectedButtonGroup(value);
-  };
+  // const handleButtonClick = (value) => {
+  //   setSelectedDataGrid(null);
+  //   setSelectedButtonGroup(value);
+  // };
 
-  const handleOpenAdd = (event) => {
-    event.preventDefault();
-    setOpenAddDialog(true);
-  };
-  const handleClose = (event) => {
-    event.preventDefault();
-    setOpenAddDialog(false);
-  };
-  function FormAddDialog(open) {
-    return (
-      <React.Fragment>
-        <Dialog
-          open={open.open}
-          onClose={handleClose}
-          PaperProps={{
-            component: "form",
-            onSubmit: (event) => {
-              event.preventDefault();
-              const formData = new FormData(event.currentTarget);
-              const formJson = Object.fromEntries(formData.entries());
-              const nameStr = formJson.nameStr;
-              const classType = formJson.classType;
+  // const handleOpenAdd = (event) => {
+  //   event.preventDefault();
+  //   setOpenAddDialog(true);
+  // };
+  // const handleClose = (event) => {
+  //   event.preventDefault();
+  //   setOpenAddDialog(false);
+  // };
+  // function FormAddDialog(open) {
+  //   return (
+  //     <React.Fragment>
+  //       <Dialog
+  //         open={open.open}
+  //         onClose={handleClose}
+  //         PaperProps={{
+  //           component: "form",
+  //           onSubmit: (event) => {
+  //             event.preventDefault();
+  //             const formData = new FormData(event.currentTarget);
+  //             const formJson = Object.fromEntries(formData.entries());
+  //             const nameStr = formJson.nameStr;
+  //             const classType = formJson.classType;
 
-              const addClass = {
-                nameStr: nameStr,
-                classType: classType,
-              };
+  //             const addClass = {
+  //               nameStr: nameStr,
+  //               classType: classType,
+  //             };
 
-              const postMeasurement = async () => {
-                try {
-                  const result = await postData(
-                    "/product-service/classes",
-                    addClass
-                  );
-                  //        const addClass = {
-                  //     nameStr: result.nameStr,
-                  //     classType: result.classType,
+  //             const postMeasurement = async () => {
+  //               try {
+  //                 const result = await postData(
+  //                   "/product-service/classes",
+  //                   addClass
+  //                 );
+  //                 //        const addClass = {
+  //                 //     nameStr: result.nameStr,
+  //                 //     classType: result.classType,
 
-                  //   };
-                  const addClass2 = result;
+  //                 //   };
+  //                 const addClass2 = result;
 
-                  console.log(addClass2);
-                  // const updatedMeasurementData = measurementData;
-                  // updatedMeasurementData.push(addMeasurement2);
+  //                 console.log(addClass2);
+  //                 // const updatedMeasurementData = measurementData;
+  //                 // updatedMeasurementData.push(addMeasurement2);
 
-                  // setMeasurementData(updatedMeasurementData);
-                  setOrdersData((prevState) => [...prevState, addClass2]);
-                } catch (err) {
-                  console.error("Error fetching data:", err);
-                }
-              };
-              postMeasurement();
+  //                 // setMeasurementData(updatedMeasurementData);
+  //                 setOrdersData((prevState) => [...prevState, addClass2]);
+  //               } catch (err) {
+  //                 console.error("Error fetching data:", err);
+  //               }
+  //             };
+  //             postMeasurement();
 
-              handleClose(event);
-              //window.location.reload(false);
-            },
-          }}
-        >
-          <DialogTitle>Thêm Class</DialogTitle>
-          <DialogContent>
-            <TextField
-              name="nameStr"
-              variant="outlined"
-              label="Tên Class"
-              required
-              sx={{ margin: 2 }}
-            />
-            <TextField
-              name="classType"
-              variant="outlined"
-              label="Loại Class"
-              required
-              sx={{ margin: 2 }}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button type="submit">Save</Button>
-          </DialogActions>
-        </Dialog>
-      </React.Fragment>
-    );
-  }
-  const handleOpenDelete = (event) => {
-    setOpenDeleteDialog(true);
-    // setAddCategory({ isChildOf: selectedSingleNode });
-  };
-  const handleCloseDelete = () => {
-    setOpenDeleteDialog(false);
-  };
-  function FormDeleteDialog(open) {
-    return (
-      <React.Fragment>
-        <Dialog
-          open={open.open}
-          onClose={handleClose}
-          PaperProps={{
-            component: "form",
-            onSubmit: (event) => {
-              event.preventDefault();
-              const respone = deleteData(
-                "/product-service/classes",
-                selectedDataGrid.id
-              );
-              console.log(respone);
-              const updatedData = ordersData.filter(
-                (item) => item.id !== selectedDataGrid.id
-              );
-              setOrdersData(updatedData);
-              setSelectedDataGrid(null);
-              handleCloseDelete();
-              alert("Xóa thành công");
-            },
-          }}
-        >
-          <DialogTitle>Xóa {selectedDataGrid.nameStr}</DialogTitle>
-          <DialogContent>Bạn chắc chắn muốn xóa thư mục này?</DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseDelete}>Cancel</Button>
-            <Button type="submit">Confirm</Button>
-          </DialogActions>
-        </Dialog>
-      </React.Fragment>
-    );
-  }
-  const handleOpenFix = (event) => {
-    setOpenFixDialog(true);
-    // setAddCategory({ isChildOf: selectedSingleNode });
-  };
-  const handleCloseFix = () => {
-    setOpenFixDialog(false);
-  };
-  function FormFixDialog(open) {
-    return (
-      <React.Fragment>
-        <Dialog
-          open={open.open}
-          onClose={handleClose}
-          PaperProps={{
-            component: "form",
-            onSubmit: (event) => {
-              event.preventDefault();
-              const respone = putData(
-                "/product-service/classes",
-                selectedDataGrid.id,
-                selectedDataGrid
-              );
-              console.log(respone);
-              const updatedData = ordersData.map((item) => {
-                if (item.id === selectedDataGrid.id) {
-                  return selectedDataGrid;
-                }
-                return item;
-              });
-              setOrdersData(updatedData);
-              setSelectedDataGrid(null);
-              handleCloseFix();
-              alert("Lưu thành công");
-            },
-          }}
-        >
-          <DialogTitle>
-            Sửa:{" "}
-            <span style={{ fontWeight: "bold" }}>
-              {selectedDataGrid.nameStr}
-            </span>
-          </DialogTitle>
-          <DialogContent>Bạn chắc chắn muốn lưu mục này?</DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseFix}>Cancel</Button>
-            <Button type="submit">Confirm</Button>
-          </DialogActions>
-        </Dialog>
-      </React.Fragment>
-    );
-  }
+  //             handleClose(event);
+  //             //window.location.reload(false);
+  //           },
+  //         }}
+  //       >
+  //         <DialogTitle>Thêm Class</DialogTitle>
+  //         <DialogContent>
+  //           <TextField
+  //             name="nameStr"
+  //             variant="outlined"
+  //             label="Tên Class"
+  //             required
+  //             sx={{ margin: 2 }}
+  //           />
+  //           <TextField
+  //             name="classType"
+  //             variant="outlined"
+  //             label="Loại Class"
+  //             required
+  //             sx={{ margin: 2 }}
+  //           />
+  //         </DialogContent>
+  //         <DialogActions>
+  //           <Button onClick={handleClose}>Cancel</Button>
+  //           <Button type="submit">Save</Button>
+  //         </DialogActions>
+  //       </Dialog>
+  //     </React.Fragment>
+  //   );
+  // }
+
+  //**FormDeleteDialog
+  // const handleOpenDelete = (event) => {
+  //   setOpenDeleteDialog(true);
+  //   // setAddCategory({ isChildOf: selectedSingleNode });
+  // };
+  // const handleCloseDelete = () => {
+  //   setOpenDeleteDialog(false);
+  // };
+  // function FormDeleteDialog(open) {
+  //   return (
+  //     <React.Fragment>
+  //       <Dialog
+  //         open={open.open}
+  //         onClose={handleClose}
+  //         PaperProps={{
+  //           component: "form",
+  //           onSubmit: (event) => {
+  //             event.preventDefault();
+  //             const respone = deleteData(
+  //               "/product-service/classes",
+  //               selectedDataGrid.id
+  //             );
+  //             console.log(respone);
+  //             const updatedData = ordersData.filter(
+  //               (item) => item.id !== selectedDataGrid.id
+  //             );
+  //             setOrdersData(updatedData);
+  //             setSelectedDataGrid(null);
+  //             handleCloseDelete();
+  //             alert("Xóa thành công");
+  //           },
+  //         }}
+  //       >
+  //         <DialogTitle>Xóa {selectedDataGrid.nameStr}</DialogTitle>
+  //         <DialogContent>Bạn chắc chắn muốn xóa thư mục này?</DialogContent>
+  //         <DialogActions>
+  //           <Button onClick={handleCloseDelete}>Cancel</Button>
+  //           <Button type="submit">Confirm</Button>
+  //         </DialogActions>
+  //       </Dialog>
+  //     </React.Fragment>
+  //   );
+  // }
+
+  //**FormFixDialog
+  // const handleOpenFix = (event) => {
+  //   setOpenFixDialog(true);
+  //   // setAddCategory({ isChildOf: selectedSingleNode });
+  // };
+  // const handleCloseFix = () => {
+  //   setOpenFixDialog(false);
+  // };
+  // function FormFixDialog(open) {
+  //   return (
+  //     <React.Fragment>
+  //       <Dialog
+  //         open={open.open}
+  //         onClose={handleClose}
+  //         PaperProps={{
+  //           component: "form",
+  //           onSubmit: (event) => {
+  //             event.preventDefault();
+  //             const respone = putData(
+  //               "/product-service/classes",
+  //               selectedDataGrid.id,
+  //               selectedDataGrid
+  //             );
+  //             console.log(respone);
+  //             const updatedData = ordersData.map((item) => {
+  //               if (item.id === selectedDataGrid.id) {
+  //                 return selectedDataGrid;
+  //               }
+  //               return item;
+  //             });
+  //             setOrdersData(updatedData);
+  //             setSelectedDataGrid(null);
+  //             handleCloseFix();
+  //             alert("Lưu thành công");
+  //           },
+  //         }}
+  //       >
+  //         <DialogTitle>
+  //           Sửa:{" "}
+  //           <span style={{ fontWeight: "bold" }}>
+  //             {selectedDataGrid.nameStr}
+  //           </span>
+  //         </DialogTitle>
+  //         <DialogContent>Bạn chắc chắn muốn lưu mục này?</DialogContent>
+  //         <DialogActions>
+  //           <Button onClick={handleCloseFix}>Cancel</Button>
+  //           <Button type="submit">Confirm</Button>
+  //         </DialogActions>
+  //       </Dialog>
+  //     </React.Fragment>
+  //   );
+  // }
 
   //tạo 1 func để truyền vào dataGird vì hàm trong dataGird không nhận prop truyền vào
   const NoRowsOverlay = () => {
@@ -350,7 +358,7 @@ export default function Order() {
           </Link>
         </Fab>
       </div>
-      <FormAddDialog open={openAddDialog} />
+      {/* <FormAddDialog open={openAddDialog} /> */}
       <div
         style={{
           display: "flex",
@@ -395,7 +403,10 @@ export default function Order() {
                 selectedOder={selectedDataGrid}
                 partnerData={partnerData}
               />
-              <OrderDetailTable orderID={selectedDataGrid.id} />
+              <OrderDetailTable
+                orderID={selectedDataGrid.id}
+                partnerName={partnerName}
+              />
               <CollectMoneyTable />
               <OrderPaymentTable />
             </>
