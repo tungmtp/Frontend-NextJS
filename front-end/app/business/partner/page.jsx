@@ -346,12 +346,11 @@ export default function Partner() {
     );
   }
   return (
-    <Paper
+    <Box
       elevation={6}
       sx={{
         paddingTop: 1,
         paddingLeft: 1,
-        height: "84vh",
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
@@ -540,6 +539,6 @@ export default function Partner() {
           <></>
         )}
       </Box>
-    </Paper>
+    </Box>
   );
 }

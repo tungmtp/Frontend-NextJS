@@ -128,17 +128,14 @@ export default function RootLayout({ children }) {
                     />
                   )}
                   <div style={{ display: "flex" }}>
-                    {pathSplit != "login" && (
+                    {/* {pathSplit != "login" && (
                       <SideBar
                         open={open}
                         handleDrawerOpen={handleDrawerOpen}
                         handleDrawerClose={handleDrawerClose}
                       />
-                    )}
-                    <Box
-                      component="main"
-                      sx={{ flexGrow: 1, p: 3, height: "664px" }}
-                    >
+                    )} */}
+                    <Box component="main" sx={{ flexGrow: 1, pt: 3, px: 3 }}>
                       <DrawerHeader />
                       {children}
                     </Box>

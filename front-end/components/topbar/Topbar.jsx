@@ -21,7 +21,14 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
-import { Avatar, Badge, Button, Tooltip } from "@mui/material";
+import {
+  AppBar,
+  Avatar,
+  Badge,
+  Button,
+  MenuList,
+  Tooltip,
+} from "@mui/material";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import NotificationsIcon from "@mui/icons-material/Notifications";
@@ -31,7 +38,6 @@ const inter = Inter({ subsets: ["latin"] });
 import Cookies from "js-cookie";
 import { usePathname } from "next/navigation";
 import { getData } from "@/hook/Hook";
-import { mnu } from "@/components/menu";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
 import {
@@ -39,13 +45,13 @@ import {
   setSelectedProduct,
 } from "@/redux/categoryProductRedux";
 import NewskyLogoLight from "../../img/newskyLogoLight.jpg";
-
+import { mnu } from "@/components/menu";
 const category = {
   NEWSKY: "home",
-  "Sản xuất": "produce/segment",
-  "Kinh doanh": "business/partner",
+  "Sản xuất": "produce",
+  "Kinh doanh": "business",
   Kho: "storage",
-  "Vật tư": "products/category",
+  "Vật tư": "products",
   "Mua hàng": "purchase",
   "Kế toán": "accountancy",
   "Nhân sự": "humanResources",
@@ -82,23 +88,23 @@ const openedMixin = (theme) => ({
 //   ...theme.mixins.toolbar,
 // }));
 
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== "open",
-})(({ theme, open }) => ({
-  zIndex: theme.zIndex.drawer + 1,
-  transition: theme.transitions.create(["width", "margin"], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  ...(open && {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(["width", "margin"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
-}));
+// const AppBar = styled(MuiAppBar, {
+//   shouldForwardProp: (prop) => prop !== "open",
+// })(({ theme, open }) => ({
+//   zIndex: theme.zIndex.drawer + 1,
+//   transition: theme.transitions.create(["width", "margin"], {
+//     easing: theme.transitions.easing.sharp,
+//     duration: theme.transitions.duration.leavingScreen,
+//   }),
+//   ...(open && {
+//     marginLeft: drawerWidth,
+//     width: `calc(100% - ${drawerWidth}px)`,
+//     transition: theme.transitions.create(["width", "margin"], {
+//       easing: theme.transitions.easing.sharp,
+//       duration: theme.transitions.duration.enteringScreen,
+//     }),
+//   }),
+// }));
 
 // const Drawer = styled(MuiDrawer, {
 //   shouldForwardProp: (prop) => prop !== "open",
@@ -120,6 +126,17 @@ const AppBar = styled(MuiAppBar, {
 export default function Topbar(ParentProp) {
   // const [categoriesChild, setCategoriesChild] = useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [currentMenu, setCurrentMenu] = useState([]);
+
+  const handleClick = (event, key) => {
+    setAnchorEl(event.currentTarget);
+    setCurrentMenu(mnu[category[key]] || []);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   // const theme = useTheme();
   // const [open, setOpen] = React.useState(true);
   // const dispatch = useDispatch();
@@ -194,9 +211,10 @@ export default function Topbar(ParentProp) {
   return (
     <Box>
       <CssBaseline />
-      <AppBar position="fixed" open={ParentProp.open}>
+      {/* <AppBar position="fixed" open={ParentProp.open}> */}
+      <AppBar position="fixed">
         <Toolbar>
-          <IconButton
+          {/* <IconButton
             color="inherit"
             aria-label="open drawer"
             onClick={ParentProp.handleDrawerOpen}
@@ -207,7 +225,7 @@ export default function Topbar(ParentProp) {
             }}
           >
             <MenuIcon />
-          </IconButton>
+          </IconButton> */}
           <Link
             href={"/" + category["NEWSKY"]}
             sx={{
@@ -239,7 +257,8 @@ export default function Topbar(ParentProp) {
               .slice(1)
               .map((key) => (
                 <Link
-                  href={"/" + category[key]}
+                  href={""}
+                  onClick={(event) => handleClick(event, key)}
                   key={key}
                   style={{
                     my: "8px",
@@ -253,6 +272,23 @@ export default function Topbar(ParentProp) {
                   {key}
                 </Link>
               ))}
+            <Menu
+              dense
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+            >
+              {currentMenu.map((item) => (
+                <MenuItem key={item.link} onClick={handleClose}>
+                  <Link
+                    href={item.link}
+                    style={{ textDecoration: "none", color: "inherit" }}
+                  >
+                    {item.title}
+                  </Link>
+                </MenuItem>
+              ))}
+            </Menu>
           </Box>
           <Badge badgeContent={4} color="success" style={{ marginRight: 20 }}>
             <NotificationsIcon style={{ color: "white" }} />

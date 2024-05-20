@@ -24,7 +24,7 @@ export default function Category() {
   return (
     <div>
       <Grid container spacing={4}>
-        <Grid item xs={2.5} sx={{ minWidth: "200px" }}>
+        <Grid item xs={2.5}>
           <TreeViewComp
             serviceURL={"/product-service/category"}
             title={"catName"}
