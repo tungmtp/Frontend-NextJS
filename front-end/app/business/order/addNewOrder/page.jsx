@@ -191,12 +191,12 @@ export default function AddNewOrder(props) {
   }
 
   return (
-    <Paper
-      elevation={6}
+    <Box
+      // elevation={6}
       sx={{
         width: "100%",
-        height: "84vh",
-        overflow: "auto",
+        // height: "84vh",
+        // overflow: "auto",
       }}
     >
       <Typography
@@ -402,7 +402,7 @@ export default function AddNewOrder(props) {
           <Typography
             sx={{
               fontSize: "18px",
-              color: "Black",
+              color: "#1976d2",
               fontWeight: "BOLD",
               margin: "8px",
               width: "92%",
@@ -417,12 +417,12 @@ export default function AddNewOrder(props) {
         style={{
           display: "flex",
           justifyContent: "center",
-          paddingBottom: 6,
+          marginTop: 20,
           width: "100%",
           position: "sticky",
           bottom: 0,
           height: "80px",
-          background: "rgb(239,239,239,0.8)",
+          // background: "rgb(239,239,239,0.8)",
         }}
       >
         <Button
@@ -449,6 +449,6 @@ export default function AddNewOrder(props) {
         </Button>
         <FormConfirmDialog open={openConfirm} />
       </div>
-    </Paper>
+    </Box>
   );
 }

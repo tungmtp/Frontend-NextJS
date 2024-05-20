@@ -1,5 +1,5 @@
 "use client";
-import { Inter } from "next/font/google";
+
 // import "./globals.css";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { styled, useTheme } from "@mui/material/styles";

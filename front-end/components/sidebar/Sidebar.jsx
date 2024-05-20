@@ -1,5 +1,5 @@
 "use client";
-import { Inter } from "next/font/google";
+
 // import "./globals.css";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { styled, useTheme } from "@mui/material/styles";
@@ -28,7 +28,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 
 // import { useRouter } from "next/navigation";
 const SelectedPageContext = createContext();
-const inter = Inter({ subsets: ["latin"] });
+
 import Cookies from "js-cookie";
 import { usePathname } from "next/navigation";
 import { getData } from "@/hook/Hook";

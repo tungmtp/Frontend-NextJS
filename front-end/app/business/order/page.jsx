@@ -307,16 +307,15 @@ export default function Order() {
     return <CustomNoRowsOverlay title="Chưa có đơn hàng ngày hôm nay !!!" />;
   };
   return (
-    <Paper
-      elevation={6}
+    <Box
+      // elevation={6}
       sx={{
         paddingTop: 1,
         paddingLeft: 1,
-        height: "84vh",
+        // height: "84vh",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        overflow: "auto",
       }}
     >
       <div style={{ display: "flex", margin: "8px" }}>
@@ -405,6 +404,6 @@ export default function Order() {
           )}
         </Box>
       </div>
-    </Paper>
+    </Box>
   );
 }
