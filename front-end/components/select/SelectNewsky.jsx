@@ -92,49 +92,49 @@ export default function SelectNewsky(props) {
     };
   }, [inputValue]);
   return (
-    <div>
-      <Autocomplete
-        fullWidth
-        size="small"
-        // sx={
-        //   props?.style && typeof props?.style === "object"
-        //     ? props.style
-        //     : { width: "640px" }
-        // }
-        open={open}
-        onOpen={() => setOpen(true)}
-        onClose={() => setOpen(false)}
-        getOptionLabel={(option) => option.nameStr || ""} // Adjust based on your data
-        renderOption={(props, option) => {
-          return (
-            <li {...props} key={option.id}>
-              {option.nameStr}
-            </li>
-          );
-        }}
-        options={options && options?.status != 404 ? options : []}
-        onInputChange={(event, newInputValue) => {
-          setInputValue(newInputValue);
-        }}
-        onChange={handleSelectionChange}
-        value={selectedValue}
-        isOptionEqualToValue={(option, value) => option?.id === value?.id}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label={props.lblinput ? props.lblinput : "Search input"}
-            variant="outlined"
-            InputProps={{
-              ...params.InputProps,
-              endAdornment: (
-                <React.Fragment>
-                  {params.InputProps.endAdornment}
-                </React.Fragment>
-              ),
-            }}
-          />
-        )}
-      />
-    </div>
+
+    <Autocomplete
+      fullWidth
+      size="small"
+      // sx={
+      //   props?.style && typeof props?.style === "object"
+      //     ? props.style
+      //     : { width: "640px" }
+      // }
+      open={open}
+      onOpen={() => setOpen(true)}
+      onClose={() => setOpen(false)}
+      getOptionLabel={(option) => option.nameStr || ""} // Adjust based on your data
+      renderOption={(props, option) => {
+        return (
+          <li {...props} key={option.id}>
+            {option.nameStr}
+          </li>
+        );
+      }}
+      options={options && options?.status != 404 ? options : []}
+      onInputChange={(event, newInputValue) => {
+        setInputValue(newInputValue);
+      }}
+      onChange={handleSelectionChange}
+      value={selectedValue}
+      isOptionEqualToValue={(option, value) => option?.id === value?.id}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label={props.lblinput ? props.lblinput : "Search input"}
+          variant="outlined"
+          InputProps={{
+            ...params.InputProps, //style: { fontSize: `12 !important` },
+            endAdornment: (
+              <React.Fragment>
+                {params.InputProps.endAdornment}
+              </React.Fragment>
+            ),
+          }}
+        />
+      )}
+    />
+
   );
 }

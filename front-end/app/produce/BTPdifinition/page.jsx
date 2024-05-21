@@ -49,7 +49,7 @@ export default function BTPdifinition() {
         <Button variant="contained" color="primary" sx={{ ml: 2 }}>Clone</Button>
         <Button variant="contained" color="primary" sx={{ ml: 2 }}>Map</Button>
       </Grid>
-      <Grid item xs={8}>
+      <Grid item xs={7}>
         {bomList.map((bom, index) => (
           <Fragment key={index}>
             <BomOutput key={bom.id} bom={bom} emitParent={(id, emitAct) => { setBomOutputIDSelected(id); setAction(emitAct); }} />
@@ -57,7 +57,7 @@ export default function BTPdifinition() {
           </Fragment>
         ))}
       </Grid>
-      <Grid item xs={4}>
+      <Grid item xs={5}>
         <BomDetail action={action} bomInputId={bomInputIDSelected} bomOutputId={bomOutputIDSelected} />
       </Grid>
     </Grid>
