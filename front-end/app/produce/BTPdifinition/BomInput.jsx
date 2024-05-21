@@ -14,6 +14,9 @@ export const BomInput = (props) => {
             console.log(listBomInput)
         }
     }
+    const handleBomClick = (id, action) => {
+        props.emitParent(id, action)
+    }
     useEffect(() => {
         // console.log("bomId in useEffect: ", props.bomId)
         getListBomInput(props.bomId);
@@ -43,10 +46,10 @@ export const BomInput = (props) => {
                         {listBomInput.map((bom, index) => (
                             // <BomInputRow key={index} bom={bom} />
                             <TableRow key={index} hover>
-                                <TableCell align="left" sx={{ border: 1 }}>{bom.productName}</TableCell>
-                                <TableCell align="left">{bom.measName}</TableCell>
-                                <TableCell align="right">{bom.quantity}</TableCell>
-                                <TableCell align="right">{0}</TableCell>
+                                <TableCell align="left" sx={{ border: 1 }}><a onClick={() => handleBomClick(bom.id, "EditBomInput")}>{bom.productName}</a></TableCell>
+                                <TableCell align="left" sx={{ border: 1 }}>{bom.measName}</TableCell>
+                                <TableCell align="right" sx={{ border: 1 }}>{bom.quantity}</TableCell>
+                                <TableCell align="right" sx={{ border: 1 }}>{0}</TableCell>
                             </TableRow>
                         ))}
 

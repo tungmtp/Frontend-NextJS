@@ -2,6 +2,7 @@ import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody, Typog
 import { useState, Fragment, useEffect } from "react";
 import Paper from '@mui/material/Paper';
 import { getData } from "@/hook/Hook";
+import Link from "next/link";
 
 export const BomOutput = (props) => {
     const [openDlg, setOpenDlg] = useState(false);
@@ -16,6 +17,10 @@ export const BomOutput = (props) => {
         setMeasName(meas.measName);
     }
 
+    const handleBomClick = (id, action) => {
+        props.emitParent(id, action)
+    }
+
     useEffect(() => {
         searchName(props.bom.productId, props.bom.measId);
     }, [props])
@@ -28,7 +33,7 @@ export const BomOutput = (props) => {
                 id="tableTitle"
                 component="div"
             >
-                Đầu ra {props.bom.bomCode}
+                Đầu ra
             </Typography>
 
             <TableContainer component={Paper}>
@@ -42,9 +47,9 @@ export const BomOutput = (props) => {
                     </TableHead>
                     <TableBody>
                         <TableRow hover>
-                            <TableCell align="left" sx={{ border: 1 }}>{productName}</TableCell>
-                            <TableCell align="left">{measName}</TableCell>
-                            <TableCell align="right">{props.bom.quantity}</TableCell>
+                            <TableCell align="left" sx={{ border: 1 }} ><a onClick={() => handleBomClick(props.bom.id, "EditBomOutput")}>{productName}</a></TableCell>
+                            <TableCell align="left" sx={{ border: 1 }}>{measName}</TableCell>
+                            <TableCell align="right" sx={{ border: 1 }}>{props.bom.quantity}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
