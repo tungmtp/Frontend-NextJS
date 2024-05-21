@@ -18,7 +18,7 @@ export default function OrderDetailAddDialog(Props) {
     quality: 1,
     rate: 0,
   });
-  console.log("selectedOrderDetail: ", selectedOrderDetail);
+  // console.log("selectedOrderDetail: ", selectedOrderDetail);
   const [seLectedMeasurement, setSeLectedMeasurement] = useState(null);
   const measureCategory = {
     1: "m2",

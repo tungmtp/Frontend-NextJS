@@ -57,8 +57,8 @@ const theme = createTheme({
     MuiSelect: {
       styleOverrides: {
         root: {
-          paddingTop: "2px", // Adjust top padding
-          paddingBottom: "2px", // Adjust bottom padding
+          paddingTop: "0px", // Adjust top padding
+          paddingBottom: "0px", // Adjust bottom padding
         },
       },
     },

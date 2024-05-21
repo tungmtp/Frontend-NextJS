@@ -224,7 +224,13 @@ export default function OrderDetailTable(props) {
             <MenuItem onClick={handleClose}> Lệnh cung ứng</MenuItem>
           </Link>
           <Link
-            href={"/business/addOrderDelivery"}
+            href={{
+              pathname: "/business/addOrderDelivery",
+              query: {
+                name: props.partnerName,
+                id: props.orderID,
+              },
+            }}
             style={{ color: "black", textDecoration: "none" }}
           >
             <MenuItem onClick={handleClose}>Lệnh giao hàng</MenuItem>

@@ -68,7 +68,6 @@ export default function Order() {
   const partnerName = partnerData?.find(
     (item) => item.id === selectedDataGrid?.partnersID
   )?.nameStr;
-  console.log(partnerName);
 
   useEffect(() => {
     const getOrdersData = async () => {
