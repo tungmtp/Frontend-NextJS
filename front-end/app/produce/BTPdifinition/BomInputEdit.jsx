@@ -1,15 +1,26 @@
 import { Box, Paper, TextField } from "@mui/material"
 import { Fragment, useState } from "react"
 import SelectNewsky from "@/components/select/SelectNewsky"
+import { SaveDelete } from "@/components/select/SaveDelete"
 
 export const BomInputEdit = (props) => {
     const [productId, setProductId] = useState("")
+    const [saveStatus, setSaveStatus] = useState(true)
     const bomInputDetail = JSON.parse(props.bomInputId);
+    const handleSave = () => {
+        alert("Save clicked")
+    }
+    const handleDelete = () => {
+        alert("Delete clicked")
+    }
+    const handleCancel = () => {
+        alert("Cancel clicked")
+    }
     return (
         <Paper elevation={3}>
-            <p></p>
+            {/* <p></p> */}
             <Box sx={{ typography: "subtitle", m: 2 }}>{(props.action == "AddBomInput") ? "Thêm một sản phẩm đầu vào" : "Sửa chi tiết một sản phẩm đầu vào"}</Box>
-            <Box sx={{ typography: "subtitle2", m: 2 }}>
+            <Box sx={{ m: 2 }}>
                 <SelectNewsky
                     lblinput="Sản phẩm đầu vào" emitParent={(id) => setProductId(id)}
                     currentItem={bomInputDetail.productId}
@@ -18,7 +29,7 @@ export const BomInputEdit = (props) => {
                     currentItemLink="/product-service/product/oneForSelect"
                 />
             </Box>
-            <Box sx={{ typography: "subtitle", m: 2 }}>
+            <Box sx={{ m: 2 }}>
                 <SelectNewsky
                     lblinput="Đơn vị tính" emitParent={(id) => setProductId(id)}
                     currentItem={bomInputDetail.measId}
@@ -27,7 +38,7 @@ export const BomInputEdit = (props) => {
                     currentItemLink="/product-service/Measurement/oneForSelect"
                 />
             </Box>
-            <Box sx={{ typography: "subtitle", m: 2 }}>
+            <Box sx={{ m: 2 }}>
                 <TextField
                     id="quantity"
                     fullWidth
@@ -39,6 +50,7 @@ export const BomInputEdit = (props) => {
                     }}
                 />
             </Box>
+            <SaveDelete save={handleSave} cancel={handleCancel} delete={handleDelete} />
         </Paper>
     )
 }

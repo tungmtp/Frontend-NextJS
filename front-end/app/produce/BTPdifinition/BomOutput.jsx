@@ -47,7 +47,7 @@ export const BomOutput = (props) => {
                     </TableHead>
                     <TableBody>
                         <TableRow hover>
-                            <TableCell align="left" sx={{ border: 1 }} ><a onClick={() => handleBomClick(props.bom.id, "EditBomOutput")}>{productName}</a></TableCell>
+                            <TableCell align="left" sx={{ border: 1 }} ><a onClick={() => handleBomClick(JSON.stringify(props.bom), "EditBomOutput")}>{productName}</a></TableCell>
                             <TableCell align="left" sx={{ border: 1 }}>{measName}</TableCell>
                             <TableCell align="right" sx={{ border: 1 }}>{props.bom.quantity}</TableCell>
                         </TableRow>

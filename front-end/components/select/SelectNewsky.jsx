@@ -48,6 +48,8 @@ export default function SelectNewsky(props) {
       const result = await getData(`${props.currentItemLink}/${id}`);
       if (!result.error) {
         setSelectedValue(result);
+        setOptions(options => [result, ...options]);
+        // setOptions(prevOptions => [result, ...prevOptions]);
       }
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -99,7 +101,7 @@ export default function SelectNewsky(props) {
       // sx={
       //   props?.style && typeof props?.style === "object"
       //     ? props.style
-      //     : { width: "640px" }
+      //     : { m: 2 }
       // }
       open={open}
       onOpen={() => setOpen(true)}

@@ -1,12 +1,13 @@
+import { Button } from "@mui/material";
 export const SaveDelete = (props) => {
     const handleCancel = () => {
-        props.cancel;
+        props.cancel();
     }
     const handleSave = () => {
-        props.save;
+        props.save();
     }
     const handleDelete = () => {
-        props.delete;
+        props.delete();
     }
     return (
         <div

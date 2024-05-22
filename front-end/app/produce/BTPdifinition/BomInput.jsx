@@ -7,11 +7,11 @@ export const BomInput = (props) => {
     // console.log(props.key, props.bomId);
     const [listBomInput, setListBomInput] = useState([])
     const getListBomInput = async (id) => {
-        console.log(`/produce-service/bom/input/${id}`)
+        // console.log(`/produce-service/bom/input/${id}`)
         if (id) {
             const result = await getData(`/produce-service/bom/input/${id}`)
             setListBomInput(result)
-            console.log(listBomInput)
+            // console.log(listBomInput)
         }
     }
     const handleBomClick = (id, action) => {
