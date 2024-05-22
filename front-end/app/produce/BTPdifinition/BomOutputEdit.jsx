@@ -7,13 +7,26 @@ export const BomOutputEdit = (props) => {
     const [bomCode, setBomCode] = useState("")
     const [productId, setProductId] = useState("")
     const [measId, setMeasId] = useState("")
+    const [segmentId, setSegmentId] = useState("")
     const [quantity, setQuantity] = useState(0)
     const [timeOfDelay, setTimeOfDelay] = useState(0)
 
     const [saveStatus, setSaveStatus] = useState(true)
     const bomOutputDetail = JSON.parse(props.bomOutputId);
     const handleSave = () => {
-        alert("Save clicked")
+        const data = {}
+        data.bomCode = bomCode;
+        data.productId = productId;
+        data.measId = measId;
+        data.quantity = quantity;
+        data.timeOfDelay = timeOfDelay;
+        data.segmentId = segmentId;
+        // alert("Save clicked")
+        const respone = putData(
+            "/produce-service/bom",
+            bomOutputDetail.id,
+            data
+        );
     }
     const handleDelete = () => {
         alert("Delete clicked")
@@ -26,15 +39,26 @@ export const BomOutputEdit = (props) => {
         <Paper elevation={3}>
             {/* <p></p> */}
             <Box sx={{ typography: "subtitle", m: 2 }}>{(props.action == "AddBomInput") ? "Thêm một định mức" : "Sửa chi tiết một định mức"}</Box>
+
             <Box sx={{ m: 2 }}>
                 <TextField
+                    name="bomCode"
                     fullWidth
                     variant="outlined"
                     label="Tên định mức"
-                    value={bomOutputDetail.bomCode}
+                    defaultValue={bomOutputDetail.bomCode}
                     onChange={(event) => {
-                        //Do something with this
+                        setBomCode(event.target.value);
                     }}
+                />
+            </Box>
+            <Box sx={{ m: 2 }}>
+                <SelectNewsky
+                    lblinput="Công đoạn sản xuất" emitParent={(id) => setSegmentId(id)}
+                    currentItem={bomOutputDetail.segmentId}
+                    byNameStr="/produce-service/segment/byNameStr"
+                    firstCall="/produce-service/segment/firstCall"
+                    currentItemLink="/produce-service/segment/oneForSelect"
                 />
             </Box>
             <Box sx={{ m: 2 }}>
@@ -60,9 +84,21 @@ export const BomOutputEdit = (props) => {
                     fullWidth
                     variant="outlined"
                     label="Số lượng làm ra"
-                    value={bomOutputDetail.quantity}
+                    defaultValue={bomOutputDetail.quantity}
                     onChange={(event) => {
                         setQuantity(event.target.value);
+                    }}
+                />
+            </Box>
+            <Box sx={{ m: 2 }}>
+                <TextField
+                    fullWidth
+                    variant="outlined"
+                    label="Thời gian xử lý (ngày)"
+                    defaultValue={bomOutputDetail.timeOfDelay}
+                    onChange={(event) => {
+                        event.preventDefault();
+                        setTimeOfDelay(event.target.value);
                     }}
                 />
             </Box>
