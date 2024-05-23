@@ -48,7 +48,8 @@ export default function SelectNewsky(props) {
       const result = await getData(`${props.currentItemLink}/${id}`);
       if (!result.error) {
         setSelectedValue(result);
-        setOptions(options => [result, ...options]);
+        // setOptions(options => [result, ...options]);
+        setOptions([result])
         // setOptions(prevOptions => [result, ...prevOptions]);
       }
     } catch (err) {
@@ -68,9 +69,18 @@ export default function SelectNewsky(props) {
   useEffect(() => {
     if (props.currentItem) {
       fetchSelectedItem(props.currentItem);
-      fetchFirstCall(props.currentItem).then((items) => {
-        setOptions(items);
-      });
+      if (props.disabled) {
+        console.log("Van chay du Disabled")
+        //   setOptions([])
+      } else {
+        console.log("Van FETCH du Disabled")
+        fetchFirstCall(props.currentItem).then((items) => {
+          setOptions(items);
+        });
+      }
+    } else {
+      setSelectedValue(null);
+      setOptions([]);
     }
   }, [props.currentItem]);
 
@@ -98,6 +108,7 @@ export default function SelectNewsky(props) {
     <Autocomplete
       fullWidth
       size="small"
+      disabled={(props.disabled == undefined) ? false : true}
       // sx={
       //   props?.style && typeof props?.style === "object"
       //     ? props.style

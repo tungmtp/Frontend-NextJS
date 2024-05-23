@@ -37,7 +37,7 @@ export default function BTPdifinition() {
     <Grid container spacing={0.5}>
       <Grid item xs={8}>
         <SelectNewsky
-          lblinput="Sản phẩm cần tạo định mức (Gõ vài ký tự đại diện của SP cần chọn)" emitParent={(id) => setProductId(id)}
+          lblinput="Sản phẩm cần tạo định mức (Gõ vài ký tự đại diện của SP cần chọn)" emitParent={(id) => { setProductId(id), setAction("Nothing") }}
           // currentItem="8ffc32c9-0d0e-4138-a30f-0514e11d5ea3"
           byNameStr="/product-service/product/byNameStr/bom"
           firstCall="/product-service/product/firstCall/bom"
@@ -45,7 +45,7 @@ export default function BTPdifinition() {
         />
       </Grid>
       <Grid item xs={4} sx={{ m: 0 }}>
-        <Button variant="contained" color="primary" >Add</Button>
+        <Button variant="contained" color="primary" onClick={() => { setBomOutputIDSelected(""), setAction("AddBomOutput") }}>Add</Button>
         <Button variant="contained" color="primary" sx={{ ml: 2 }}>Clone</Button>
         <Button variant="contained" color="primary" sx={{ ml: 2 }}>Map</Button>
       </Grid>
