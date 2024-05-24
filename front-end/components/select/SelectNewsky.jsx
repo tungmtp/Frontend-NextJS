@@ -59,9 +59,11 @@ export default function SelectNewsky(props) {
 
   const debouncedFetchOptions = debounce((query) => {
     if (query !== selectedValue?.nameStr) {
+      console.log(query);
       fetchOptions(query).then((items) => {
         // console.log("items:", items);
         setOptions(items);
+        setInputValue(query);
       });
     }
   }, 600); // Delay in ms
@@ -70,10 +72,8 @@ export default function SelectNewsky(props) {
     if (props.currentItem) {
       fetchSelectedItem(props.currentItem);
       if (props.disabled) {
-        console.log("Van chay du Disabled")
         //   setOptions([])
       } else {
-        console.log("Van FETCH du Disabled")
         fetchFirstCall(props.currentItem).then((items) => {
           setOptions(items);
         });
@@ -85,11 +85,12 @@ export default function SelectNewsky(props) {
   }, [props.currentItem]);
 
   useEffect(() => {
-    switch (inputValue.toUpperCase()) {
+    let mInput = inputValue.toUpperCase()
+    switch (mInput) {
       case "":
         // setOptions([]);
         break;
-      case "++":
+      case "**":
         // setOpenAddItem(true);
         alert("Sẽ mở dialog thêm sản phẩm");
         break;
@@ -97,7 +98,9 @@ export default function SelectNewsky(props) {
         alert("Sẽ mở dialog lọc sản phẩm");
         break;
       default:
-        debouncedFetchOptions(inputValue);
+        if (mInput.length > 2 && mInput.startsWith("++")) {
+          debouncedFetchOptions(inputValue.substring(2, inputValue.length));
+        }
     }
     return () => {
       debouncedFetchOptions.cancel();
@@ -114,6 +117,7 @@ export default function SelectNewsky(props) {
       //     ? props.style
       //     : { m: 2 }
       // }
+      inputValue={inputValue}
       open={open}
       onOpen={() => setOpen(true)}
       onClose={() => setOpen(false)}
