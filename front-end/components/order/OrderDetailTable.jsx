@@ -78,7 +78,7 @@ export default function OrderDetailTable(props) {
     };
 
     getOrderDetailData();
-  }, [props.orderID, openAddOderDetail]);
+  }, [props.orderID, openAddOderDetail, openUpdateOderDetail]);
 
   const calculateQualityRate = (itemQuanlity, rateInRoot) => {
     if (rateInRoot == 0) {
@@ -93,17 +93,15 @@ export default function OrderDetailTable(props) {
     {
       field: "nameStr",
       headerName: "Sản phẩm",
-      width: 380,
+      flex: 8,
       renderCell: (params) => {
         return (
           <Link
             href=""
             key={params.row.id}
-            sx={{
+            style={{
               textOverflow: "ellipsis",
               overflow: "hidden",
-              cursor: "pointer",
-              ":hover": " underline",
             }}
             onClick={() => {
               handleOpenUpdateOrderDetail();
@@ -132,7 +130,7 @@ export default function OrderDetailTable(props) {
           params.row.rateInRoot
         )} ${measureCategory[params.row.measCatId]}`;
       },
-      width: 300,
+      flex: 6,
     },
     { field: "price", headerName: "Giá bán", width: 100, type: "number" },
     {
@@ -237,7 +235,12 @@ export default function OrderDetailTable(props) {
           </Link>
           <Divider variant="middle" />
           <Link
-            href={"/business/deliveryProcess"}
+            href={{
+              pathname: "/business/deliveryProcess",
+              query: {
+                id: props.orderID,
+              },
+            }}
             style={{ color: "black", textDecoration: "none" }}
           >
             <MenuItem onClick={handleClose}>Quá trình giao hàng</MenuItem>
@@ -270,6 +273,12 @@ export default function OrderDetailTable(props) {
               </Typography>
             </GridFooterContainer>
           ),
+        }}
+        getRowHeight={() => "auto"}
+        sx={{
+          "&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell": {
+            py: "8px",
+          },
         }}
       />
       {selectedOrderDeatail && (

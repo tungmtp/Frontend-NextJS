@@ -62,6 +62,27 @@ const theme = createTheme({
         },
       },
     },
+    MuiDataGrid: {
+      styleOverrides: {
+        columnHeaders: {
+          backgroundColor: "#f5f5f5", // Example to ensure style override works
+        },
+        columnHeaderTitle: {
+          fontWeight: "bold",
+        },
+      },
+    },
+    MuiTableHead: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "#f5f5f5", // Use theme.palette.primary.main for dynamic color
+          // fontWeight: "bold", // Use theme.palette.common.white for dynamic color
+          "& .MuiTableCell-root": {
+            fontWeight: "bold", // Ensure table head cell text is white
+          },
+        },
+      },
+    },
     // Add other components here with similar overrides if needed
   },
 });

@@ -112,8 +112,8 @@ const AddOrderDelivery = () => {
                 `/product-service/product/oneForSelect/mayBeSell/${row.productID}`
               );
               return {
-                ordersDeliveryID: "",
-                ordersDetailID: row.id,
+                orderDeliveryID: "",
+                orderDetailID: row.id,
                 productID: row.productID,
                 id: row.id,
                 quality: row.quality,
@@ -130,8 +130,8 @@ const AddOrderDelivery = () => {
             } catch (err) {
               console.error("Error fetching product data:", err);
               return {
-                ordersDeliveryID: "",
-                ordersDetailID: row.id,
+                orderDeliveryID: "",
+                orderDetailID: row.id,
                 productID: row.productID,
                 id: row.id,
                 quality: row.quality,
@@ -327,7 +327,7 @@ const AddOrderDelivery = () => {
             delete row.id;
             delete row.index;
             delete row.measName;
-            row.ordersDeliveryID = result.id;
+            row.orderDeliveryID = result.id;
             const result2 = postData(
               "/business-service/orderDeliveryDetail",
               row
