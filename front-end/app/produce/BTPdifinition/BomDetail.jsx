@@ -15,13 +15,13 @@ export const BomDetail = (props) => {
             return (<BomOutputEdit bomOutputId={props.bomOutputId} action={props.action} />);
             break;
         case "EditBomInput":
-            return (<BomInputEdit bomInputId={props.bomInputId} action={props.action} keyRender={keyRender} />);
+            return (<BomInputEdit bomInputId={props.bomInputId} action={props.action} />);
             break;
         case "AddBomOutput":
-            return (<BomOutputEdit bomOutputId={""} action={props.action} keyRender={keyRender} />);
+            return (<BomOutputEdit bomOutputId={""} action={props.action} />);
             break;
         case "AddBomInput":
-            return (<BomInputEdit action={props.action} keyRender={keyRender} />);
+            return (<BomInputEdit action={props.action} />);
             break;
         default:
             return (

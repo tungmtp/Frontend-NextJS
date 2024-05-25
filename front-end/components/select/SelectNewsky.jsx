@@ -22,7 +22,8 @@ export default function SelectNewsky(props) {
   const handleSelectionChange = (event, value) => {
     setSelectedValue(value);
     if (props.emitParent !== undefined) {
-      props.emitParent(value ? value.id : "");
+      //Trả về value.id hoặc đầy đủ selectedValue dưới dạng String để dùng cho component sau
+      props.emitParent(value ? (props.returnObject ? JSON.stringify(value) : value.id) : "");
     }
   };
   const fetchOptions = async (query) => {
@@ -48,8 +49,8 @@ export default function SelectNewsky(props) {
       const result = await getData(`${props.currentItemLink}/${id}`);
       if (!result.error) {
         setSelectedValue(result);
-        // setOptions(options => [result, ...options]);
-        setOptions([result])
+        setOptions(options => [result, ...options]);
+        // setOptions([result])
         // setOptions(prevOptions => [result, ...prevOptions]);
       }
     } catch (err) {
@@ -59,7 +60,7 @@ export default function SelectNewsky(props) {
 
   const debouncedFetchOptions = debounce((query) => {
     if (query !== selectedValue?.nameStr) {
-      console.log(query);
+      // console.log(query);
       fetchOptions(query).then((items) => {
         // console.log("items:", items);
         setOptions(items);
@@ -73,14 +74,20 @@ export default function SelectNewsky(props) {
       fetchSelectedItem(props.currentItem);
       if (props.disabled) {
         //   setOptions([])
+        console.log(props.lblinput, props.disabled)
       } else {
         fetchFirstCall(props.currentItem).then((items) => {
           setOptions(items);
         });
       }
     } else {
+      //Dành cho mục Addnew khi ko có lựa chọn trước
       setSelectedValue(null);
-      setOptions([]);
+      if (props.fetchAll) {
+        fetchOptions("all").then((items) => setOptions(items));
+      } else {
+        // setOptions([]);
+      }
     }
   }, [props.currentItem]);
 
