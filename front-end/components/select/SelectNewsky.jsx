@@ -49,8 +49,8 @@ export default function SelectNewsky(props) {
       const result = await getData(`${props.currentItemLink}/${id}`);
       if (!result.error) {
         setSelectedValue(result);
-        setOptions(options => [result, ...options]);
-        // setOptions([result])
+        // setOptions(options => [result, ...options]);
+        setOptions([result])
         // setOptions(prevOptions => [result, ...prevOptions]);
       }
     } catch (err) {

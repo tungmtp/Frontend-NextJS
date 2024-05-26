@@ -1,12 +1,12 @@
 import { Box, Paper, TextField } from "@mui/material"
-import { Fragment, useState } from "react"
+import { useEffect, useState } from "react"
 import SelectNewsky from "@/components/select/SelectNewsky"
 import { SaveDelete } from "@/components/select/SaveDelete"
 import { getData } from "@/hook/Hook"
 
 export const BomInputEdit = (props) => {
-    const [productId, setProductId] = useState("")
-    const [saveStatus, setSaveStatus] = useState(true)
+    const [currentMeasId, setCurrentMeasId] = useState("")
+    const [currentProductId, setCurrentProductId] = useState("")
     // const bomInputDetail = JSON.parse(props.bomInputId);
     const getDefaultBomInputDetail = () => ({
         bomCode: "",
@@ -32,6 +32,20 @@ export const BomInputEdit = (props) => {
 
     const [bomInputDetail, setBomInputDetail] = useState(getBomInputDetail());
 
+    useEffect(() => {
+        let xx
+        if (props.bomInputId) {
+            xx = JSON.parse(props.bomInputId);
+            setCurrentMeasId(xx?.measId)
+            setCurrentProductId(xx?.productId)
+        }
+        else {
+            setCurrentMeasId("")
+            setCurrentProductId("")
+        }
+        setBomInputDetail(getBomInputDetail())
+    }, [props.bomInputId]);
+
     const handleSave = () => {
         alert("Save clicked")
     }
@@ -56,7 +70,7 @@ export const BomInputEdit = (props) => {
                 <SelectNewsky
                     lblinput="Sản phẩm đầu vào"
                     emitParent={productIdChange}
-                    currentItem={() => bomInputDetail.productId}
+                    currentItem={currentProductId}
                     byNameStr="/product-service/product/byNameStr"
                     firstCall="/product-service/product/firstCall"
                     currentItemLink="/product-service/product/oneForSelect"
@@ -66,7 +80,7 @@ export const BomInputEdit = (props) => {
                 <SelectNewsky
                     lblinput="Đơn vị tính"
                     emitParent={(id) => setBomInputDetail({ ...bomInputDetail, measId: id })}
-                    currentItem={() => bomInputDetail.measId}
+                    currentItem={currentMeasId}
                     byNameStr="/product-service/Measurement/byNameStr"
                     firstCall="/product-service/Measurement/firstCall"
                     currentItemLink="/product-service/Measurement/oneForSelect"
