@@ -3,7 +3,7 @@ import SelectNewsky from "@/components/select/SelectNewsky";
 import { Box, Button, Grid } from "@mui/material";
 import { useEffect, useState, Fragment } from "react";
 import { BomOutput } from "./BomOutput";
-import { getData } from "@/hook/Hook";
+import { getData, asyncGetData } from "@/hook/Hook";
 import { BomInput } from "./BomInput";
 import { BomDetail } from "./BomDetail";
 
@@ -27,6 +27,9 @@ export default function BTPdifinition() {
       } catch (error) {
         console.log("error get data:", error)
       }
+      asyncGetData(`/product-service/product/${id}`)
+        .then(response => response.json())
+        .then(data => console.log(data));
     } else { setBomList([]); }
   }
 
@@ -51,6 +54,7 @@ export default function BTPdifinition() {
         <SelectNewsky
           lblinput="Sản phẩm cần tạo định mức (Gõ vài ký tự đại diện của SP cần chọn)" emitParent={handProductChange}
           // currentItem="8ffc32c9-0d0e-4138-a30f-0514e11d5ea3"
+          // returnObject={true}
           byNameStr="/product-service/product/byNameStr/bom"
           firstCall="/product-service/product/firstCall/bom"
           currentItemLink="/product-service/product/oneForSelect"
@@ -70,7 +74,7 @@ export default function BTPdifinition() {
         ))}
       </Grid>
       <Grid item xs={5}>
-        <BomDetail action={action} bomInputId={bomInputIDSelected} bomOutputId={bomOutputIDSelected} />
+        <BomDetail action={action} bomInputId={bomInputIDSelected} bomOutputId={bomOutputIDSelected} selectedProductId={productId} />
       </Grid>
     </Grid>
   );

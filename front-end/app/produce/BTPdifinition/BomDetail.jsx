@@ -10,18 +10,22 @@ export const BomDetail = (props) => {
         setKeyRender(xx);
     }, [props.action, props.bomInputId, props.bomOutputId])
 
+    const emitParent = (action) => {
+        props.emitParent(action)
+    }
+
     switch (props.action) {
         case "EditBomOutput":
-            return (<BomOutputEdit bomOutputId={props.bomOutputId} action={props.action} />);
+            return (<BomOutputEdit bomOutputId={props.bomOutputId} action={props.action} emitParent={emitParent} />);
             break;
         case "EditBomInput":
-            return (<BomInputEdit bomInputId={props.bomInputId} action={props.action} />);
+            return (<BomInputEdit bomInputId={props.bomInputId} action={props.action} emitParent={emitParent} />);
             break;
         case "AddBomOutput":
-            return (<BomOutputEdit bomOutputId={""} action={props.action} />);
+            return (<BomOutputEdit bomOutputId={""} action={props.action} emitParent={emitParent} selectedProductId={props.selectedProductId} />);
             break;
         case "AddBomInput":
-            return (<BomInputEdit action={props.action} />);
+            return (<BomInputEdit action={props.action} emitParent={emitParent} />);
             break;
         default:
             return (

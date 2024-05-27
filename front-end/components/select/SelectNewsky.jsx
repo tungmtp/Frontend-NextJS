@@ -71,12 +71,14 @@ export default function SelectNewsky(props) {
 
   useEffect(() => {
     if (props.currentItem) {
-      fetchSelectedItem(props.currentItem);
+      // fetchSelectedItem(props.currentItem);
       if (props.disabled) {
         //   setOptions([])
         console.log(props.lblinput, props.disabled)
       } else {
         fetchFirstCall(props.currentItem).then((items) => {
+          let xx = items.find(item => item.id == props.currentItem)
+          setSelectedValue(xx)
           setOptions(items);
         });
       }
@@ -84,7 +86,12 @@ export default function SelectNewsky(props) {
       //Dành cho mục Addnew khi ko có lựa chọn trước
       setSelectedValue(null);
       if (props.fetchAll) {
-        fetchOptions("all").then((items) => setOptions(items));
+        fetchOptions("all").then((items) => {
+          // let xx = items.find(item => item.id == props.currentItem)
+          // setSelectedValue(xx)
+          setOptions(items)
+        }
+        );
       } else {
         // setOptions([]);
       }

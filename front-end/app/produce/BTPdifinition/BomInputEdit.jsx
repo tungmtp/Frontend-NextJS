@@ -9,12 +9,10 @@ export const BomInputEdit = (props) => {
     const [currentProductId, setCurrentProductId] = useState("")
     // const bomInputDetail = JSON.parse(props.bomInputId);
     const getDefaultBomInputDetail = () => ({
-        bomCode: "",
+        bomId: "",
         productId: "",
         measId: "",
-        segmentId: "",
-        quantity: 0,
-        timeOfDelay: 0,
+        quantity: 0
     });
 
     const getBomInputDetail = () => {
@@ -47,7 +45,25 @@ export const BomInputEdit = (props) => {
     }, [props.bomInputId]);
 
     const handleSave = () => {
-        alert("Save clicked")
+        const data = {
+            bomId: bomInputDetail.bomId,
+            productId: bomInputDetail.productId,
+            measId: bomInputDetail.measId,
+            quantity: bomInputDetail.quantity,
+        };
+        if (props.action === "EditBomOutput") {
+            putData("/produce-service/bominput", bomInputDetail.id, data).then((response) => {
+                //props.emitParent("InputEdit")
+                console.log("Update BOM Input detail: ", response)
+                // update table
+            });
+        } else {
+            postData("/produce-service/bominput", data).then((response) => {
+                //props.emitParent("InputAddNew")
+                console.log("Add new BOM Input detail: ", response)
+                //Update table
+            });
+        }
     }
     const handleDelete = () => {
         alert("Delete clicked")

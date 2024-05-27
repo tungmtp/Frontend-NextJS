@@ -28,8 +28,22 @@ export const BomOutputEdit = (props) => {
     };
 
     const [bomOutputDetail, setBomOutputDetail] = useState(getBomOutputDetail());
+    const [currentProductId, setCurrentProductId] = useState("")
+    const [currentSegmentId, setCurrentSegmentId] = useState("")
+    const [currentMeasId, setCurrentMeasId] = useState("")
 
     useEffect(() => {
+        let xx
+        if (props.action == "EditBomOutput") {
+            xx = JSON.parse(props.bomOutputId);
+            setCurrentMeasId(xx.measId);
+            setCurrentProductId(xx.productId)
+            setCurrentSegmentId(xx.segmentId)
+        } else {
+            setCurrentMeasId("");
+            setCurrentProductId(props.selectedProductId);
+            setCurrentSegmentId("")
+        }
         setBomOutputDetail(getBomOutputDetail());
     }, [props.bomOutputId, props.action]);
 
@@ -43,9 +57,14 @@ export const BomOutputEdit = (props) => {
             segmentId: bomOutputDetail.segmentId,
         };
         if (props.action === "EditBomOutput") {
-            putData("/produce-service/bom", bomOutputDetail.id, data);
+            putData("/produce-service/bom", bomOutputDetail.id, data).then((response) => {
+                //props.emitParent("OutputEdit")
+            });
+
         } else {
-            postData("/produce-service/bom", data);
+            postData("/produce-service/bom", data).then((response) => {
+                //props.emitParent("OutputAddNew")
+            });
         }
     };
 
@@ -72,16 +91,16 @@ export const BomOutputEdit = (props) => {
                 <SelectNewsky
                     lblinput="Công đoạn sản xuất"
                     emitParent={(id) => setBomOutputDetail({ ...bomOutputDetail, segmentId: id })}
-                    currentItem={bomOutputDetail.segmentId}
+                    currentItem={currentSegmentId}
                     byNameStr="/produce-service/segment/byNameStr"
                     firstCall="/produce-service/segment/firstCall"
                     currentItemLink="/produce-service/segment/oneForSelect"
                 />
                 <SelectNewsky
                     lblinput="Sản phẩm đầu ra"
-                    disabled={true}
+                    disabled={false}
                     emitParent={(id) => setBomOutputDetail({ ...bomOutputDetail, productId: id })}
-                    currentItem={bomOutputDetail.productId}
+                    currentItem={currentProductId}
                     byNameStr="/product-service/product/byNameStr"
                     firstCall="/product-service/product/firstCall"
                     currentItemLink="/product-service/product/oneForSelect"
@@ -89,7 +108,7 @@ export const BomOutputEdit = (props) => {
                 <SelectNewsky
                     lblinput="Đơn vị tính"
                     emitParent={(id) => setBomOutputDetail({ ...bomOutputDetail, measId: id })}
-                    currentItem={bomOutputDetail.measId}
+                    currentItem={currentMeasId}
                     byNameStr="/product-service/Measurement/byNameStr"
                     firstCall="/product-service/Measurement/firstCall"
                     currentItemLink="/product-service/Measurement/oneForSelect"

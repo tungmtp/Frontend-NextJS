@@ -54,6 +54,17 @@ export async function getData(serviceURL) {
   }
 }
 
+export function asyncGetData(serviceURL) {
+  const url = `${process.env.NEXT_PUBLIC_DB_HOST}${serviceURL}`;
+  return fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      UserName: username,
+      // ...config.headers,
+    },
+  });
+}
+
 export async function getDataById(serviceURL, id) {
   try {
     const config = {
