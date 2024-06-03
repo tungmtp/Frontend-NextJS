@@ -28,34 +28,35 @@ export const BomOutputEdit = (props) => {
     };
 
     const [bomOutputDetail, setBomOutputDetail] = useState(getBomOutputDetail());
-    const [currentProductId, setCurrentProductId] = useState("")
-    const [currentSegmentId, setCurrentSegmentId] = useState("")
-    const [currentMeasId, setCurrentMeasId] = useState("")
+    const [defaultProductId, setDefaultProductId] = useState("")
+    const [defaultSegmentId, setDefaultSegmentId] = useState("")
+    const [defaultMeasId, setDefaultMeasId] = useState("")
 
     useEffect(() => {
         let xx
         if (props.action == "EditBomOutput") {
             xx = JSON.parse(props.bomOutputId);
-            setCurrentMeasId(xx.measId);
-            setCurrentProductId(xx.productId)
-            setCurrentSegmentId(xx.segmentId)
+            setDefaultMeasId(xx.measId);
+            setDefaultProductId(xx.productId)
+            setDefaultSegmentId(xx.segmentId)
         } else {
-            setCurrentMeasId("");
-            setCurrentProductId(props.selectedProductId);
-            setCurrentSegmentId("")
+            setDefaultMeasId(props.measIdForAddBOM);
+            setDefaultProductId(props.selectedProductId);
+            setDefaultSegmentId(props.segmentIdForAddBOM);
         }
         setBomOutputDetail(getBomOutputDetail());
     }, [props.bomOutputId, props.action]);
 
     const handleSave = () => {
         const data = {
-            bomCode: bomOutputDetail.bomCode,
-            productId: bomOutputDetail.productId,
-            measId: bomOutputDetail.measId,
+            bomCode: bomOutputDetail.bomCode ? bomOutputDetail.bomCode : "Định mức của: " + props.productNameForAddBOM,
+            productId: bomOutputDetail.productId ? bomOutputDetail.productId : defaultProductId,
+            measId: bomOutputDetail.measId ? bomOutputDetail.measId : defaultMeasId,
             quantity: bomOutputDetail.quantity,
             timeOfDelay: bomOutputDetail.timeOfDelay,
-            segmentId: bomOutputDetail.segmentId,
+            segmentId: bomOutputDetail.segmentId ? bomOutputDetail.segmentId : defaultSegmentId,
         };
+        console.log(data)
         if (props.action === "EditBomOutput") {
             putData("/produce-service/bom", bomOutputDetail.id, data).then((response) => {
                 //props.emitParent("OutputEdit")
@@ -85,13 +86,13 @@ export const BomOutputEdit = (props) => {
                     fullWidth
                     variant="outlined"
                     label="Tên định mức"
-                    value={bomOutputDetail.bomCode}
+                    value={bomOutputDetail.bomCode ? bomOutputDetail.bomCode : "Định mức của: " + props.productNameForAddBOM}
                     onChange={(event) => setBomOutputDetail({ ...bomOutputDetail, bomCode: event.target.value })}
                 />
                 <SelectNewsky
                     lblinput="Công đoạn sản xuất"
                     emitParent={(id) => setBomOutputDetail({ ...bomOutputDetail, segmentId: id })}
-                    currentItem={currentSegmentId}
+                    currentItem={defaultSegmentId}
                     byNameStr="/produce-service/segment/byNameStr"
                     firstCall="/produce-service/segment/firstCall"
                     currentItemLink="/produce-service/segment/oneForSelect"
@@ -100,7 +101,7 @@ export const BomOutputEdit = (props) => {
                     lblinput="Sản phẩm đầu ra"
                     disabled={false}
                     emitParent={(id) => setBomOutputDetail({ ...bomOutputDetail, productId: id })}
-                    currentItem={currentProductId}
+                    currentItem={defaultProductId}
                     byNameStr="/product-service/product/byNameStr"
                     firstCall="/product-service/product/firstCall"
                     currentItemLink="/product-service/product/oneForSelect"
@@ -108,7 +109,7 @@ export const BomOutputEdit = (props) => {
                 <SelectNewsky
                     lblinput="Đơn vị tính"
                     emitParent={(id) => setBomOutputDetail({ ...bomOutputDetail, measId: id })}
-                    currentItem={currentMeasId}
+                    currentItem={defaultMeasId}
                     byNameStr="/product-service/Measurement/byNameStr"
                     firstCall="/product-service/Measurement/firstCall"
                     currentItemLink="/product-service/Measurement/oneForSelect"

@@ -10,6 +10,8 @@ import { BomDetail } from "./BomDetail";
 
 export default function BTPdifinition() {
   const [productId, setProductId] = useState("");
+  const [defaultMeasId, setDefaultMeasId] = useState("");
+  const [productDetails, setProductDetails] = useState({});
   const [bomList, setBomList] = useState([])
   const [bomOutputIDSelected, setBomOutputIDSelected] = useState("")
   const [bomInputIDSelected, setBomInputIDSelected] = useState("")
@@ -29,13 +31,26 @@ export default function BTPdifinition() {
       }
       asyncGetData(`/product-service/product/${id}`)
         .then(response => response.json())
-        .then(data => console.log(data));
+        .then(data => {
+          setDefaultMeasId(data.measID);
+          setProductDetails({ ...data })
+          console.log(data);
+        })
+        .catch(error => console.log("error get data:", error));
     } else { setBomList([]); }
   }
 
   const handProductChange = (id) => {
     setProductId(id);
     setAction("Nothing")
+  }
+
+  const handleInOutAction = (action) => {
+    if (action == "Cancel") {
+      setAction("Nothing")
+    } else {
+      handProductChange(productId);
+    }
   }
 
   useEffect(() => {
@@ -74,7 +89,11 @@ export default function BTPdifinition() {
         ))}
       </Grid>
       <Grid item xs={5}>
-        <BomDetail action={action} bomInputId={bomInputIDSelected} bomOutputId={bomOutputIDSelected} selectedProductId={productId} />
+        <BomDetail action={action} bomInputId={bomInputIDSelected} bomOutputId={bomOutputIDSelected} selectedProductId={productId}
+          measIdForAddBOM={defaultMeasId}
+          segmentIdForAddBOM={productDetails.segmentID}
+          productNameForAddBOM={productDetails.nameStr}
+          emitParent={handleInOutAction} />
       </Grid>
     </Grid>
   );

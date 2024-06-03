@@ -53,23 +53,23 @@ export const BomInputEdit = (props) => {
         };
         if (props.action === "EditBomOutput") {
             putData("/produce-service/bominput", bomInputDetail.id, data).then((response) => {
-                //props.emitParent("InputEdit")
+                props.emitParent("InputEdit")
                 console.log("Update BOM Input detail: ", response)
                 // update table
             });
         } else {
             postData("/produce-service/bominput", data).then((response) => {
-                //props.emitParent("InputAddNew")
+                props.emitParent("InputAddNew")
                 console.log("Add new BOM Input detail: ", response)
                 //Update table
             });
         }
     }
     const handleDelete = () => {
-        alert("Delete clicked")
+        props.emitParent("InputDelete")
     }
     const handleCancel = () => {
-        alert("Cancel clicked")
+        props.emitParent("Cancel")
     }
 
     const productIdChange = (id) => {

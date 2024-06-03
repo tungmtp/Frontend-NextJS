@@ -22,7 +22,16 @@ export const BomDetail = (props) => {
             return (<BomInputEdit bomInputId={props.bomInputId} action={props.action} emitParent={emitParent} />);
             break;
         case "AddBomOutput":
-            return (<BomOutputEdit bomOutputId={""} action={props.action} emitParent={emitParent} selectedProductId={props.selectedProductId} />);
+            return (
+                <BomOutputEdit
+                    bomOutputId={""}
+                    action={props.action}
+                    emitParent={emitParent}
+                    selectedProductId={props.selectedProductId}
+                    measIdForAddBOM={props.measIdForAddBOM}
+                    segmentIdForAddBOM={props.segmentIdForAddBOM}
+                    productNameForAddBOM={props.productNameForAddBOM}
+                />);
             break;
         case "AddBomInput":
             return (<BomInputEdit action={props.action} emitParent={emitParent} />);
