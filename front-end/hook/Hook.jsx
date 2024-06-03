@@ -43,13 +43,19 @@ export async function getData(serviceURL) {
     });
     if (!response.ok) {
     }
+    const responseText = await response.text();
+    if (!responseText) {
+      // Handle empty response
+      return null; // or return an empty object, array, etc., depending on your needs
+    }
 
     // Parse the JSON response directly and return it
-    const data = await response.json();
+    // const data = await response.json();
+    const data = JSON.parse(responseText);
     return data;
   } catch (error) {
     // Handle errors
-    console.error("Get productCategory failed:", error);
+    console.error("Get data failed:", error);
     throw error; // Rethrow the error for handling elsewhere if needed
   }
 }
@@ -180,6 +186,38 @@ export async function deleteData(serviceURL, id) {
   } catch (error) {
     // Xử lý lỗi
     console.error("Put data failed:", error);
+    throw error; // Ném lỗi để xử lý ở nơi gọi hàm nếu cần
+  }
+}
+
+export async function PostDataMessage(serviceURL, message) {
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        UserName: username,
+      },
+    };
+    const url = `${process.env.NEXT_PUBLIC_DB_HOST}${serviceURL}`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        ...config.headers,
+      },
+      body: message,
+    });
+
+    if (!response.ok) {
+      // Xử lý các trường hợp lỗi
+      const errorMessage = await response.text();
+      throw new Error(`Error: ${errorMessage}`);
+    }
+
+    // Parse JSON response và trả về dữ liệu
+  } catch (error) {
+    // Xử lý lỗi
+    console.error("Post data failed:", error);
     throw error; // Ném lỗi để xử lý ở nơi gọi hàm nếu cần
   }
 }

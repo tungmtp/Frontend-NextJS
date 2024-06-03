@@ -32,21 +32,21 @@ import { getData, postData } from "@/hook/Hook";
 import Cookies from "js-cookie";
 import { NotifySnackbar } from "@/components/general/notifySnackbar/NotifySnackbar";
 import { useSnackbar } from "notistack";
-
+import { purpose, warehouseID } from "@/components/selectOptions";
 const username = Cookies.get("username");
-const purpose = {
-  1: "Bán hàng",
-  2: "Bảo hành",
-  3: "Cấp mẫu miễn phí",
-  4: "Trả lại nhà cung cấp",
-  5: "Xuất chuyển kho",
-};
-const warehouseID = {
-  1: "Kho văn phòng",
-  2: "Kho Nhà máy Việt Á",
-  3: "Kho Sài gòn",
-  10: "Kho CPC",
-};
+// const purpose = {
+//   1: "Bán hàng",
+//   2: "Bảo hành",
+//   3: "Cấp mẫu miễn phí",
+//   4: "Trả lại nhà cung cấp",
+//   5: "Xuất chuyển kho",
+// };
+// const warehouseID = {
+//   1: "Kho văn phòng",
+//   2: "Kho Nhà máy Việt Á",
+//   3: "Kho Sài gòn",
+//   10: "Kho CPC",
+// };
 const measureCategory = {
   1: "m2",
   2: "md",
@@ -83,7 +83,7 @@ const AddOrderDelivery = () => {
   });
 
   //   console.log(dayjs(rows[0].ngayGiao).format("YYYY-MM-DD"));
-  // console.log("orderDelivery:  ", orderDelivery);
+  console.log("orderDelivery:  ", orderDelivery);
   // console.log("Delivery Detail:  ", rows);
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -307,7 +307,11 @@ const AddOrderDelivery = () => {
   const isAnyRowInEditMode = Object.values(rowModesModel).some(
     (row) => row.mode === GridRowModes.Edit
   );
-  const handleSubmit = () => {
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const formJson = Object.fromEntries(formData.entries());
+    const deliveryAddress = formJson.deliveryAddress;
     if (isAnyRowInEditMode) {
       NotifySnackbar(
         enqueueSnackbar,
@@ -315,11 +319,15 @@ const AddOrderDelivery = () => {
         "warning"
       );
     } else {
+      //update the deliveryAddress because using onchane and setUsestate is too slow
+      const updatedOrderDelivery = { ...orderDelivery };
+      updatedOrderDelivery.deliveryAddress = deliveryAddress;
+      console.log(updatedOrderDelivery);
       const postOrderDelivery = async () => {
         try {
           const result = await postData(
             "/business-service/orderDelivery",
-            orderDelivery
+            updatedOrderDelivery
           );
           // console.log(result.id);
           rows.map((row) => {
@@ -349,6 +357,8 @@ const AddOrderDelivery = () => {
       justifyContent="center"
       spacing={{ xs: 2, md: 3 }}
       columns={{ xs: 1, sm: 8, md: 12 }}
+      component={"form"}
+      onSubmit={handleSubmit}
     >
       <Grid item xs={12}>
         <Typography variant="h5" gutterBottom>
@@ -435,16 +445,16 @@ const AddOrderDelivery = () => {
       <Grid item xs={1} sm={8} md={12}>
         <TextField
           multiline
-          id=""
+          name="deliveryAddress"
           variant="outlined"
           label="Địa chỉ gia hàng"
           sx={{ width: "100%" }}
-          value={orderDelivery?.deliveryAddress}
-          onChange={(event) => {
-            const updatedOrderDelivery = { ...orderDelivery };
-            updatedOrderDelivery.deliveryAddress = event.target.value;
-            setOrderDelivery(updatedOrderDelivery);
-          }}
+          // value={orderDelivery?.deliveryAddress}
+          // onChange={(event) => {
+          //   const updatedOrderDelivery = { ...orderDelivery };
+          //   updatedOrderDelivery.deliveryAddress = event.target.value;
+          //   setOrderDelivery(updatedOrderDelivery);
+          // }}
         />
       </Grid>
       <Grid item xs={1} sm={7} md={11.5}>
@@ -483,7 +493,7 @@ const AddOrderDelivery = () => {
             variant="contained"
             color="primary"
             sx={{ mr: 2 }}
-            onClick={handleSubmit}
+            type="submit"
           >
             Save
           </Button>
