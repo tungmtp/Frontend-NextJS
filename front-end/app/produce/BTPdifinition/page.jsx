@@ -17,6 +17,7 @@ export default function BTPdifinition() {
   const [bomInputIDSelected, setBomInputIDSelected] = useState("")
   const [action, setAction] = useState("")
   const [addButtonDisabled, setAddButtonDisabled] = useState(false)
+  const [keyRendered, setKeyRendered] = useState(0)
 
   const getBom = async (id) => {
     if (id) {
@@ -46,16 +47,15 @@ export default function BTPdifinition() {
   }
 
   const handleInOutAction = (action) => {
-    if (action == "Cancel") {
-      setAction("Nothing")
-    } else {
-      handProductChange(productId);
+    setAction("Nothing")
+    if (action !== "Cancel") {
+      setKeyRendered(action => action + 1)
     }
   }
 
   useEffect(() => {
     getBom(productId);
-  }, [productId])
+  }, [productId, keyRendered])
 
   useEffect(() => {
     if (bomList && bomList.length > 0) {

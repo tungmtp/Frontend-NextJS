@@ -2,7 +2,7 @@ import { Box, Paper, Stack, TextField } from "@mui/material";
 import { Fragment, useEffect, useState } from "react";
 import SelectNewsky from "@/components/select/SelectNewsky";
 import { SaveDelete } from "@/components/select/SaveDelete";
-import { putData, postData } from "@/hook/Hook";
+import { putData, postData, asyncFetch } from "@/hook/Hook";
 
 export const BomOutputEdit = (props) => {
     const getDefaultBomOutputDetail = () => ({
@@ -59,22 +59,26 @@ export const BomOutputEdit = (props) => {
         console.log(data)
         if (props.action === "EditBomOutput") {
             putData("/produce-service/bom", bomOutputDetail.id, data).then((response) => {
-                //props.emitParent("OutputEdit")
+                props.emitParent("OutputEdit")
             });
 
         } else {
             postData("/produce-service/bom", data).then((response) => {
-                //props.emitParent("OutputAddNew")
+                props.emitParent("OutputAddNew")
             });
         }
     };
 
     const handleDelete = () => {
-        alert("Delete clicked");
+        // alert("Delete clicked");
+        asyncFetch("DELETE", `/produce-service/bom/${bomOutputDetail.id}`)
+            .then((response) => { props.emitParent("OutputDelete") })
+            .catch((error) => console.log(error));
+
     };
 
     const handleCancel = () => {
-        alert("Cancel clicked");
+        props.emitParent("Cancel")
     };
 
     return (

@@ -194,3 +194,27 @@ export async function deleteData(serviceURL, id) {
     throw error; // Ném lỗi để xử lý ở nơi gọi hàm nếu cần
   }
 }
+
+export function asyncFetch(method, url, data) {
+  if (data) {
+    return fetch(`${process.env.NEXT_PUBLIC_DB_HOST}${url}`, {
+      method: method,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        UserName: username,
+      },
+      body: JSON.stringify(data),
+    });
+  }
+  else {
+    return fetch(`${process.env.NEXT_PUBLIC_DB_HOST}${url}`, {
+      method: method,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        UserName: username,
+      },
+    });
+  }
+}
