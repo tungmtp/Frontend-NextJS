@@ -1,0 +1,24 @@
+{
+	"Print to console": {
+		"scope": "javascript,typescript",
+		"prefix": "log",
+		"body": [
+			"console.log('$1');",
+			"$2"
+		],
+		"description": "Log output to console"
+	},
+	"Async Fetch Data": {
+		"scope": "javascript,typescript,javascriptreact",
+		"prefix": "myfetch",
+		"body": [
+			"asyncFetch('POST', `/produce-service/bominput`, data)",
+			".then((response) => response.json())",
+			".then((data) => {",
+			"\t// Do something",
+			"})",
+			".catch((error) => {console.log(error)});"
+		],
+		"description": "Fetch Data by asynchronous solution"
+	}
+}

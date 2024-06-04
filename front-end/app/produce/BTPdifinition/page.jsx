@@ -25,6 +25,7 @@ export default function BTPdifinition() {
         const result = await getData(`/produce-service/bom/product/${id}`);
         if (!result.error) {
           // console.log(result);
+          console.log("Có chạy bomList");
           setBomList(result);
         }
       } catch (error) {
@@ -38,6 +39,7 @@ export default function BTPdifinition() {
           console.log(data);
         })
         .catch(error => console.log("error get data:", error));
+
     } else { setBomList([]); }
   }
 
@@ -49,7 +51,7 @@ export default function BTPdifinition() {
   const handleInOutAction = (action) => {
     setAction("Nothing")
     if (action !== "Cancel") {
-      setKeyRendered(action => action + 1)
+      setKeyRendered(keyRendered => keyRendered + 1)
     }
   }
 
@@ -83,8 +85,8 @@ export default function BTPdifinition() {
       <Grid item xs={7}>
         {bomList.map((bom, index) => (
           <Fragment key={index}>
-            <BomOutput key={bom.id} bom={bom} emitParent={(id, emitAct) => { setBomOutputIDSelected(id); setAction(emitAct); }} />
-            <BomInput bomId={bom.id} emitParent={(id, emitAct) => { setBomInputIDSelected(id); setAction(emitAct); }} />
+            <BomOutput key={bom.id} bom={bom} emitParent={(id, emitAct) => { setBomOutputIDSelected(id); setAction(emitAct); }} keyRendered={keyRendered} />
+            <BomInput bomId={bom.id} emitParent={(id, emitAct) => { setBomInputIDSelected(id); setAction(emitAct); }} keyRendered={keyRendered} />
           </Fragment>
         ))}
       </Grid>

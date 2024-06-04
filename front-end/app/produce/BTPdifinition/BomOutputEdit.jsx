@@ -52,8 +52,8 @@ export const BomOutputEdit = (props) => {
             bomCode: bomOutputDetail.bomCode ? bomOutputDetail.bomCode : "Định mức của: " + props.productNameForAddBOM,
             productId: bomOutputDetail.productId ? bomOutputDetail.productId : defaultProductId,
             measId: bomOutputDetail.measId ? bomOutputDetail.measId : defaultMeasId,
-            quantity: bomOutputDetail.quantity,
-            timeOfDelay: bomOutputDetail.timeOfDelay,
+            quantity: Number(bomOutputDetail.quantity),
+            timeOfDelay: Number(bomOutputDetail.timeOfDelay),
             segmentId: bomOutputDetail.segmentId ? bomOutputDetail.segmentId : defaultSegmentId,
         };
         console.log(data)

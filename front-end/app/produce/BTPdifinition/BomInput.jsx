@@ -20,17 +20,11 @@ export const BomInput = (props) => {
     useEffect(() => {
         // console.log("bomId in useEffect: ", props.bomId)
         getListBomInput(props.bomId);
-    }, [props.bomId])
+    }, [props.bomId, props.keyRendered])
     return (
         <Fragment>
-            <Typography
-                sx={{ flex: '1 1 100%' }}
-                variant="h6"
-                id="tableInput"
-                component="div"
-            >
-                Đầu vào
-            </Typography>
+            {/* <Button variant="outline" sx={{ mt: 2 }} onClick={() => handleBomClick("", "AddBomInput")}>Đầu vào</Button> */}
+            <a sx={{ mt: 2 }} onClick={() => handleBomClick("", "AddBomInput")}>Đầu vào</a>
 
             <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }} aria-labelledby="tableInput" size="small">

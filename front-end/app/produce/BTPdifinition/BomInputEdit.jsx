@@ -1,13 +1,13 @@
-import { Box, Paper, TextField } from "@mui/material"
+import { Box, Paper, TextField, Stack } from "@mui/material"
 import { useEffect, useState } from "react"
 import SelectNewsky from "@/components/select/SelectNewsky"
 import { SaveDelete } from "@/components/select/SaveDelete"
-import { getData } from "@/hook/Hook"
+import { asyncFetch } from "@/hook/Hook"
 
 export const BomInputEdit = (props) => {
     const [currentMeasId, setCurrentMeasId] = useState("")
     const [currentProductId, setCurrentProductId] = useState("")
-    // const bomInputDetail = JSON.parse(props.bomInputId);
+    const [defaultQty, setDefaultQty] = useState(0)
     const getDefaultBomInputDetail = () => ({
         bomId: "",
         productId: "",
@@ -36,10 +36,12 @@ export const BomInputEdit = (props) => {
             xx = JSON.parse(props.bomInputId);
             setCurrentMeasId(xx?.measId)
             setCurrentProductId(xx?.productId)
+            setDefaultQty(xx.quantity)
         }
         else {
             setCurrentMeasId("")
             setCurrentProductId("")
+            setDefaultQty(0)
         }
         setBomInputDetail(getBomInputDetail())
     }, [props.bomInputId]);
@@ -51,22 +53,31 @@ export const BomInputEdit = (props) => {
             measId: bomInputDetail.measId,
             quantity: bomInputDetail.quantity,
         };
-        if (props.action === "EditBomOutput") {
-            putData("/produce-service/bominput", bomInputDetail.id, data).then((response) => {
-                props.emitParent("InputEdit")
-                console.log("Update BOM Input detail: ", response)
-                // update table
-            });
+        if (props.action === "EditBomInput") {
+            asyncFetch("PUT", `/produce-service/bominput/${bomInputDetail.id}`, data)
+                .then((response) => {
+                    props.emitParent("InputEdit")
+                    console.log("Update BOM Input detail: ", response)
+                })
+                .catch((error) => { console.log(error) });
         } else {
-            postData("/produce-service/bominput", data).then((response) => {
-                props.emitParent("InputAddNew")
-                console.log("Add new BOM Input detail: ", response)
-                //Update table
-            });
+            asyncFetch('POST', `/produce-service/bominput`, data)
+                .then((response) => {
+                    props.emitParent("InputAddNew")
+                    console.log("INSERT BOM Input detail: ", response)
+                })
+                .catch((error) => { console.log(error) });
+
+
         }
     }
     const handleDelete = () => {
-        props.emitParent("InputDelete")
+        asyncFetch('DELETE', `/produce-service/bominput/${bomInputDetail.id}`, data)
+            .then((response) => {
+                props.emitParent("InputDelete")
+            })
+            .catch((error) => { console.log(error) });
+
     }
     const handleCancel = () => {
         props.emitParent("Cancel")
@@ -75,14 +86,20 @@ export const BomInputEdit = (props) => {
     const productIdChange = (id) => {
         setBomInputDetail({ ...bomInputDetail, productId: id })
         if (id) {
-            // getData(`/product-service/product/${id}`).then((data) => { setBomInputDetail({ ...bomInputDetail, measId: data.measId }) })
+            asyncFetch('GET', `/product-service/product/${id}`)
+                .then(response => response.json())
+                .then((data) => {
+                    console.log(data);
+                    setCurrentMeasId(data.measID)
+                })
+                .catch((error) => { console.log(error) });
         }
     }
     return (
         <Paper elevation={3}>
-            {/* <p></p> */}
-            <Box sx={{ typography: "subtitle", m: 2 }}>{(props.action == "AddBomInput") ? "Thêm một sản phẩm đầu vào" : "Sửa chi tiết một sản phẩm đầu vào"}</Box>
-            <Box sx={{ m: 2 }}>
+            <Stack spacing={2} sx={{ p: 2 }}>
+                <Box sx={{ typography: "subtitle", m: 2 }}>{(props.action == "AddBomInput") ? "Thêm một sản phẩm đầu vào" : "Sửa chi tiết một sản phẩm đầu vào"}</Box>
+
                 <SelectNewsky
                     lblinput="Sản phẩm đầu vào"
                     emitParent={productIdChange}
@@ -91,8 +108,7 @@ export const BomInputEdit = (props) => {
                     firstCall="/product-service/product/firstCall"
                     currentItemLink="/product-service/product/oneForSelect"
                 />
-            </Box>
-            <Box sx={{ m: 2 }}>
+
                 <SelectNewsky
                     lblinput="Đơn vị tính"
                     emitParent={(id) => setBomInputDetail({ ...bomInputDetail, measId: id })}
@@ -101,18 +117,18 @@ export const BomInputEdit = (props) => {
                     firstCall="/product-service/Measurement/firstCall"
                     currentItemLink="/product-service/Measurement/oneForSelect"
                 />
-            </Box>
-            <Box sx={{ m: 2 }}>
+
                 <TextField
                     id="quantity"
                     fullWidth
                     variant="outlined"
                     label="Số lượng sử dụng"
                     value={bomInputDetail.quantity}
-                    onChange={(event) => setBomInputDetail({ ...bomInputDetail, bomCode: event.target.value })}
+                    onChange={(event) => setBomInputDetail({ ...bomInputDetail, quantity: event.target.value })}
                 />
-            </Box>
-            <SaveDelete save={handleSave} cancel={handleCancel} delete={handleDelete} />
+
+                <SaveDelete save={handleSave} cancel={handleCancel} delete={handleDelete} />
+            </Stack>
         </Paper>
     )
 }

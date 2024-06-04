@@ -6,19 +6,13 @@ import { getData } from "@/hook/Hook";
 // import ItemAddDialog from "../dialog/productDialog/ProductAddDialog";
 
 export default function SelectNewsky(props) {
-  const [openAddItem, setOpenAddItem] = useState(false);
 
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [selectedValue, setSelectedValue] = useState(null);
 
-  const handleOpenAddItem = () => {
-    setOpenAddItem(true);
-  };
-  const handleCloseAddItem = () => {
-    setOpenAddItem(false);
-  };
+
   const handleSelectionChange = (event, value) => {
     setSelectedValue(value);
     if (props.emitParent !== undefined) {
@@ -87,8 +81,6 @@ export default function SelectNewsky(props) {
       setSelectedValue(null);
       if (props.fetchAll) {
         fetchOptions("all").then((items) => {
-          // let xx = items.find(item => item.id == props.currentItem)
-          // setSelectedValue(xx)
           setOptions(items)
         }
         );
@@ -136,13 +128,13 @@ export default function SelectNewsky(props) {
       onOpen={() => setOpen(true)}
       onClose={() => setOpen(false)}
       getOptionLabel={(option) => option.nameStr || ""} // Adjust based on your data
-      renderOption={(props, option) => {
-        return (
-          <li {...props} key={option.id}>
-            {option.nameStr}
-          </li>
-        );
-      }}
+      // renderOption={(props, option) => {
+      //   return (
+      //     <li {...props} key={option.id}>
+      //       {option.nameStr}
+      //     </li>
+      //   );
+      // }}
       options={options && options?.status != 404 ? options : []}
       onInputChange={(event, newInputValue) => {
         setInputValue(newInputValue);
