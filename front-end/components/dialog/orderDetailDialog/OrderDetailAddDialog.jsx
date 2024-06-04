@@ -5,13 +5,13 @@ import SelectQuality from "@/components/select/SelectQuality";
 import SelectNewsky from "@/components/select/SelectNewsky";
 import { NotifySnackbar } from "@/components/general/notifySnackbar/NotifySnackbar";
 import { useSnackbar } from "notistack";
-export default function OrderDetailAddDialog(Props) {
+export default function OrderDetailAddDialog(props) {
   const { enqueueSnackbar } = useSnackbar();
   const [selectedOrderDetail, setSelectedOrderDetail] = useState({
     currency: "VND",
     importTax: "",
     measID: "",
-    orderID: Props.orderID,
+    orderID: props.orderID,
     price: 0,
     productID: "",
     quantity: 0,
@@ -30,8 +30,6 @@ export default function OrderDetailAddDialog(Props) {
   const style = { marginTop: 2, width: "640px", marginLeft: 5 };
   const style1 = { marginTop: 2, width: "301px", marginLeft: 5 };
   // console.log(selectedOrderDetail);
-  // useEffect(() => {
-  // }, []);
   const fetchMeasurementByProductID = useCallback(async (id) => {
     try {
       const response = await getData(
@@ -66,8 +64,8 @@ export default function OrderDetailAddDialog(Props) {
         "/business-service/orderDetail",
         selectedOrderDetail
       );
-      NotifySnackbar(enqueueSnackbar, "Thêm đơn hàng thành công", "success");
-      Props.handleCloseAddOrderDetail();
+      NotifySnackbar(enqueueSnackbar, "Thêm mặt hàng thành công", "success");
+      props.handleCloseAddOrderDetail();
     } catch (err) {
       console.error("Error fetching data:", err);
       NotifySnackbar(
@@ -79,7 +77,11 @@ export default function OrderDetailAddDialog(Props) {
   };
 
   return (
-    <Dialog open={Props.open} maxWidth={"lg"}>
+    <Dialog
+      open={props.open}
+      onClose={props.handleCloseAddOrderDetail}
+      maxWidth={"lg"}
+    >
       <Typography
         sx={{
           fontSize: "18px",
@@ -167,7 +169,7 @@ export default function OrderDetailAddDialog(Props) {
         />
 
         <TextField
-          InputProps={{
+          inputprops={{
             readOnly: true,
           }}
           id=""
@@ -181,7 +183,7 @@ export default function OrderDetailAddDialog(Props) {
           }
         />
         <TextField
-          InputProps={{
+          inputprops={{
             readOnly: true,
           }}
           id=""
@@ -258,6 +260,12 @@ export default function OrderDetailAddDialog(Props) {
             setSelectedOrderDetail(updatedSelectedOrderDetail);
           }}
         />
+        <TextField
+          id=""
+          label="test"
+          size="small"
+          sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
+        />
         <div
           style={{
             display: "flex",
@@ -274,7 +282,7 @@ export default function OrderDetailAddDialog(Props) {
           <Button
             variant="contained"
             sx={{ margin: 2 }}
-            onClick={Props.handleCloseAddOrderDetail}
+            onClick={props.handleCloseAddOrderDetail}
           >
             Cancel
           </Button>

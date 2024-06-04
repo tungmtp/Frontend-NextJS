@@ -3,6 +3,7 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import {
+  Button,
   FormControl,
   Grid,
   InputLabel,
@@ -20,7 +21,7 @@ import {
   Paper,
 } from "@mui/material";
 import { useRouter, useSearchParams } from "next/navigation";
-import { getData } from "@/hook/Hook";
+import { getData, putData } from "@/hook/Hook";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
@@ -68,6 +69,7 @@ export default function OrderDelivery() {
         const response = await getData(
           `/business-service/orderDeliverySql/${deliveryDate}`
         );
+        // console.log(response);
         setSelectedOrderDelivery(response);
       } catch (error) {
         console.log(error);
@@ -78,7 +80,58 @@ export default function OrderDelivery() {
       const dataFromEventSource = event.detail;
       console.log("Received new data from eventSource: ", dataFromEventSource);
       console.log(dataFromEventSource.headers.UserName[0]);
-      setEventSourceData(dataFromEventSource);
+      if (
+        dataFromEventSource.headers.RequestType[0] ===
+        "SENDMESSAGE_orderDelivery"
+      ) {
+        setEventSourceData(dataFromEventSource);
+        if (dataFromEventSource.headers.Status[0] === "process") {
+          setSelectedOrderDelivery((prevState) =>
+            prevState?.map((item) => {
+              if (item.id === dataFromEventSource.body) {
+                item.inProcess = true;
+                return item;
+              }
+              return item;
+            })
+          );
+        } else if (dataFromEventSource.headers.Status[0] === "success") {
+          setSelectedOrderDelivery((prevState) =>
+            prevState?.map((item) => {
+              if (item.id === dataFromEventSource.body) {
+                item.inProcess = false;
+                item.completed = true;
+                return item;
+              }
+              return item;
+            })
+          );
+        } else if (dataFromEventSource.headers.Status[0] === "cancel") {
+          setSelectedOrderDelivery((prevState) =>
+            prevState?.map((item) => {
+              if (item.id === dataFromEventSource.body) {
+                item.inProcess = false;
+                item.completed = false;
+                item.cancel = true;
+                return item;
+              }
+              return item;
+            })
+          );
+        } else if (dataFromEventSource.headers.Status[0] === "normal") {
+          setSelectedOrderDelivery((prevState) =>
+            prevState?.map((item) => {
+              if (item.id === dataFromEventSource.body) {
+                item.inProcess = false;
+                item.completed = false;
+                item.cancel = false;
+                return item;
+              }
+              return item;
+            })
+          );
+        }
+      }
     };
     window.addEventListener("newDataEvent", handleNewDataFromEventSource);
 
@@ -130,7 +183,11 @@ export default function OrderDelivery() {
       <Grid item xs={12}>
         <TableContainer component={Paper}>
           <Table aria-label="simple table">
-            <TableHead sx={{ backgroundColor: "#c0c077" }}>
+            <TableHead
+              sx={{
+                backgroundColor: "#c0c077",
+              }}
+            >
               <TableRow>
                 <TableCell align="center">STT</TableCell>
                 <TableCell align="right">Khách hàng</TableCell>
@@ -144,10 +201,20 @@ export default function OrderDelivery() {
                 <TableRow
                   key={row.id}
                   sx={
-                    eventSourceData != null && row.id == eventSourceData.body
+                    row.inProcess === true
                       ? {
                           "&:last-child td, &:last-child th": { border: 0 },
                           backgroundColor: "#f89595",
+                        }
+                      : row.completed === true
+                      ? {
+                          "&:last-child td, &:last-child th": { border: 0 },
+                          backgroundColor: "#96be98",
+                        }
+                      : row.cancel === true
+                      ? {
+                          "&:last-child td, &:last-child th": { border: 0 },
+                          backgroundColor: "#c1c1c1",
                         }
                       : {
                           "&:last-child td, &:last-child th": { border: 0 },
@@ -181,31 +248,45 @@ export default function OrderDelivery() {
                     })}
                   </TableCell>
                   <TableCell align="left">
-                    {eventSourceData != null &&
-                    eventSourceData.body == row.id ? (
+                    {row.inProcess === true ? (
                       <Link
                         href={{}}
                         onClick={() => {
                           NotifySnackbar(
                             enqueueSnackbar,
-                            `${eventSourceData.headers.UserName[0]} đang sửa mục này!!`,
+                            `Đơn hàng này đang được thực hiện!!`,
                             "warning"
                           );
                         }}
                       >
                         In process
                       </Link>
+                    ) : row.completed === true || row.cancel ? (
+                      <></>
                     ) : (
-                      <Link
-                        href={{
-                          pathname: "/storage/exportProduct/addExportProduct",
-                          query: {
-                            id: row.id,
-                          },
-                        }}
-                      >
-                        Do it
-                      </Link>
+                      <Box sx={{ display: "flex", flexDirection: "column" }}>
+                        <Link
+                          href={{
+                            pathname: "/storage/exportProduct/addExportProduct",
+                            query: {
+                              id: row.id,
+                            },
+                          }}
+                        >
+                          Do it
+                        </Link>
+                        <Link
+                          href={""}
+                          onClick={() => {
+                            event.preventDefault();
+                            putData("/business-service/orderDelivery", row.id, {
+                              cancel: true,
+                            });
+                          }}
+                        >
+                          cancel
+                        </Link>
+                      </Box>
                     )}
                   </TableCell>
                 </TableRow>

@@ -47,7 +47,7 @@ export default function OrderDetailUpdateDialog(props) {
       }
     };
     if (props.id != null) getSingleOrderDetail(props.id);
-  }, [props.id]);
+  }, [props.id, props.open]);
   const fetchMeasurementByProductID = useCallback(async (id) => {
     try {
       const response = await getData(
@@ -84,7 +84,7 @@ export default function OrderDetailUpdateDialog(props) {
         id,
         selectedOrderDetail
       );
-      NotifySnackbar(enqueueSnackbar, "Thêm đơn hàng thành công", "success");
+      NotifySnackbar(enqueueSnackbar, "Sửa đơn hàng thành công", "success");
       props.handleClose();
     } catch (err) {
       console.error("Error fetching data:", err);

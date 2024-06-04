@@ -123,12 +123,16 @@ export default function OrderDetailTable(props) {
       field: "quantity",
       headerName: "Số lượng",
       valueGetter: (params) => {
-        return `${params.value}  ${
-          params.row.measName
-        } = ${calculateQualityRate(
-          params.row.quantity,
-          params.row.rateInRoot
-        )} ${measureCategory[params.row.measCatId]}`;
+        if (params.row.measCatId === 4) {
+          return `${params.value}  ${params.row.measName}`;
+        } else {
+          return `${params.value}  ${
+            params.row.measName
+          } = ${calculateQualityRate(
+            params.row.quantity,
+            params.row.rateInRoot
+          )} ${measureCategory[params.row.measCatId]}`;
+        }
       },
       flex: 6,
     },
@@ -165,11 +169,13 @@ export default function OrderDetailTable(props) {
   const handleCloseUpdateOrderDetail = () => {
     setOpenUpdateOderDetail(false);
   };
-  const totalSum = orderDeatailList.reduce(
-    (sum, row) =>
-      sum + row.price * calculateQualityRate(row.quantity, row.rateInRoot),
-    0
-  );
+  const totalSum = orderDeatailList
+    .reduce(
+      (sum, row) =>
+        sum + row.price * calculateQualityRate(row.quantity, row.rateInRoot),
+      0
+    )
+    .toLocaleString();
   return (
     <Box>
       <Box display="flex" alignItems="center" marginBottom={2} sx={{ mt: 4 }}>
@@ -203,11 +209,6 @@ export default function OrderDetailTable(props) {
             open={openAddOderDetail}
             handleCloseAddOrderDetail={handleCloseAddOrderDetail}
           /> */}
-          <OrderDetailAddDialog
-            open={openAddOderDetail}
-            handleCloseAddOrderDetail={handleCloseAddOrderDetail}
-            orderID={props.orderID}
-          />
           <Link
             // href={"/produce/addSupplyRequests"}
             href={{
@@ -289,6 +290,11 @@ export default function OrderDetailTable(props) {
           orderID={props.orderID}
         />
       )}
+      <OrderDetailAddDialog
+        open={openAddOderDetail}
+        handleCloseAddOrderDetail={handleCloseAddOrderDetail}
+        orderID={props.orderID}
+      />
     </Box>
   );
 }

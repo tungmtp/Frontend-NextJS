@@ -27,8 +27,8 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import { DatePicker } from "@mui/x-date-pickers";
-import { useRouter, useSearchParams } from "next/navigation";
-import { PostDataMessage, getData, postData } from "@/hook/Hook";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { PostDataMessage, getData, postData, putData } from "@/hook/Hook";
 import Cookies from "js-cookie";
 import { NotifySnackbar } from "@/components/general/notifySnackbar/NotifySnackbar";
 import { useSnackbar } from "notistack";
@@ -37,6 +37,7 @@ import AddDetailExportTable from "./AddDetailExportTable";
 const username = Cookies.get("username");
 
 export default function AddExportProduct() {
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   let orderDeliveryID = searchParams.get("id");
   const date = new Date();
@@ -52,7 +53,7 @@ export default function AddExportProduct() {
     purpose: "",
     paymentDate: currentDate,
     noidung: "",
-    warehouseID: 0,
+    warehouseID: "",
   });
   const [stockoutDetail, setStockoutDetail] = React.useState();
   // console.log("selectedOrderDelivery: ", selectedOrderDelivery);
@@ -64,14 +65,18 @@ export default function AddExportProduct() {
   // console.log("stockoutDetail: ", stockoutDetail);
   React.useEffect(() => {
     PostDataMessage(
-      "/business-service/orders/sendMessage/orderDeliveryID",
+      "/business-service/orderDelivery/sendMessage/orderDeliveryID/process",
       orderDeliveryID
     );
+    putData("/business-service/orderDelivery", orderDeliveryID, {
+      inProcess: true,
+    });
     const getOrderDetailData = async () => {
       try {
         const result = await getData(
           `/business-service/orderDeliverySql/byId/${orderDeliveryID}`
         );
+        console.log("SelectedOrderDelivery: ", result);
         const updateStockout = { ...stockout };
         updateStockout.comment = result[0].deliveryAddress;
         updateStockout.purpose = result[0].purpose;
@@ -86,6 +91,14 @@ export default function AddExportProduct() {
     };
     getOrderDetailData();
   }, []);
+
+  // React.useEffect(() => {
+  //   alert("thay đổi trang");
+
+  //   // You can now use the current URL
+  //   // ...
+  // }, [pathname, searchParams]);
+
   return (
     <Grid container spacing={4}>
       <Grid item xs={12}>
@@ -200,6 +213,7 @@ export default function AddExportProduct() {
         <AddDetailExportTable
           deliveryDetail={selectedOrderDelivery?.[0]?.deliveryDetail}
           stockout={stockout}
+          orderDeliveryID={orderDeliveryID}
         />
       </Grid>
     </Grid>

@@ -190,10 +190,17 @@ const AddOrderDelivery = () => {
       type: "number",
       flex: 3,
       valueGetter: (value, row) => {
-        return `${calculateQualityRate(
-          value.row.quantity,
-          value.row.rateInRoot
-        )} ${measureCategory[value.row.measCatId]}`;
+        if (value.row.measCatId === 4) {
+          return `${calculateQualityRate(
+            value.row.quantity,
+            value.row.rateInRoot
+          )} ${value.row.measName}`;
+        } else {
+          return `${calculateQualityRate(
+            value.row.quantity,
+            value.row.rateInRoot
+          )} ${measureCategory[value.row.measCatId]}`;
+        }
       },
     },
     {

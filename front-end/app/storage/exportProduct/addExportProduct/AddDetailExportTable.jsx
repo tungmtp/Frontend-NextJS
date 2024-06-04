@@ -28,7 +28,7 @@ import {
 import Link from "next/link";
 import { DatePicker } from "@mui/x-date-pickers";
 import { useRouter, useSearchParams } from "next/navigation";
-import { getData, postData } from "@/hook/Hook";
+import { PostDataMessage, getData, postData, putData } from "@/hook/Hook";
 import Cookies from "js-cookie";
 import { NotifySnackbar } from "@/components/general/notifySnackbar/NotifySnackbar";
 import { useSnackbar } from "notistack";
@@ -40,7 +40,7 @@ export default function AddDetailExportTable(props) {
   const [rows, setRows] = React.useState([]);
   const [rowModesModel, setRowModesModel] = React.useState({});
   const router = useRouter();
-  console.log(rows);
+  console.log(props.deliveryDetail);
   React.useEffect(() => {
     if (props.deliveryDetail) {
       const resultWithIndex = props.deliveryDetail.map((row, index) => ({
@@ -216,6 +216,14 @@ export default function AddDetailExportTable(props) {
           });
           NotifySnackbar(enqueueSnackbar, "Thêm thành công", "success");
           router.push("/business/orderDelivery");
+          PostDataMessage(
+            "/business-service/orderDelivery/sendMessage/orderDeliveryID/success",
+            props.orderDeliveryID
+          );
+          putData("/business-service/orderDelivery", props.orderDeliveryID, {
+            success: true,
+            inProcess: false,
+          });
         } catch (err) {
           console.error("Error post ordersProduce :", err);
           NotifySnackbar(enqueueSnackbar, "Có lỗi xảy ra!!", "error");
@@ -267,7 +275,25 @@ export default function AddDetailExportTable(props) {
             Save
           </Button>
           <Link href="/business/orderDelivery">
-            <Button variant="outlined">Cancel</Button>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                PostDataMessage(
+                  "/business-service/orderDelivery/sendMessage/orderDeliveryID/normal",
+                  props.orderDeliveryID
+                );
+                putData(
+                  "/business-service/orderDelivery",
+                  props.orderDeliveryID,
+                  {
+                    success: false,
+                    inProcess: false,
+                  }
+                );
+              }}
+            >
+              Cancel
+            </Button>
           </Link>
         </Box>
       </Grid>
