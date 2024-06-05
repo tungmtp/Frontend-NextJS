@@ -9,7 +9,11 @@ export default function SelectQuality(Props) {
   return (
     <FormControl
       label="Cấp phẩm chất"
-      sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
+      sx={
+        Props.disableStyle
+          ? { width: "100%" }
+          : { marginTop: 2, width: "300px", marginLeft: 5 }
+      }
     >
       <InputLabel>Cấp phẩm chất</InputLabel>
       <Select

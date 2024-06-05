@@ -221,7 +221,7 @@ export default function AddDetailExportTable(props) {
             props.orderDeliveryID
           );
           putData("/business-service/orderDelivery", props.orderDeliveryID, {
-            success: true,
+            completed: true,
             inProcess: false,
           });
         } catch (err) {
@@ -286,7 +286,7 @@ export default function AddDetailExportTable(props) {
                   "/business-service/orderDelivery",
                   props.orderDeliveryID,
                   {
-                    success: false,
+                    completed: false,
                     inProcess: false,
                   }
                 );

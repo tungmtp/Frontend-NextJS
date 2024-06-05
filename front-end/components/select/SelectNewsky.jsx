@@ -109,7 +109,7 @@ export default function SelectNewsky(props) {
         sx={
           props?.style && typeof props?.style === "object"
             ? props.style
-            : { width: "640px" }
+            : { width: "100%" }
         }
         open={open}
         onOpen={() => setOpen(true)}

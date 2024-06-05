@@ -56,6 +56,7 @@ export default function AddExportProduct() {
     warehouseID: "",
   });
   const [stockoutDetail, setStockoutDetail] = React.useState();
+  const [changePage, setChangePage] = React.useState(false);
   // console.log("selectedOrderDelivery: ", selectedOrderDelivery);
   // console.log(
   //   "selectedOrderDeliveryDetail: ",
@@ -85,20 +86,40 @@ export default function AddExportProduct() {
         updateStockout.warehouseID = result[0].warehouseID;
         setSelectedOrderDelivery(result);
         setStockout(updateStockout);
+        setChangePage(true);
       } catch (err) {
         console.error("Error fetching order detail data:", err);
       }
     };
     getOrderDetailData();
+    return () => {
+      // if (changePage) {
+      alert("chuyen trang!!!");
+      // }
+
+      // putData("/business-service/orderDelivery", orderDeliveryID, {
+      //   inProcess: false,
+      // });
+    };
   }, []);
 
   // React.useEffect(() => {
-  //   alert("thay đổi trang");
+  //   const handleBeforeUnload = (event) => {
+  //     // Custom logic before leaving the page
+  //     event.preventDefault();
+  //     // event.returnValue = true;
+  //     alert("Doing something before leaving the page");
 
-  //   // You can now use the current URL
-  //   // ...
-  // }, [pathname, searchParams]);
+  //     // Show confirmation dialog
+  //     // Required for showing the dialog
+  //   };
 
+  //   window.addEventListener("beforeunload", handleBeforeUnload);
+
+  //   return () => {
+  //     window.removeEventListener("beforeunload", handleBeforeUnload);
+  //   };
+  // }, []);
   return (
     <Grid container spacing={4}>
       <Grid item xs={12}>
