@@ -6,18 +6,18 @@ import { getData } from "@/hook/Hook";
 // import ItemAddDialog from "../dialog/productDialog/ProductAddDialog";
 
 export default function SelectNewsky(props) {
-
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [selectedValue, setSelectedValue] = useState(null);
 
-
   const handleSelectionChange = (event, value) => {
     setSelectedValue(value);
     if (props.emitParent !== undefined) {
       //Trả về value.id hoặc đầy đủ selectedValue dưới dạng String để dùng cho component sau
-      props.emitParent(value ? (props.returnObject ? JSON.stringify(value) : value.id) : "");
+      props.emitParent(
+        value ? (props.returnObject ? JSON.stringify(value) : value.id) : ""
+      );
     }
   };
   const fetchOptions = async (query) => {
@@ -44,7 +44,7 @@ export default function SelectNewsky(props) {
       if (!result.error) {
         setSelectedValue(result);
         // setOptions(options => [result, ...options]);
-        setOptions([result])
+        setOptions([result]);
         // setOptions(prevOptions => [result, ...prevOptions]);
       }
     } catch (err) {
@@ -68,11 +68,11 @@ export default function SelectNewsky(props) {
       // fetchSelectedItem(props.currentItem);
       if (props.disabled) {
         //   setOptions([])
-        console.log(props.lblinput, props.disabled)
+        console.log(props.lblinput, props.disabled);
       } else {
         fetchFirstCall(props.currentItem).then((items) => {
-          let xx = items.find(item => item.id == props.currentItem)
-          setSelectedValue(xx)
+          let xx = items.find((item) => item.id == props.currentItem);
+          setSelectedValue(xx);
           setOptions(items);
         });
       }
@@ -81,9 +81,8 @@ export default function SelectNewsky(props) {
       setSelectedValue(null);
       if (props.fetchAll) {
         fetchOptions("all").then((items) => {
-          setOptions(items)
-        }
-        );
+          setOptions(items);
+        });
       } else {
         // setOptions([]);
       }
@@ -91,7 +90,7 @@ export default function SelectNewsky(props) {
   }, [props.currentItem]);
 
   useEffect(() => {
-    let mInput = inputValue.toUpperCase()
+    let mInput = inputValue.toUpperCase();
     switch (mInput) {
       case "":
         // setOptions([]);
@@ -113,11 +112,10 @@ export default function SelectNewsky(props) {
     };
   }, [inputValue]);
   return (
-
     <Autocomplete
       fullWidth
       size="small"
-      disabled={(props.disabled == undefined) ? false : true}
+      disabled={props.disabled == undefined ? false : true}
       // sx={
       //   props?.style && typeof props?.style === "object"
       //     ? props.style
@@ -150,14 +148,11 @@ export default function SelectNewsky(props) {
           InputProps={{
             ...params.InputProps, //style: { fontSize: `12 !important` },
             endAdornment: (
-              <React.Fragment>
-                {params.InputProps.endAdornment}
-              </React.Fragment>
+              <React.Fragment>{params.InputProps.endAdornment}</React.Fragment>
             ),
           }}
         />
       )}
     />
-
   );
 }

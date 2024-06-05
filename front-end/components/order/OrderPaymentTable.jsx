@@ -23,12 +23,12 @@ const columns = [
     field: "ngayChi",
     headerName: "Ngày Chi",
     type: "date",
-    width: 180,
+    flex: 4,
     valueFormatter: (params) => dayjs(params?.value).format("DD/MM/YYYY"),
   },
-  { field: "noiDung", headerName: "Nội dung", width: 450 },
-  { field: "soTien", headerName: "Số tiền", width: 150, type: "number" },
-  { field: "quy", headerName: "Quỹ", width: 250 },
+  { field: "noiDung", headerName: "Nội dung", flex: 8 },
+  { field: "soTien", headerName: "Số tiền", flex: 4, type: "number" },
+  { field: "quy", headerName: "Quỹ", flex: 5 },
 ];
 
 // Define the data for the DataGrid

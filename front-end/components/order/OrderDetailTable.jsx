@@ -27,6 +27,7 @@ export default function OrderDetailTable(props) {
   const [selectedOrderDeatail, setSelectedOrderDetail] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [seLectedMeasurement, setSeLectedMeasurement] = useState(null);
+
   const measureCategory = {
     1: "m2",
     2: "md",
@@ -34,6 +35,7 @@ export default function OrderDetailTable(props) {
     4: "",
     5: "Lít",
   };
+
   // console.log("orderDeatailList: ", orderDeatailList);
   useEffect(() => {
     const getOrderDetailData = async () => {
@@ -76,7 +78,7 @@ export default function OrderDetailTable(props) {
     };
 
     getOrderDetailData();
-  }, [props.orderID, openAddOderDetail]);
+  }, [props.orderID, openAddOderDetail, openUpdateOderDetail]);
 
   const calculateQualityRate = (itemQuanlity, rateInRoot) => {
     if (rateInRoot == 0) {
@@ -91,17 +93,15 @@ export default function OrderDetailTable(props) {
     {
       field: "nameStr",
       headerName: "Sản phẩm",
-      width: 380,
+      flex: 8,
       renderCell: (params) => {
         return (
           <Link
             href=""
             key={params.row.id}
-            sx={{
+            style={{
               textOverflow: "ellipsis",
               overflow: "hidden",
-              cursor: "pointer",
-              ":hover": " underline",
             }}
             onClick={() => {
               handleOpenUpdateOrderDetail();
@@ -123,14 +123,18 @@ export default function OrderDetailTable(props) {
       field: "quantity",
       headerName: "Số lượng",
       valueGetter: (params) => {
-        return `${params.value}  ${
-          params.row.measName
-        } = ${calculateQualityRate(
-          params.row.quantity,
-          params.row.rateInRoot
-        )} ${measureCategory[params.row.measCatId]}`;
+        if (params.row.measCatId === 4) {
+          return `${params.value}  ${params.row.measName}`;
+        } else {
+          return `${params.value}  ${
+            params.row.measName
+          } = ${calculateQualityRate(
+            params.row.quantity,
+            params.row.rateInRoot
+          )} ${measureCategory[params.row.measCatId]}`;
+        }
       },
-      width: 300,
+      flex: 6,
     },
     { field: "price", headerName: "Giá bán", width: 100, type: "number" },
     {
@@ -165,11 +169,13 @@ export default function OrderDetailTable(props) {
   const handleCloseUpdateOrderDetail = () => {
     setOpenUpdateOderDetail(false);
   };
-  const totalSum = orderDeatailList.reduce(
-    (sum, row) =>
-      sum + row.price * calculateQualityRate(row.quantity, row.rateInRoot),
-    0
-  );
+  const totalSum = orderDeatailList
+    .reduce(
+      (sum, row) =>
+        sum + row.price * calculateQualityRate(row.quantity, row.rateInRoot),
+      0
+    )
+    .toLocaleString();
   return (
     <Box>
       <Box display="flex" alignItems="center" marginBottom={2} sx={{ mt: 4 }}>
@@ -203,26 +209,39 @@ export default function OrderDetailTable(props) {
             open={openAddOderDetail}
             handleCloseAddOrderDetail={handleCloseAddOrderDetail}
           /> */}
-          <OrderDetailAddDialog
-            open={openAddOderDetail}
-            handleCloseAddOrderDetail={handleCloseAddOrderDetail}
-            orderID={props.orderID}
-          />
           <Link
-            href={"/produce/addSupplyRequests"}
+            // href={"/produce/addSupplyRequests"}
+            href={{
+              pathname: `/produce/addSupplyRequests`,
+              query: {
+                name: props.partnerName,
+                id: props.orderID,
+              },
+            }}
             style={{ color: "black", textDecoration: "none" }}
           >
             <MenuItem onClick={handleClose}> Lệnh cung ứng</MenuItem>
           </Link>
           <Link
-            href={"/business/addOrderDelivery"}
+            href={{
+              pathname: "/business/addOrderDelivery",
+              query: {
+                name: props.partnerName,
+                id: props.orderID,
+              },
+            }}
             style={{ color: "black", textDecoration: "none" }}
           >
             <MenuItem onClick={handleClose}>Lệnh giao hàng</MenuItem>
           </Link>
           <Divider variant="middle" />
           <Link
-            href={"/business/deliveryProcess"}
+            href={{
+              pathname: "/business/deliveryProcess",
+              query: {
+                id: props.orderID,
+              },
+            }}
             style={{ color: "black", textDecoration: "none" }}
           >
             <MenuItem onClick={handleClose}>Quá trình giao hàng</MenuItem>
@@ -256,6 +275,12 @@ export default function OrderDetailTable(props) {
             </GridFooterContainer>
           ),
         }}
+        getRowHeight={() => "auto"}
+        sx={{
+          "&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell": {
+            py: "8px",
+          },
+        }}
       />
       {selectedOrderDeatail && (
         <OrderDetailUpdateDialog
@@ -265,6 +290,11 @@ export default function OrderDetailTable(props) {
           orderID={props.orderID}
         />
       )}
+      <OrderDetailAddDialog
+        open={openAddOderDetail}
+        handleCloseAddOrderDetail={handleCloseAddOrderDetail}
+        orderID={props.orderID}
+      />
     </Box>
   );
 }

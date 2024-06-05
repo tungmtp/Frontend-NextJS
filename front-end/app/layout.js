@@ -57,8 +57,29 @@ const theme = createTheme({
     MuiSelect: {
       styleOverrides: {
         root: {
-          paddingTop: "2px", // Adjust top padding
-          paddingBottom: "2px", // Adjust bottom padding
+          paddingTop: "0px", // Adjust top padding
+          paddingBottom: "0px", // Adjust bottom padding
+        },
+      },
+    },
+    MuiDataGrid: {
+      styleOverrides: {
+        columnHeaders: {
+          backgroundColor: "#f5f5f5", // Example to ensure style override works
+        },
+        columnHeaderTitle: {
+          fontWeight: "bold",
+        },
+      },
+    },
+    MuiTableHead: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "#f5f5f5", // Use theme.palette.primary.main for dynamic color
+          // fontWeight: "bold", // Use theme.palette.common.white for dynamic color
+          "& .MuiTableCell-root": {
+            fontWeight: "bold", // Ensure table head cell text is white
+          },
         },
       },
     },

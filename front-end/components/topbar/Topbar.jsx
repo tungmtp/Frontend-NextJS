@@ -45,6 +45,7 @@ import {
 } from "@/redux/categoryProductRedux";
 import NewskyLogoLight from "../../img/newskyLogoLight.jpg";
 import { mnu } from "@/components/menu";
+import NotificationBell from "./notificationBell/NotificationBell";
 const category = {
   NEWSKY: "home",
   "Sản xuất": "produce",
@@ -272,7 +273,6 @@ export default function Topbar(ParentProp) {
                 </Link>
               ))}
             <Menu
-              dense
               anchorEl={anchorEl}
               open={Boolean(anchorEl)}
               onClose={handleClose}
@@ -289,9 +289,10 @@ export default function Topbar(ParentProp) {
               ))}
             </Menu>
           </Box>
-          <Badge badgeContent={4} color="success" style={{ marginRight: 20 }}>
+          {/* <Badge badgeContent={4} color="success" style={{ marginRight: 20 }}>
             <NotificationsIcon style={{ color: "white" }} />
-          </Badge>
+          </Badge> */}
+          <NotificationBell />
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
