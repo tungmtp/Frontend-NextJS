@@ -38,20 +38,6 @@ export default function SelectNewsky(props) {
     }
   };
 
-  const fetchSelectedItem = async (id) => {
-    try {
-      const result = await getData(`${props.currentItemLink}/${id}`);
-      if (!result.error) {
-        setSelectedValue(result);
-        // setOptions(options => [result, ...options]);
-        setOptions([result]);
-        // setOptions(prevOptions => [result, ...prevOptions]);
-      }
-    } catch (err) {
-      console.error("Error fetching data:", err);
-    }
-  };
-
   const debouncedFetchOptions = debounce((query) => {
     if (query !== selectedValue?.nameStr) {
       // console.log(query);

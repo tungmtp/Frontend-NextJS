@@ -1,38 +1,24 @@
 import { Box, Paper, TextField, Stack } from "@mui/material"
 import { useEffect, useState } from "react"
 import SelectNewsky from "@/components/select/SelectNewsky"
-import { SaveDelete } from "@/components/select/SaveDelete"
+import { SaveCancel } from "@/components/select/SaveCancel"
 import { asyncFetch } from "@/hook/Hook"
 
-export const BomInputEdit = (props) => {
-    const [defaultMeasId, setDefaultMeasId] = useState("")
-    const [defaultProductId, setDefaultProductId] = useState("")
-    const [defaultBomId, setDefaultBomId] = useState("")
-    const [currentBomInputId, setCurrentBomInputId] = useState("")
-
+export const BomInputAddNew = (props) => {
+    const [currentMeasId, setCurrentMeasId] = useState("")
+    // const [currentProductId, setCurrentProductId] = useState("")
     const [quantity, setQuantity] = useState(0)
     const [productId, setProductId] = useState("")
     const [measId, setMeasId] = useState("")
 
 
-    const loadDefaultValue = () => {
-        let xx
-        xx = JSON.parse(props.bomInputId);
-
-        setDefaultMeasId(xx.measId)
-        setDefaultProductId(xx.productId)
-        setDefaultBomId(xx.bomId)
-
-        setCurrentBomInputId(xx.id)
-
-        setQuantity(xx.quantity)
-        setProductId(xx.productId)
-        setMeasId(xx.measId)
-    };
+    useEffect(() => {
+        productIdChange(productId);
+    }, [productId]);
 
     const handleSave = () => {
         const data = {
-            bomId: defaultBomId,
+            bomId: props.bomId,
             productId: productId,
             measId: measId,
             quantity: quantity,
@@ -40,22 +26,13 @@ export const BomInputEdit = (props) => {
 
         console.log("Data to save: ", data);
 
-        asyncFetch("PUT", `/produce-service/bominput/${currentBomInputId}`, data)
+        asyncFetch('POST', `/produce-service/bominput`, data)
             .then((response) => {
-                props.emitParent("InputEdit")
-                console.log("Update BOM Input detail: ", response)
+                props.emitParent("InputAddNew")
             })
             .catch((error) => { console.log(error) });
-
     }
-    const handleDelete = () => {
-        asyncFetch('DELETE', `/produce-service/bominput/${currentBomInputId}`)
-            .then((response) => {
-                props.emitParent("InputDelete")
-            })
-            .catch((error) => { console.log(error) });
 
-    }
     const handleCancel = () => {
         props.emitParent("Cancel")
     }
@@ -66,31 +43,20 @@ export const BomInputEdit = (props) => {
                 .then(response => response.json())
                 .then((data) => {
                     // console.log(data);
-                    setDefaultMeasId(data.measID)
+                    setCurrentMeasId(data.measID)
                     setMeasId(data.measID)
                 })
                 .catch((error) => { console.log(error) });
         }
     }
-    //------------ useEffect area --------------------//
-    useEffect(() => {
-        loadDefaultValue();
-    }, [props.bomInputId]);
-
-    useEffect(() => {
-        productIdChange(productId);
-    }, [productId]);
-    //------------ useEffect area --------------------//
-
     return (
         <Paper elevation={3}>
             <Stack spacing={2} sx={{ p: 2 }}>
-                <Box sx={{ typography: "subtitle", m: 2 }}>{(props.action == "AddBomInput") ? "Thêm một sản phẩm đầu vào" : "Sửa chi tiết một sản phẩm đầu vào"}</Box>
+                <Box sx={{ typography: "subtitle", m: 2 }}>"Thêm một sản phẩm đầu vào" </Box>
 
                 <SelectNewsky
                     lblinput="Sản phẩm đầu vào"
                     emitParent={(id) => setProductId(id)}
-                    currentItem={defaultProductId}
                     byNameStr="/product-service/product/byNameStr"
                     firstCall="/product-service/product/firstCall"
                     currentItemLink="/product-service/product/oneForSelect"
@@ -99,7 +65,7 @@ export const BomInputEdit = (props) => {
                 <SelectNewsky
                     lblinput="Đơn vị tính"
                     emitParent={(id) => setMeasId(id)}
-                    currentItem={defaultMeasId}
+                    currentItem={currentMeasId}
                     byNameStr="/product-service/Measurement/byNameStr"
                     firstCall="/product-service/Measurement/firstCall"
                     currentItemLink="/product-service/Measurement/oneForSelect"
@@ -114,7 +80,7 @@ export const BomInputEdit = (props) => {
                     onChange={(event) => setQuantity(Number(event.target.value))}
                 />
 
-                <SaveDelete save={handleSave} cancel={handleCancel} delete={handleDelete} />
+                <SaveCancel save={handleSave} cancel={handleCancel} />
             </Stack>
         </Paper>
     )

@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useState } from 'react';
 import { BomOutputEdit } from './BomOutputEdit';
 import { BomInputEdit } from './BomInputEdit';
+import { BomInputAddNew } from './BOMInputAddNew';
 
 export const BomDetail = (props) => {
     const [keyRender, setKeyRender] = useState(0)
@@ -34,7 +35,9 @@ export const BomDetail = (props) => {
                 />);
             break;
         case "AddBomInput":
-            return (<BomInputEdit bomInputId={props.bomInputId} action={props.action} emitParent={emitParent} />);
+            let mm
+            mm = JSON.parse(props.bomInputId);
+            return (<BomInputAddNew bomId={mm.bomId} action={props.action} emitParent={emitParent} />);
             break;
         default:
             return (
