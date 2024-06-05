@@ -34,7 +34,7 @@ export const BomDetail = (props) => {
                 />);
             break;
         case "AddBomInput":
-            return (<BomInputEdit action={props.action} emitParent={emitParent} />);
+            return (<BomInputEdit bomInputId={props.bomInputId} action={props.action} emitParent={emitParent} />);
             break;
         default:
             return (

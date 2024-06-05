@@ -24,7 +24,7 @@ export const BomInput = (props) => {
     return (
         <Fragment>
             {/* <Button variant="outline" sx={{ mt: 2 }} onClick={() => handleBomClick("", "AddBomInput")}>Đầu vào</Button> */}
-            <a sx={{ mt: 2 }} onClick={() => handleBomClick("", "AddBomInput")}>Đầu vào</a>
+            <a sx={{ mt: 2 }} onClick={() => handleBomClick(`{"bomId": "${props.bomId}"}`, "AddBomInput")}>Đầu vào</a>
 
             <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }} aria-labelledby="tableInput" size="small">

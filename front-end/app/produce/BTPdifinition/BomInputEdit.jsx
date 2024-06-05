@@ -33,16 +33,20 @@ export const BomInputEdit = (props) => {
     useEffect(() => {
         let xx
         if (props.bomInputId) {
+            console.log(props.bomInputId);
             xx = JSON.parse(props.bomInputId);
-            setCurrentMeasId(xx?.measId)
-            setCurrentProductId(xx?.productId)
-            setDefaultQty(xx.quantity)
+            if (props.action === "EditBomInput") {
+                setCurrentMeasId(xx?.measId)
+                setCurrentProductId(xx?.productId)
+                setDefaultQty(xx.quantity)
+            } else {
+                setBomInputDetail({ ...bomInputDetail, measId: xx.measId })
+                setCurrentMeasId("")
+                setCurrentProductId("")
+                setDefaultQty(0)
+            }
         }
-        else {
-            setCurrentMeasId("")
-            setCurrentProductId("")
-            setDefaultQty(0)
-        }
+
         setBomInputDetail(getBomInputDetail())
     }, [props.bomInputId]);
 
@@ -53,6 +57,8 @@ export const BomInputEdit = (props) => {
             measId: bomInputDetail.measId,
             quantity: bomInputDetail.quantity,
         };
+
+        console.log("Data to save: ", data);
         if (props.action === "EditBomInput") {
             asyncFetch("PUT", `/produce-service/bominput/${bomInputDetail.id}`, data)
                 .then((response) => {
@@ -91,6 +97,8 @@ export const BomInputEdit = (props) => {
                 .then((data) => {
                     console.log(data);
                     setCurrentMeasId(data.measID)
+                    setBomInputDetail({ ...bomInputDetail, measId: data.measID })
+                    setBomInputDetail({ ...bomInputDetail, productId: id })
                 })
                 .catch((error) => { console.log(error) });
         }

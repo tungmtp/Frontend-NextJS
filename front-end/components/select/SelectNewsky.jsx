@@ -126,13 +126,13 @@ export default function SelectNewsky(props) {
       onOpen={() => setOpen(true)}
       onClose={() => setOpen(false)}
       getOptionLabel={(option) => option.nameStr || ""} // Adjust based on your data
-      // renderOption={(props, option) => {
-      //   return (
-      //     <li {...props} key={option.id}>
-      //       {option.nameStr}
-      //     </li>
-      //   );
-      // }}
+      renderOption={(props, option) => {
+        return (
+          <li {...props} key={option.id}>
+            {option.nameStr}
+          </li>
+        );
+      }}
       options={options && options?.status != 404 ? options : []}
       onInputChange={(event, newInputValue) => {
         setInputValue(newInputValue);
