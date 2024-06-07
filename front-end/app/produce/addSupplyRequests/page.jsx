@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation";
 import { ListDayRequest } from "./ListDayRequest"
 import { RequestContent } from "./RequestContent";
-import { Stack, Button, Grid } from "@mui/material";
+import { Stack, Button, Grid, Paper } from "@mui/material";
 import { today } from "@/hook/Hook";
 
 export default function OrderSupply() {
@@ -33,7 +33,7 @@ export default function OrderSupply() {
         <Grid container spacing={0.5}>
             <Grid item xs={2}>
                 <Stack spacing={2} sx={{ p: 2 }}>
-                    <Button variant="contained" color="primary" onClick={() => { setRequestDate(today()); setAction("NewRequest") }}>Add</Button>
+                    <Button variant="contained" color="primary" onClick={() => { setRequestDate(Date()); setAction("NewRequest") }}>Add</Button>
                     <ListDayRequest orderID={orderID} emitParent={handleAction} />
                 </Stack>
             </Grid>
