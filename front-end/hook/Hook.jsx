@@ -255,3 +255,8 @@ export function asyncFetch(method, url, data) {
     });
   }
 }
+
+export function today() {
+  var d = new Date();
+  return d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear();
+}
