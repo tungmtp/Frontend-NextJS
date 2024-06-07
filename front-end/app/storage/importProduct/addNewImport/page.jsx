@@ -32,7 +32,7 @@ import { PostDataMessage, getData, postData, putData } from "@/hook/Hook";
 import Cookies from "js-cookie";
 import { NotifySnackbar } from "@/components/general/notifySnackbar/NotifySnackbar";
 import { useSnackbar } from "notistack";
-import { purpose, warehouseID } from "@/components/selectOptions";
+import { purposeStockIn, warehouseID } from "@/components/selectOptions";
 import AddDetailImport from "./AddDetailImport";
 
 const username = Cookies.get("username");
@@ -100,9 +100,9 @@ export default function AddNewImport() {
               setStockin(updatedStockin);
             }}
           >
-            {Object.keys(purpose).map((key) => (
+            {Object.keys(purposeStockIn).map((key) => (
               <MenuItem key={key} value={key}>
-                {purpose[key]}
+                {purposeStockIn[key]}
               </MenuItem>
             ))}
           </Select>

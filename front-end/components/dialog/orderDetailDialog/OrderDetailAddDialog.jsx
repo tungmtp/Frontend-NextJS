@@ -102,23 +102,23 @@ export default function OrderDetailAddDialog(props) {
           alignItems: "center",
         }}
       >
-        <SelectNewsky
-          lblinput="Sản phẩm"
-          emitParent={(id) => {
-            // console.log("Selected Product: ", id);
-            // const updatedSelectedOrderDetail = {
-            //   ...selectedOrderDetail, // Copy existing attributes
-            //   productID: id, // Set or update the ProductID attribute
-            // };
-            // setSelectedOrderDetail(updatedSelectedOrderDetail);
-            memoizedFetchMeasurementByProductID(id);
-          }}
-          byNameStr="/product-service/product/byNameStr/mayBeSell"
-          firstCall="/product-service/product/firstCall/mayBeSell"
-          currentItemLink="/product-service/product/oneForSelect"
-          style={style}
-        />
-
+        <Box sx={style}>
+          <SelectNewsky
+            lblinput="Sản phẩm"
+            emitParent={(id) => {
+              // console.log("Selected Product: ", id);
+              // const updatedSelectedOrderDetail = {
+              //   ...selectedOrderDetail, // Copy existing attributes
+              //   productID: id, // Set or update the ProductID attribute
+              // };
+              // setSelectedOrderDetail(updatedSelectedOrderDetail);
+              memoizedFetchMeasurementByProductID(id);
+            }}
+            byNameStr="/product-service/product/byNameStr/mayBeSell"
+            firstCall="/product-service/product/firstCall/mayBeSell"
+            currentItemLink="/product-service/product/oneForSelect"
+          />
+        </Box>
         <SelectQuality
           getValue={(quality) => {
             const updatedSelectedOrderDetail = {
@@ -152,22 +152,21 @@ export default function OrderDetailAddDialog(props) {
             setSelectedOrderDetail(updatedSelectedOrderDetail);
           }}
         />
-
-        <SelectNewsky
-          lblinput="Đơn vị tính"
-          emitParent={(id) => {
-            // console.log("Selected Measurement: ", id);
-            const updatedSelectedOrderDetail = { ...selectedOrderDetail };
-            updatedSelectedOrderDetail.measID = id;
-            setSelectedOrderDetail(updatedSelectedOrderDetail);
-          }}
-          currentItem={seLectedMeasurement?.measID}
-          byNameStr="/product-service/Measurement/byNameStr"
-          firstCall="/product-service/Measurement/firstCall"
-          currentItemLink="/product-service/Measurement/oneForSelect"
-          style={style1}
-        />
-
+        <Box sx={style1}>
+          <SelectNewsky
+            lblinput="Đơn vị tính"
+            emitParent={(id) => {
+              // console.log("Selected Measurement: ", id);
+              const updatedSelectedOrderDetail = { ...selectedOrderDetail };
+              updatedSelectedOrderDetail.measID = id;
+              setSelectedOrderDetail(updatedSelectedOrderDetail);
+            }}
+            currentItem={seLectedMeasurement?.measID}
+            byNameStr="/product-service/Measurement/byNameStr"
+            firstCall="/product-service/Measurement/firstCall"
+            currentItemLink="/product-service/Measurement/oneForSelect"
+          />
+        </Box>
         <TextField
           inputprops={{
             readOnly: true,
@@ -260,12 +259,7 @@ export default function OrderDetailAddDialog(props) {
             setSelectedOrderDetail(updatedSelectedOrderDetail);
           }}
         />
-        <TextField
-          id=""
-          label="test"
-          size="small"
-          sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
-        />
+
         <div
           style={{
             display: "flex",

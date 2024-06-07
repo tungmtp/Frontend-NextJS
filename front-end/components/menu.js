@@ -67,55 +67,58 @@ export const mnu = {
   ],
 
   storage: [
-    { title: "Danh mục nhập kho hàng hóa", link: "/storage/importProduct" },
-    { title: "Danh mục tạm nhập", link: "/storage/temporaryImport" },
-    { title: "Danh mục xuất kho hàng hóa", link: "/storage/exportProduct" },
     {
-      title: "Tồn 01 sản phẩm ở 01 kho",
+      title: "(#) Danh mục nhập kho hàng hóa (X)",
+      link: "/storage/importProduct",
+    },
+    { title: "(#) Danh mục tạm nhập", link: "/storage/temporaryImport" },
+    { title: "(#) Danh mục xuất kho hàng hóa", link: "/storage/exportProduct" },
+    {
+      title: "(#) Tồn 01 sản phẩm ở 01 kho",
       link: "/storage/oneProductOneStorage",
     },
     {
-      title: "Tồn 01 sản phẩm ở các kho",
+      title: "(#) Tồn 01 sản phẩm ở các kho",
       link: "/storage/oneProductManyStorage",
     },
     {
-      title: "Tồn các sản phẩm ở 01 kho",
+      title: "(#) Tồn các sản phẩm ở 01 kho",
       link: "/storage/manyProductOneStorage",
     },
     {
-      title: "Tồn sản phẩm theo mã màu",
+      title: "(#) Tồn sản phẩm theo mã màu",
       link: "/storage/storeByColor",
     },
     {
-      title: "Tồn sản phẩm theo thương hiệu",
+      title: "(#) Tồn sản phẩm theo thương hiệu",
       link: "/storage/storeByBrand",
     },
     {
-      title: "Tồn sản phẩm theo Class",
+      title: "(#) Tồn sản phẩm theo Class",
       link: "/storage/storeByClass",
     },
     {
-      title: "Xuất chuyển sang kho khác",
+      title: "(#) Xuất chuyển sang kho khác",
       link: "/storage/exportAnotherStorage",
     },
     {
-      title: "Nhập từ kho khác chuyển đến",
+      title: "(#) Nhập từ kho khác chuyển đến",
       link: "/storage/importAnotherStorage",
     },
     {
-      title: "Thu hồi hàng thừa",
+      title: "(#) Thu hồi hàng thừa",
       link: "/storage/recoveryProduct",
     },
     {
-      title: "Cập nhật kiểm kê thừa thiếu",
+      title: "(#) Cập nhật kiểm kê thừa thiếu",
       link: "/storage/updateSurplusInventory",
     },
   ],
   business: [
-    { title: "Danh sách đối tác", link: "/business/partner" },
-    { title: "Danh sách liên hệ", link: "/business/contact" },
-    { title: "Bán hàng", link: "/business/order" },
-    { title: "Lịch giao hàng", link: "/business/orderDelivery" },
+    { title: "(#) Danh sách đối tác (X)", link: "/business/partner" },
+    { title: "(#) Danh sách liên hệ (X)", link: "/business/contact" },
+    { title: "(#) Bán hàng", link: "/business/order" },
+    { title: "(#) Lịch giao hàng", link: "/business/orderDelivery" },
     { title: "Công nợ theo nhân viên", link: "/business/debtByEmployee" },
     { title: "Công nợ một đại lý (toàn bộ)", link: "/business/debtAgentAll" },
     { title: "Công nợ một đại lý (NX-TT)", link: "/business/debtAgentNXTT" },

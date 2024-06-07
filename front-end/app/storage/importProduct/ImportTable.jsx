@@ -35,22 +35,7 @@ const columns = [
   },
   { field: "noidung", headerName: "Nội dung", width: 400, flex: 1 },
 ];
-const rows = [
-  {
-    id: 175985,
-    date: "24/05/2024",
-    description:
-      "Nhập hàng cho VINGROUP [Dự án: VINHOMES SMART CITY ĐẠI MỘ]-29C-755.79",
-  },
-  {
-    id: 175986,
-    date: "24/05/2024",
-    description:
-      "Nhập hàng cho DỰ ÁN PARAGON [Dự án: THÁP A]-Tủng văn chuyển, 89C-129.00",
-  },
-  // Add more rows as needed
-];
-export default function ExportTable() {
+export default function ExportTable(props) {
   const date = new Date();
   const currentDate = dayjs(date).format("YYYY-MM-DD");
   const dateMinus = dayjs(date).subtract(7, "day").format("YYYY-MM-DD");
@@ -60,10 +45,7 @@ export default function ExportTable() {
     startDate: dateMinus,
     endDate: currentDate,
   });
-  console.log(
-    `/product-service/stockIn/byDate?startDate=${filterConditional.startDate}&endDate=${filterConditional.endDate}`
-  );
-  console.log(stockInList);
+
   useEffect(() => {
     const getStockInByDate = async () => {
       const result = await getData(
@@ -73,6 +55,18 @@ export default function ExportTable() {
     };
     getStockInByDate();
   }, [filterConditional]);
+  const handleRowClick = (params) => {
+    const getStockInDetail = async () => {
+      const result = await getData(
+        `/product-service/stockIn/byStockInID/${params.id}`
+      );
+      // setStockInDetail(result);
+      props.setStockInDetail(result);
+    };
+    getStockInDetail();
+  };
+  // console.log(" ", stockInDetail);
+
   return (
     <Grid container spacing={2}>
       <Grid item xs={10}>
@@ -148,6 +142,7 @@ export default function ExportTable() {
       </Grid>
       <Grid item xs={12}>
         <DataGrid
+          onRowClick={handleRowClick}
           rows={stockInList}
           columns={columns}
           pageSize={1}

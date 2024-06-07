@@ -2,30 +2,33 @@ import {
   Grid,
   Paper,
   Table,
+  TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
   Typography,
 } from "@mui/material";
+import dayjs from "dayjs";
 import React from "react";
-
-export default function DetailExportTable() {
+import { purposeStockIn, warehouseID } from "@/components/selectOptions";
+export default function DetailExportTable(props) {
+  console.log("stockInDetail: ", props.stockInDetail);
   return (
     <Grid container rowSpacing={2} columnSpacing={5}>
       <Grid item xs={12}>
         <Typography variant="h5" color={"#a94442"}>
-          Nhập hàng của Thanh Thành Đạt đơn hàng số: 10129
+          Đơn hàng số: {props.stockInDetail[0]?.id}
         </Typography>
       </Grid>
       <Grid item xs={12} md={6}>
-        ID 176140 Ngày: 25/05/2024
+        Ngày: {dayjs(props.stockInDetail[0]?.slipDate).format("DD/MM/YYYY")}
       </Grid>
       <Grid item xs={12} md={6}>
-        Type: Bán hàng
+        Type: {purposeStockIn[props.stockInDetail[0]?.purpose]}
       </Grid>
       <Grid item xs={12} md={6}>
-        Kho Nhà máy Việt Á{" "}
+        {warehouseID[props.stockInDetail[0]?.warehouseID]}
         <span
           style={{
             color: "#c7254e",
@@ -33,7 +36,10 @@ export default function DetailExportTable() {
             borderRadius: "4px",
           }}
         >
-          Created by: nv_tam on 25/05/2024 10:59:01
+          Created by: {props.stockInDetail[0]?.createdBy} on{" "}
+          {dayjs(props.stockInDetail[0]?.createdOn).format(
+            "DD/MM/YYYY HH:MM:ss"
+          )}{" "}
         </span>
       </Grid>
       <Grid item xs={12} md={6}>
@@ -51,42 +57,21 @@ export default function DetailExportTable() {
                 <TableCell align="left">Số lượng xuất</TableCell>
               </TableRow>
             </TableHead>
-            {/* <TableBody>
-            {selectedOrderDelivery?.map((row, index) => (
-              <TableRow
-                hover
-                key={row.id}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell align="center">{index + 1}</TableCell>
-                <TableCell align="right">{row.partnerName}</TableCell>
-                <TableCell align="right">{row.deliveryAddress}</TableCell>
-                <TableCell align="left">
-                  {row.deliveryDetail?.map((item) => {
-                    return (
-                      <Box sx={{ mb: 1 }} key={item.id}>
-                        <span style={{ fontWeight: "bold", marginRight: 8 }}>
-                          {item.productName}
-                        </span>
-                        <span
-                          style={{
-                            fontStyle: "italic",
-                            color: "red",
-                            fontWeight: "bold",
-                            marginRight: 8,
-                          }}
-                        >
-                          {item.quantity} {item.MeasName}
-                        </span>
-                        <span> Loại: {item.quality}</span>
-                      </Box>
-                    );
-                  })}
-                </TableCell>
-                <TableCell align="left">cancel, Do it, ...</TableCell>
-              </TableRow>
-            ))}
-          </TableBody> */}
+            <TableBody>
+              {props.stockInDetail[0]?.StockInDetail?.map((row, index) => (
+                <TableRow
+                  hover
+                  key={row.id}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell align="center">{index + 1}</TableCell>
+                  <TableCell align="right">{row.nameStr}</TableCell>
+                  <TableCell align="right">{row.MeasName}</TableCell>
+                  <TableCell align="left">{row.quality}</TableCell>
+                  <TableCell align="left">{row.quantity}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
           </Table>
         </TableContainer>
       </Grid>

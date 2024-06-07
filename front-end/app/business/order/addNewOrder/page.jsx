@@ -15,7 +15,7 @@ import { getData, postData } from "@/hook/Hook";
 import Autocomplete from "@mui/material/Autocomplete";
 import dayjs from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import { FormControl, Grid, InputLabel, MenuItem, Select } from "@mui/material";
 import OrderDetail from "@/components/orderDetail/OrderDetail";
 import SelectNewsky from "@/components/select/SelectNewsky";
 import { useRouter } from "next/navigation";
@@ -191,51 +191,33 @@ export default function AddNewOrder(props) {
   }
 
   return (
-    <Box
-      // elevation={6}
-      sx={{
-        width: "100%",
-        // height: "84vh",
-        // overflow: "auto",
-      }}
-    >
-      <Typography
-        sx={{
-          fontSize: "18px",
-          color: "#1976d2",
-          fontWeight: "BOLD",
-          margin: "8px",
-        }}
-      >
-        Thêm đơn hàng mới
-      </Typography>
-      <Box
-        sx={{
-          width: "100%",
-          height: "100%",
-        }}
-        // onSubmit={handleOpenConfirm}
-      >
-        <Box
+    <Grid container spacing={2}>
+      <Grid item xs={12}>
+        <Typography
           sx={{
-            width: "100%",
-            display: "flex",
-            flexWrap: "wrap",
+            fontSize: "18px",
+            color: "#1976d2",
+            fontWeight: "BOLD",
           }}
         >
-          <FormControl size="small">
-            <DatePicker
-              label="Ngày order"
-              value={dayjs(selectedOrder?.orderDate)}
-              onChange={(newValue) => {
-                const updatedSelectedOrder = { ...selectedOrder };
-                updatedSelectedOrder.orderDate = newValue.format("YYYY-MM-DD");
-                setSelectedOrder(updatedSelectedOrder);
-              }}
-              sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
-            />
-          </FormControl>
-
+          Thêm đơn hàng mới
+        </Typography>
+      </Grid>
+      <Grid item xs={12} md={6} lg={3}>
+        <FormControl fullWidth>
+          <DatePicker
+            label="Ngày order"
+            value={dayjs(selectedOrder?.orderDate)}
+            onChange={(newValue) => {
+              const updatedSelectedOrder = { ...selectedOrder };
+              updatedSelectedOrder.orderDate = newValue.format("YYYY-MM-DD");
+              setSelectedOrder(updatedSelectedOrder);
+            }}
+          />
+        </FormControl>
+      </Grid>
+      <Grid item xs={12} md={6} lg={3}>
+        <FormControl fullWidth>
           <DatePicker
             label="Ngày giao hàng lần đầu"
             value={dayjs(selectedOrder?.endDate)}
@@ -244,43 +226,44 @@ export default function AddNewOrder(props) {
               updatedSelectedOrder.endDate = newValue.format("YYYY-MM-DD");
               setSelectedOrder(updatedSelectedOrder);
             }}
-            sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
           />
-
-          <Autocomplete
-            size="small"
-            disablePortal
-            id=""
-            options={employeeData}
-            sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
-            renderInput={(params) => (
-              <TextField {...params} label="Nhân viên thực hiện" />
-            )}
-            value={
-              employeeData.length > 0 &&
-              employeeData.find(
-                (employee) => employee.label === selectedOrder.staffControl
-              )
-                ? employeeData.find(
-                    (employee) => employee.label === selectedOrder.staffControl
-                  )
-                : null
+        </FormControl>
+      </Grid>
+      <Grid item xs={12} md={6} lg={3}>
+        <Autocomplete
+          size="small"
+          disablePortal
+          id=""
+          options={employeeData}
+          renderInput={(params) => (
+            <TextField {...params} label="Nhân viên thực hiện" />
+          )}
+          value={
+            employeeData.length > 0 &&
+            employeeData.find(
+              (employee) => employee.label === selectedOrder.staffControl
+            )
+              ? employeeData.find(
+                  (employee) => employee.label === selectedOrder.staffControl
+                )
+              : null
+          }
+          onChange={(event, value) => {
+            if (value) {
+              const updatedSelectedOrder = { ...selectedOrder };
+              updatedSelectedOrder.staffControl = value.label;
+              setSelectedOrder(updatedSelectedOrder);
             }
-            onChange={(event, value) => {
-              if (value) {
-                const updatedSelectedOrder = { ...selectedOrder };
-                updatedSelectedOrder.staffControl = value.label;
-                setSelectedOrder(updatedSelectedOrder);
-              }
-            }}
-            //   onChange={handleOnChange}
-          />
-          {/* <Autocomplete
+          }}
+          //   onChange={handleOnChange}
+        />
+      </Grid>
+      {/* <Autocomplete
             size="small"
             disablePortal
             id=""
             options={partnerData}
-            sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
+           
             renderInput={(params) => <TextField {...params} label="Đối tác" />}
             value={
               partnerData.length > 0 &&
@@ -301,118 +284,101 @@ export default function AddNewOrder(props) {
             }}
             //   onChange={handleOnChange}
           /> */}
-
-          <SelectNewsky
-            lblinput="Đối tác"
-            emitParent={(id) => {
+      <Grid item xs={12} md={6} lg={3}>
+        <SelectNewsky
+          lblinput="Đối tác"
+          emitParent={(id) => {
+            const updatedSelectedOrder = { ...selectedOrder };
+            updatedSelectedOrder.partnersID = id;
+            setSelectedOrder(updatedSelectedOrder);
+          }}
+          byNameStr="/business-service/partner/byNameStr"
+          firstCall="/business-service/partner/firstCall"
+          currentItemLink="/business-service/partner/oneForSelect"
+          style={style}
+        />
+      </Grid>
+      <Grid item xs={12} md={6} lg={3}>
+        <Autocomplete
+          disablePortal
+          id=""
+          size="small"
+          options={["None", ...contactData]}
+          renderInput={(params) => (
+            <TextField {...params} label="Người liên hệ" />
+          )}
+          value={
+            contactData.length > 0 &&
+            contactData.find(
+              (contact) => contact.id === selectedOrder.contactID
+            )
+              ? contactData.find(
+                  (contact) => contact.id === selectedOrder.contactID
+                )
+              : null
+          }
+          onChange={(event, value) => {
+            if (value && value != "None") {
               const updatedSelectedOrder = { ...selectedOrder };
-              updatedSelectedOrder.partnersID = id;
+              updatedSelectedOrder.contactID = value.id;
               setSelectedOrder(updatedSelectedOrder);
-            }}
-            byNameStr="/business-service/partner/byNameStr"
-            firstCall="/business-service/partner/firstCall"
-            currentItemLink="/business-service/partner/oneForSelect"
-            style={style}
-          />
-
-          <Autocomplete
-            disablePortal
-            id=""
-            size="small"
-            options={["None", ...contactData]}
-            sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
-            renderInput={(params) => (
-              <TextField {...params} label="Người liên hệ" />
-            )}
-            value={
-              contactData.length > 0 &&
-              contactData.find(
-                (contact) => contact.id === selectedOrder.contactID
-              )
-                ? contactData.find(
-                    (contact) => contact.id === selectedOrder.contactID
-                  )
-                : null
+            } else {
+              const updatedSelectedOrder = { ...selectedOrder };
+              updatedSelectedOrder.contactID = "";
+              setSelectedOrder(updatedSelectedOrder);
             }
-            onChange={(event, value) => {
-              if (value && value != "None") {
-                const updatedSelectedOrder = { ...selectedOrder };
-                updatedSelectedOrder.contactID = value.id;
-                setSelectedOrder(updatedSelectedOrder);
-              } else {
-                const updatedSelectedOrder = { ...selectedOrder };
-                updatedSelectedOrder.contactID = "";
-                setSelectedOrder(updatedSelectedOrder);
-              }
-            }}
-            //   onChange={handleOnChange}
-          />
-
-          <FormControl
-            sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
-            size="small"
-          >
-            <InputLabel id="partner-type-label">Cách tính</InputLabel>
-            <Select
-              sx={{ width: "300px" }}
-              labelId="partner-type-label"
-              id="partner-type-select"
-              value={selectedOrder?.calcType}
-              label="Cách tính"
-              onChange={(event) => {
-                const updatedSelectedOrder = { ...selectedOrder };
-                updatedSelectedOrder.calcType = Number(event.target.value);
-                setSelectedOrder(updatedSelectedOrder);
-              }}
-            >
-              {Object.keys(calcType).map((key) => (
-                <MenuItem key={key} value={key}>
-                  {getcalcTypeName(key)}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <TextField
-            id=""
-            label="Dự án"
-            size="small"
-            sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
-            value={selectedOrder?.comment}
+          }}
+          //   onChange={handleOnChange}
+        />
+      </Grid>
+      <Grid item xs={12} md={6} lg={3}>
+        <FormControl fullWidth>
+          <InputLabel id="partner-type-label">Cách tính</InputLabel>
+          <Select
+            labelId="partner-type-label"
+            id="partner-type-select"
+            value={selectedOrder?.calcType}
+            label="Cách tính"
             onChange={(event) => {
               const updatedSelectedOrder = { ...selectedOrder };
-              updatedSelectedOrder.comment = event.target.value;
+              updatedSelectedOrder.calcType = Number(event.target.value);
               setSelectedOrder(updatedSelectedOrder);
             }}
-          />
-          {/* <ProductAttribute
+          >
+            {Object.keys(calcType).map((key) => (
+              <MenuItem key={key} value={key}>
+                {getcalcTypeName(key)}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Grid>
+      <Grid item xs={12} md={6} lg={3}>
+        <TextField
+          fullWidth
+          id=""
+          label="Dự án"
+          size="small"
+          value={selectedOrder?.comment}
+          onChange={(event) => {
+            const updatedSelectedOrder = { ...selectedOrder };
+            updatedSelectedOrder.comment = event.target.value;
+            setSelectedOrder(updatedSelectedOrder);
+          }}
+        />
+      </Grid>
+      {/* <ProductAttribute
           title={"attName"}
           serviceURL={"/product-service/ProductAttribute"}
           status={"add"}
           getorderDetail={getorderDetail}
+          </Grid>
         /> */}
-        </Box>
-        <Box
-          sx={{
-            marginTop: "50px",
-            width: "100%",
-            display: "flex",
-            flexWrap: "wrap",
-          }}
-        >
-          <Typography
-            sx={{
-              fontSize: "18px",
-              color: "#1976d2",
-              fontWeight: "BOLD",
-              margin: "8px",
-              width: "92%",
-            }}
-          >
-            Chi tiết đơn hàng
-          </Typography>
-          <OrderDetail setOrderDetail={setOrderDetail} />
-        </Box>
-      </Box>
+
+      <Grid item xs={12}>
+        <OrderDetail setOrderDetail={setOrderDetail} />
+      </Grid>
+
       <div
         style={{
           display: "flex",
@@ -449,6 +415,6 @@ export default function AddNewOrder(props) {
         </Button>
         <FormConfirmDialog open={openConfirm} />
       </div>
-    </Box>
+    </Grid>
   );
 }

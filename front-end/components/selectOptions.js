@@ -20,3 +20,11 @@ export const measureCategory = {
   4: "",
   5: "Lít",
 };
+
+export const purposeStockIn = {
+  1: "Mua hàng",
+  2: "Nhận bảo hành, bồi thường",
+  3: "Thu hồi hàng về",
+  4: "Nhập KQ SX",
+  5: "Nhập hàng chuyển từ kho khác về",
+};
