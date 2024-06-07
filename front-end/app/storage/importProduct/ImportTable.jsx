@@ -35,7 +35,7 @@ const columns = [
   },
   { field: "noidung", headerName: "Nội dung", width: 400, flex: 1 },
 ];
-export default function ExportTable(props) {
+export default function ImportTable(props) {
   const date = new Date();
   const currentDate = dayjs(date).format("YYYY-MM-DD");
   const dateMinus = dayjs(date).subtract(7, "day").format("YYYY-MM-DD");

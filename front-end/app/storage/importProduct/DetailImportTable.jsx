@@ -12,7 +12,7 @@ import {
 import dayjs from "dayjs";
 import React from "react";
 import { purposeStockIn, warehouseID } from "@/components/selectOptions";
-export default function DetailExportTable(props) {
+export default function DetailImportTable(props) {
   console.log("stockInDetail: ", props.stockInDetail);
   return (
     <Grid container rowSpacing={2} columnSpacing={5}>
@@ -65,8 +65,8 @@ export default function DetailExportTable(props) {
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell align="center">{index + 1}</TableCell>
-                  <TableCell align="right">{row.nameStr}</TableCell>
-                  <TableCell align="right">{row.MeasName}</TableCell>
+                  <TableCell align="left">{row.nameStr}</TableCell>
+                  <TableCell align="left">{row.MeasName}</TableCell>
                   <TableCell align="left">{row.quality}</TableCell>
                   <TableCell align="left">{row.quantity}</TableCell>
                 </TableRow>

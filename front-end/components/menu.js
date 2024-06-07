@@ -4,20 +4,20 @@ export const mnu = {
     { title: "Thông tin về công ty", link: "/home/info" },
   ],
   products: [
-    { title: "Sản phẩm Explorer", link: "/products/category" },
-    { title: "Thêm sản phẩm", link: "/products/addProduct" },
-    { title: "Danh mục đơn vị tính", link: "/products/measurement" },
-    { title: "Thuộc tính sản phẩm", link: "/products/attribute" },
-    { title: "Danh mục Class", link: "/products/classes" },
-    { title: "Giá hạch toán", link: "/products/classPrice" },
-    { title: "Tồn vật tư đầu kỳ", link: "/products/beginningInventory" },
+    { title: "(#) Sản phẩm Explorer (X)", link: "/products/category" },
+    { title: "(#) Thêm sản phẩm (X)", link: "/products/addProduct" },
+    { title: "(#) Danh mục đơn vị tính (X)", link: "/products/measurement" },
+    { title: "(#) Thuộc tính sản phẩm (X)", link: "/products/attribute" },
+    { title: "(#) Danh mục Class (X)", link: "/products/classes" },
+    { title: "(#) Giá hạch toán (X)", link: "/products/classPrice" },
+    { title: "(#) Tồn vật tư đầu kỳ", link: "/products/beginningInventory" },
     {
-      title: "Kiểm soát tồn kho tối thiểu",
+      title: "(#) Kiểm soát tồn kho tối thiểu",
       link: "/products/controlMinimumInventory",
     },
   ],
   produce: [
-    { title: "Các công đoạn sản xuất", link: "/produce/segment" },
+    { title: "(#) Các công đoạn sản xuất (X)", link: "/produce/segment" },
     { title: "Tạo mã và định mưc cho BTP", link: "/produce/BTPdifinition" },
     { title: "Xử lý yêu cầu cung ứng", link: "/produce/supplyRequests" },
     {
@@ -72,7 +72,10 @@ export const mnu = {
       link: "/storage/importProduct",
     },
     { title: "(#) Danh mục tạm nhập", link: "/storage/temporaryImport" },
-    { title: "(#) Danh mục xuất kho hàng hóa", link: "/storage/exportProduct" },
+    {
+      title: "(#) Danh mục xuất kho hàng hóa (X)",
+      link: "/storage/exportProduct",
+    },
     {
       title: "(#) Tồn 01 sản phẩm ở 01 kho",
       link: "/storage/oneProductOneStorage",
@@ -139,7 +142,7 @@ export const mnu = {
     },
   ],
   purchase: [
-    { title: "Danh mục đơn hàng mua", link: "/purchase/purchaseOrder" },
+    { title: "(#) Danh mục đơn hàng mua", link: "/purchase/purchaseOrder" },
     {
       title: "Xử lý yêu cầu mua vật tư",
       link: "/purchase/purchaseMaterialRequest",
