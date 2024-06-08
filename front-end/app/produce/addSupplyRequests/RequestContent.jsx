@@ -2,6 +2,9 @@ import { RequestDetail } from "./RequestDetail";
 import { NewRequest } from "./NewRequest";
 
 export const RequestContent = (props) => {
+    const emitParent = (action, requestDate) => {
+        props.emitParent(action, requestDate);
+    }
     switch (props.action) {
         case "RequestDetail":
             return (
@@ -10,7 +13,7 @@ export const RequestContent = (props) => {
             break;
         case "NewRequest":
             return (
-                <NewRequest requestDate={props.requestDate} orderID={props.orderID} />
+                <NewRequest requestDate={props.requestDate} orderID={props.orderID} emitParent={emitParent} />
             )
             break;
         default:

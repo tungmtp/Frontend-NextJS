@@ -256,8 +256,9 @@ export function asyncFetch(method, url, data) {
   }
 }
 
-export function today(dateFormat = "ISO") {
-  var d = new Date();
+export function today(mday = new Date(), dateFormat = "ISO") {
+  // console.log(mday);
+  var d = new Date(mday);
   switch (dateFormat) {
     case "ISO":
       return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);

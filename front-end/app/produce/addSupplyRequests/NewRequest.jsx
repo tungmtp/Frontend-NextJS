@@ -14,6 +14,8 @@ export function NewRequest(props) {
 
     const [requestList, setRequestList] = useState([])
     const [reqDay, setReqDay] = useState("")
+    const [collectInput, setCollectInput] = useState({})
+
 
     const loadData = () => {
         asyncFetch("GET", `/produce-service/ordersProduce/orderRequestSumary/${props.orderID}`)
@@ -25,10 +27,25 @@ export function NewRequest(props) {
 
     const handleInputChange = (value, index) => {
         console.log(value, index);
+        let convertData;
+        convertData = Number(value)
+        if (convertData && convertData !== 0) {
+            setCollectInput({ ...collectInput, [index]: convertData })
+        }
     }
 
     const handleSave = () => {
-        alert('Save');
+        let data = requestList
+            .map((item, index) => ({ orderDetailID: item.OrderDetailID, quantity: collectInput[index] ? collectInput[index] : 0, reqDate: reqDay, markDone: false, generated: false }))
+            .filter(item => item.quantity !== 0)
+        console.log(data);
+        asyncFetch("POST", "/produce-service/ordersProduce/addlist", data)
+            .then(response => {
+                if (response.ok) {
+                    props.emitParent("AddRequestOK", reqDay)
+                }
+            })
+            .catch(e => console.log(e));
     }
 
     const handleCancel = () => {
@@ -37,7 +54,7 @@ export function NewRequest(props) {
 
     useEffect(() => {
         loadData();
-        console.log(today());
+        // console.log(today());
 
     }, [props.orderID])
 
@@ -48,8 +65,9 @@ export function NewRequest(props) {
                 <DatePicker
                     label="Yêu cầu giao hàng ngày"
                     value={dayjs(reqDay)}
+                    onChange={(e) => setReqDay(today(e.toDate()))}
                 />
-                <SaveCancel handleSave={handleSave} handleCancel={handleCancel} />
+                <SaveCancel save={handleSave} cancel={handleCancel} />
             </Stack>
             <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }} aria-labelledby="tableTitle" size="small">
