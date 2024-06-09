@@ -33,8 +33,9 @@ export default function OrderSupply() {
                 setActionContent("Nothing")
                 break
             case "OpenRequest":
-                setActionContent("RequestDetail")
                 setRequestDate(reqDate);
+                setActionContent("RequestDetail")
+
                 break;
             case "CreateRequest":
                 setRequestDate(reqDate);

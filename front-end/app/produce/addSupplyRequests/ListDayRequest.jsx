@@ -32,6 +32,7 @@ export const ListDayRequest = (props) => {
             {listDate.map((item, index) => (<a key={index} onClick={() => emitParent("OpenRequest", item.ReqDate)}>{item.ReqDate}</a>))}
 
             <a onClick={() => emitParent("Summary")}>Summary</a>
+            <a onClick={() => { window.open("/produce/addSupplyRequests?name=PHUC+NHA+TRANG&id=21f557af-30c5-4fae-9d61-1b3da938c040") }}>Window Open</a>
         </Stack>
     )
 }

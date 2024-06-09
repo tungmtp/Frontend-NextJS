@@ -49,7 +49,7 @@ export function NewRequest(props) {
     }
 
     const handleCancel = () => {
-        alert('Cancel');
+        props.emitParent("Cancel");
     }
 
     useEffect(() => {
