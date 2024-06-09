@@ -1,4 +1,5 @@
 import {
+  Button,
   Grid,
   Paper,
   Table,
@@ -10,9 +11,18 @@ import {
   Typography,
 } from "@mui/material";
 import dayjs from "dayjs";
-import React from "react";
+import React, { useState } from "react";
 import { purposeStockIn, warehouseID } from "@/components/selectOptions";
+import AddStockInDetailDialog from "./AddStockInDetailDialog";
 export default function DetailImportTable(props) {
+  const [open, setOpenAddProduct] = useState(false);
+  const handleOpen = () => {
+    setOpenAddProduct(true);
+  };
+  const handleClose = () => {
+    setOpenAddProduct(false);
+  };
+
   console.log("stockInDetail: ", props.stockInDetail);
   return (
     <Grid container rowSpacing={2} columnSpacing={5}>
@@ -46,6 +56,11 @@ export default function DetailImportTable(props) {
         KHÁCH LẺ
       </Grid>
       <Grid item xs={12}>
+        <Button variant="contained" onClick={handleOpen}>
+          Add
+        </Button>
+      </Grid>
+      <Grid item xs={12}>
         <TableContainer component={Paper}>
           <Table aria-label="simple table">
             <TableHead>
@@ -75,6 +90,11 @@ export default function DetailImportTable(props) {
           </Table>
         </TableContainer>
       </Grid>
+      <AddStockInDetailDialog
+        open={open}
+        handleClose={handleClose}
+        stockin={props.stockInDetail[0] && props.stockInDetail[0]}
+      />
     </Grid>
   );
 }

@@ -57,7 +57,7 @@ export default function AddNewImport() {
     receiveFrom: 1,
   });
   return (
-    <Grid container spacing={4}>
+    <Grid container spacing={2}>
       <Grid item xs={12}>
         <Typography variant="h5">Đơn nhập hàng mới:</Typography>
       </Grid>
