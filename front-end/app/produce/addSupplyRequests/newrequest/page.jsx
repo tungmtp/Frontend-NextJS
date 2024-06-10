@@ -1,3 +1,4 @@
+'use client'
 import { asyncFetch, today } from "@/hook/Hook"
 import { Fragment, useEffect, useState } from "react"
 import {

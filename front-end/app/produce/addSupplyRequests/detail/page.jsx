@@ -1,3 +1,13 @@
+'use client'
+import { useSearchParams } from "next/navigation";
+
 export default function RequestDetail() {
-    return (<div>Detail of Request</div>)
+    const searchParams = useSearchParams();
+
+    return (<div>
+        Detail of Request
+        <span>{searchParams.get("id")}</span>
+        <br />
+        <span>{searchParams.get("mdate")}</span>
+    </div>)
 }
