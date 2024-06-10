@@ -13,6 +13,14 @@ export const warehouseID = {
   10: "Kho CPC",
 };
 
+export const filterWarehouseID = {
+  1: "Kho văn phòng",
+  2: "Kho Nhà máy Việt Á",
+  3: "Kho Sài gòn",
+  4: "Giao thẳng từ nhà cung cấp",
+  10: "Kho CPC",
+};
+
 export const measureCategory = {
   1: "m2",
   2: "md",

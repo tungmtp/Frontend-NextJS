@@ -13,11 +13,11 @@ export default function LandingPage() {
   };
   return (
     <>
-      <TopBar
+      {/* <TopBar
         open={open}
         handleDrawerOpen={handleDrawerOpen}
         handleDrawerClose={handleDrawerClose}
-      />
+      /> */}
       Trang chủ
       {/* <SideBar
         open={open}
