@@ -18,8 +18,14 @@ export const mnu = {
   ],
   produce: [
     { title: "(#) Các công đoạn sản xuất (X)", link: "/produce/segment" },
-    { title: "Tạo mã và định mưc cho BTP", link: "/produce/BTPdifinition" },
-    { title: "Xử lý yêu cầu cung ứng", link: "/produce/supplyRequests" },
+    {
+      title: "(#) Tạo mã và định mưc cho BTP (X)",
+      link: "/produce/BTPdifinition",
+    },
+    {
+      title: "(#) Xử lý yêu cầu cung ứng ",
+      link: "/produce/supplyRequests",
+    },
     {
       title: "Lên lịch sản xuất đơn lẻ",
       link: "/produce/scheduleSingleProduction",
@@ -49,7 +55,7 @@ export const mnu = {
       link: "/produce/productionControl",
     },
     {
-      title: "Nhập kết quả sản xuất",
+      title: "(#) Nhập kết quả sản xuất ",
       link: "/produce/enterProductionResult",
     },
     {
@@ -85,7 +91,7 @@ export const mnu = {
       link: "/storage/oneProductManyStorage",
     },
     {
-      title: "(#) Tồn các sản phẩm ở 01 kho",
+      title: "(#) Tồn các sản phẩm ở 01 kho (X)",
       link: "/storage/manyProductOneStorage",
     },
     {

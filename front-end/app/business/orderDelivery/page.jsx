@@ -272,9 +272,21 @@ export default function OrderDelivery() {
                               id: row.id,
                             },
                           }}
+                          target="_blank"
                         >
                           Do it
                         </Link>
+                        {/* <a
+                          href={{
+                            pathname: "/storage/exportProduct/addExportProduct",
+                            query: {
+                              id: row.id,
+                            },
+                          }}
+                          target="_blank"
+                        >
+                          Do it
+                        </a> */}
                         <Link
                           href={""}
                           onClick={() => {

@@ -33,7 +33,7 @@ export default function Category() {
             handleCloseAddproduct={handleCloseAddproduct}
           />
         </Grid>
-        <Grid item md={9.5} xs={8}>
+        <Grid item xs={9.5}>
           <ChildCategory
             title={"catName"}
             openAddProduct={openAddProduct}

@@ -1,4 +1,11 @@
-import { Badge, Box, Menu, MenuItem, Typography } from "@mui/material";
+import {
+  Badge,
+  Box,
+  IconButton,
+  Menu,
+  MenuItem,
+  Typography,
+} from "@mui/material";
 import React from "react";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 
@@ -19,16 +26,15 @@ export default function NotificationBell() {
   return (
     <Box>
       {" "}
-      <Badge
-        badgeContent={options.length}
-        color="success"
-        style={{ marginRight: 20 }}
-      >
-        <NotificationsIcon
-          onClick={handleOpenNotification}
-          style={{ color: "white" }}
-        />
-      </Badge>
+      <IconButton onClick={handleOpenNotification}>
+        <Badge
+          badgeContent={options.length}
+          color="success"
+          style={{ marginRight: 20 }}
+        >
+          <NotificationsIcon style={{ color: "white" }} />
+        </Badge>
+      </IconButton>
       <Menu
         sx={{ mt: "30px" }}
         id="menu-appbar"
