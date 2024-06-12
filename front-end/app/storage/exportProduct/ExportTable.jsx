@@ -39,7 +39,7 @@ export default function ExportTable(props) {
   const date = new Date();
   const currentDate = dayjs(date).format("YYYY-MM-DD");
   const dateMinus = dayjs(date).subtract(7, "day").format("YYYY-MM-DD");
-  const [stockInList, setStockInList] = useState([]);
+  const [stockOutList, setStockOutList] = useState([]);
   const [filterConditional, setFilterConditional] = useState({
     warehouseID: 0,
     startDate: dateMinus,
@@ -51,7 +51,7 @@ export default function ExportTable(props) {
       const result = await getData(
         `/product-service/stockOut/byDate?startDate=${filterConditional.startDate}&endDate=${filterConditional.endDate}`
       );
-      setStockInList(result);
+      setStockOutList(result);
     };
     getStockInByDate();
   }, [filterConditional]);
@@ -60,6 +60,7 @@ export default function ExportTable(props) {
       const result = await getData(
         `/product-service/stockOut/byStockOutID/${params.id}`
       );
+      console.log(result);
       // setStockInDetail(result);
       props.setStockOutDetail(result);
     };
@@ -120,7 +121,7 @@ export default function ExportTable(props) {
       <Grid item xs={12}>
         <DataGrid
           onRowClick={handleRowClick}
-          rows={stockInList}
+          rows={stockOutList}
           columns={columns}
           pageSize={1}
           pageSizeOptions={[12]}

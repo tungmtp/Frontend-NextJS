@@ -20,7 +20,7 @@ export default function Attribute() {
   dispatch(setSelectedCategory(null));
   return (
     <div>
-      <Grid container spacing={4} sx={{ minWidth: "1200px" }}>
+      <Grid container spacing={4}>
         <Grid item xs={2.5} sx={{ minWidth: "200px" }}>
           <TreeViewComp
             serviceURL={"/product-service/ProductAttribute"}

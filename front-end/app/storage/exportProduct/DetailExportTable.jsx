@@ -13,7 +13,7 @@ import dayjs from "dayjs";
 import React from "react";
 import { purpose, warehouseID } from "@/components/selectOptions";
 export default function DetailExportTable(props) {
-  console.log("stockOutDetail: ", props.stockOutDetail);
+  // console.log("stockOutDetail: ", props.stockOutDetail);
   return (
     <Grid container rowSpacing={2} columnSpacing={5}>
       <Grid item xs={12}>
@@ -38,7 +38,7 @@ export default function DetailExportTable(props) {
         >
           Created by: {props.stockOutDetail[0]?.createdBy} on{" "}
           {dayjs(props.stockOutDetail[0]?.createdOn).format(
-            "DD/MM/YYYY HH:MM:ss"
+            "DD/MM/YYYY HH:mm:ss"
           )}{" "}
         </span>
       </Grid>

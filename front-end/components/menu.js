@@ -83,11 +83,11 @@ export const mnu = {
       link: "/storage/exportProduct",
     },
     {
-      title: "(#) Tồn 01 sản phẩm ở 01 kho",
+      title: "(#) Tồn 01 sản phẩm ở 01 kho (X)",
       link: "/storage/oneProductOneStorage",
     },
     {
-      title: "(#) Tồn 01 sản phẩm ở các kho",
+      title: "(#) Tồn 01 sản phẩm ở các kho (X)",
       link: "/storage/oneProductManyStorage",
     },
     {
@@ -107,7 +107,7 @@ export const mnu = {
       link: "/storage/storeByClass",
     },
     {
-      title: "(#) Xuất chuyển sang kho khác",
+      title: "(#) Xuất chuyển sang kho khác (X)",
       link: "/storage/exportAnotherStorage",
     },
     {

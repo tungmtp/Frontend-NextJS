@@ -128,7 +128,7 @@ export default function Topbar(ParentProp) {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [currentMenu, setCurrentMenu] = useState([]);
-
+  const dispatch = useDispatch();
   const handleClick = (event, key) => {
     setAnchorEl(event.currentTarget);
     setCurrentMenu(mnu[category[key]] || []);
@@ -282,6 +282,10 @@ export default function Topbar(ParentProp) {
                   <Link
                     href={item.link}
                     style={{ textDecoration: "none", color: "inherit" }}
+                    onClick={() => {
+                      dispatch(setSelectedProduct(null));
+                      dispatch(setSelectedCategory(null));
+                    }}
                   >
                     {item.title}
                   </Link>
