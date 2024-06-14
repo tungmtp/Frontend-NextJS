@@ -103,10 +103,11 @@ export default function OneProductManyStorage() {
                     <TableCell align="left">{index + 1}</TableCell>
                     <TableCell align="left">{row.warehouseName}</TableCell>
                     <TableCell align="left">{row.sumLoai1}</TableCell>
-                    <TableCell align="left">{}</TableCell>
+                    <TableCell align="left">{row.qdLoai1}</TableCell>
                     <TableCell align="left">{row.sumLoai2}</TableCell>
-                    <TableCell align="left">{}</TableCell>
+                    <TableCell align="left">{row.qdLoai2}</TableCell>
                     <TableCell align="left">{row.sumTong}</TableCell>
+                    <TableCell align="left">{row.qdTong}</TableCell>
                   </TableRow>
                 ))}
             </TableBody>

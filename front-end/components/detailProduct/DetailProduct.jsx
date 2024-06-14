@@ -40,7 +40,7 @@ export default function DetailProduct() {
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
 
-  console.log(selectedProduct);
+  console.log(selectedDataGrid);
   useEffect(() => {
     const getClassPriceData = async () => {
       try {
@@ -178,112 +178,112 @@ export default function DetailProduct() {
   //   event.preventDefault();
   //   setOpenAddDialog(true);
   // };
-  const handleClose = (event) => {
-    event.preventDefault();
-    setOpenAddDialog(false);
-  };
-  function FormAddDialog(open) {
-    let selectedClassId = "";
-    let selectedDefaultMeas = "";
-    let selectedDateEffected = "";
-    return (
-      <React.Fragment>
-        <Dialog
-          open={open.open}
-          onClose={handleClose}
-          PaperProps={{
-            component: "form",
-            onSubmit: (event) => {
-              event.preventDefault();
-              const formData = new FormData(event.currentTarget);
-              const formJson = Object.fromEntries(formData.entries());
+  // const handleClose = (event) => {
+  //   event.preventDefault();
+  //   setOpenAddDialog(false);
+  // };
+  // function FormAddDialog(open) {
+  //   let selectedClassId = "";
+  //   let selectedDefaultMeas = "";
+  //   let selectedDateEffected = "";
+  //   return (
+  //     <React.Fragment>
+  //       <Dialog
+  //         open={open.open}
+  //         onClose={handleClose}
+  //         PaperProps={{
+  //           component: "form",
+  //           onSubmit: (event) => {
+  //             event.preventDefault();
+  //             const formData = new FormData(event.currentTarget);
+  //             const formJson = Object.fromEntries(formData.entries());
 
-              const dateEffected = selectedDateEffected;
-              const classId = selectedClassId;
-              const DefaultMeas = selectedDefaultMeas;
-              const price = formJson.price;
+  //             const dateEffected = selectedDateEffected;
+  //             const classId = selectedClassId;
+  //             const DefaultMeas = selectedDefaultMeas;
+  //             const price = formJson.price;
 
-              const addClassPrice = {
-                classId: classId,
-                defaultMeas: DefaultMeas,
-                dateEffected: dateEffected,
-                price: Number(price),
-              };
-              console.log(addClassPrice);
+  //             const addClassPrice = {
+  //               classId: classId,
+  //               defaultMeas: DefaultMeas,
+  //               dateEffected: dateEffected,
+  //               price: Number(price),
+  //             };
+  //             console.log(addClassPrice);
 
-              const postMeasurement = async () => {
-                try {
-                  const result = await postData(
-                    "/product-service/classPrice",
-                    addClassPrice
-                  );
-                  const addClassPrice2 = result;
-                  setClassPriceData((prevState) => [
-                    ...prevState,
-                    addClassPrice2,
-                  ]);
-                } catch (err) {
-                  console.error("Error fetching data:", err);
-                }
-              };
-              postMeasurement();
+  //             const postMeasurement = async () => {
+  //               try {
+  //                 const result = await postData(
+  //                   "/product-service/classPrice",
+  //                   addClassPrice
+  //                 );
+  //                 const addClassPrice2 = result;
+  //                 setClassPriceData((prevState) => [
+  //                   ...prevState,
+  //                   addClassPrice2,
+  //                 ]);
+  //               } catch (err) {
+  //                 console.error("Error fetching data:", err);
+  //               }
+  //             };
+  //             postMeasurement();
 
-              handleClose(event);
-            },
-          }}
-        >
-          <DialogTitle>Thêm giá hạch toán</DialogTitle>
-          <DialogContent>
-            <Autocomplete
-              disablePortal
-              name="classId"
-              options={classesData}
-              sx={{ margin: 2 }}
-              renderInput={(params) => (
-                <TextField {...params} label="Tên Class" />
-              )}
-              onChange={(event, value) => {
-                selectedClassId = value.id;
-              }}
-              //   onChange={handleOnChange}
-            />
-            <Autocomplete
-              disablePortal
-              name="defaultMeas"
-              options={measurementData}
-              sx={{ margin: 2 }}
-              renderInput={(params) => (
-                <TextField {...params} label="Đơn vị mặc định" />
-              )}
-              onChange={(event, value) => {
-                selectedDefaultMeas = value.id;
-              }}
-            />
-            <DatePicker
-              name="dateEffected"
-              label="Ngày áp dụng"
-              sx={{ margin: 2 }}
-              onChange={(newValue) => {
-                selectedDateEffected = newValue.format(
-                  "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
-                );
-              }}
-            />
-            <TextField
-              name="price"
-              variant="outlined"
-              label="Giá thành"
-              sx={{ margin: 2, marginBottom: 22 }}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button type="submit">Save</Button>
-          </DialogActions>
-        </Dialog>
-      </React.Fragment>
-    );
-  }
+  //             handleClose(event);
+  //           },
+  //         }}
+  //       >
+  //         <DialogTitle>Thêm giá hạch toán</DialogTitle>
+  //         <DialogContent>
+  //           <Autocomplete
+  //             disablePortal
+  //             name="classId"
+  //             options={classesData}
+  //             sx={{ margin: 2 }}
+  //             renderInput={(params) => (
+  //               <TextField {...params} label="Tên Class" />
+  //             )}
+  //             onChange={(event, value) => {
+  //               selectedClassId = value.id;
+  //             }}
+  //             //   onChange={handleOnChange}
+  //           />
+  //           <Autocomplete
+  //             disablePortal
+  //             name="defaultMeas"
+  //             options={measurementData}
+  //             sx={{ margin: 2 }}
+  //             renderInput={(params) => (
+  //               <TextField {...params} label="Đơn vị mặc định" />
+  //             )}
+  //             onChange={(event, value) => {
+  //               selectedDefaultMeas = value.id;
+  //             }}
+  //           />
+  //           <DatePicker
+  //             name="dateEffected"
+  //             label="Ngày áp dụng"
+  //             sx={{ margin: 2 }}
+  //             onChange={(newValue) => {
+  //               selectedDateEffected = newValue.format(
+  //                 "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
+  //               );
+  //             }}
+  //           />
+  //           <TextField
+  //             name="price"
+  //             variant="outlined"
+  //             label="Giá thành"
+  //             sx={{ margin: 2, marginBottom: 22 }}
+  //           />
+  //         </DialogContent>
+  //         <DialogActions>
+  //           <Button onClick={handleClose}>Cancel</Button>
+  //           <Button type="submit">Save</Button>
+  //         </DialogActions>
+  //       </Dialog>
+  //     </React.Fragment>
+  //   );
+  // }
   const handleOpenDelete = (event) => {
     setOpenDeleteDialog(true);
     // setAddCategory({ isChildOf: selectedSingleNode });
@@ -336,7 +336,7 @@ export default function DetailProduct() {
           }}
         >
           <DialogTitle>Xóa {selectedDataGrid.nameStr}</DialogTitle>
-          <DialogContent>Bạn chắc chắn muốn xóa thư mục này?</DialogContent>
+          <DialogContent>Bạn chắc chắn muốn xóa sản phẩm này?</DialogContent>
           <DialogActions>
             <Button onClick={handleCloseDelete}>Cancel</Button>
             <Button type="submit">Confirm</Button>
@@ -427,7 +427,7 @@ export default function DetailProduct() {
       //   overflow: "auto",
       // }}
     >
-      <FormAddDialog open={openAddDialog} />
+      {/* <FormAddDialog open={openAddDialog} /> */}
 
       <Grid item xs={12}>
         <TextField
@@ -527,17 +527,17 @@ export default function DetailProduct() {
       <Grid item xs={12} md={8}>
         <Autocomplete
           id="combo-box-demo"
-          options={classPriceData}
+          options={classesData}
           // sx={{ marginTop: 2, marginX: 5 }}
           renderInput={(params) => (
             <TextField {...params} label="Class giá hạch toán" />
           )}
           value={
-            classPriceData.length > 0 &&
-            classPriceData.find(
+            classesData.length > 0 &&
+            classesData.find(
               (classPrice) => classPrice.id === selectedDataGrid.classPriceID
             )
-              ? classPriceData.find(
+              ? classesData.find(
                   (classPrice) =>
                     classPrice.id === selectedDataGrid.classPriceID
                 )
