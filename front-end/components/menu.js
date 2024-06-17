@@ -111,7 +111,7 @@ export const mnu = {
       link: "/storage/exportAnotherStorage",
     },
     {
-      title: "(#) Nhập từ kho khác chuyển đến",
+      title: "(#) Nhập từ kho khác chuyển đến (X)",
       link: "/storage/importAnotherStorage",
     },
     {
@@ -126,8 +126,8 @@ export const mnu = {
   business: [
     { title: "(#) Danh sách đối tác (X)", link: "/business/partner" },
     { title: "(#) Danh sách liên hệ (X)", link: "/business/contact" },
-    { title: "(#) Bán hàng", link: "/business/order" },
-    { title: "(#) Lịch giao hàng", link: "/business/orderDelivery" },
+    { title: "(#) Bán hàng (X)", link: "/business/order" },
+    { title: "(#) Lịch giao hàng (X)", link: "/business/orderDelivery" },
     { title: "Công nợ theo nhân viên", link: "/business/debtByEmployee" },
     { title: "Công nợ một đại lý (toàn bộ)", link: "/business/debtAgentAll" },
     { title: "Công nợ một đại lý (NX-TT)", link: "/business/debtAgentNXTT" },

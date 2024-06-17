@@ -35,10 +35,13 @@ import { useSnackbar } from "notistack";
 import { purpose, warehouseID } from "@/components/selectOptions";
 import { measureCategory } from "@/components/selectOptions";
 import AddProductToTableDialog from "./AddProductToTableDialog";
+import PhysicalStock from "@/components/physicalStock/PhysicalStock";
 
 const username = Cookies.get("username");
 
 export default function ExportAnotherStorageTable(props) {
+  const date = new Date();
+  const currentDate = dayjs(date).format("YYYY-MM-DD");
   const { enqueueSnackbar } = useSnackbar();
   const [rows, setRows] = React.useState([]);
   const [rowModesModel, setRowModesModel] = React.useState({});
@@ -103,6 +106,15 @@ export default function ExportAnotherStorageTable(props) {
       headerName: "Tồn kho",
       type: "number",
       flex: 3,
+      renderCell: (param) => {
+        return (
+          <PhysicalStock
+            productID={param.row.productID}
+            measID={param.row.measID}
+            date={currentDate}
+          />
+        );
+      },
     },
     {
       field: "actions",
@@ -161,7 +173,7 @@ export default function ExportAnotherStorageTable(props) {
   };
 
   const handleDeleteClick = (id) => () => {
-    setRows(rows.filter((row) => row.id !== id));
+    setRows(rows.filter((row) => row.productID !== id));
   };
 
   const handleCancelClick = (id) => () => {
@@ -223,7 +235,8 @@ export default function ExportAnotherStorageTable(props) {
             const result2 = postData("/product-service/stockOutDetail", row);
           });
           NotifySnackbar(enqueueSnackbar, "Thêm thành công", "success");
-          //   router.push("/business/orderDelivery");
+
+          router.push("/storage/importAnotherStorage");
         } catch (err) {
           console.error("Error post ordersProduce :", err);
           NotifySnackbar(enqueueSnackbar, "Có lỗi xảy ra!!", "error");

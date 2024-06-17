@@ -147,7 +147,7 @@ export default function AddProductToTableDialog(props) {
           <TextField
             fullWidth
             id=""
-            label="Sản lượng nhập vào"
+            label="Sản lượng xuất ra"
             size="small"
             type="number"
             //   sx={{ marginTop: 2, width: "300px", marginLeft: 5 }}
