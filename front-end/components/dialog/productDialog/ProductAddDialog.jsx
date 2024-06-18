@@ -426,14 +426,14 @@ export default function ProductAddDialog(props) {
         />
         <Autocomplete
           id="combo-box-demo"
-          options={classPriceData}
+          options={classesData}
           sx={{ marginTop: 2, marginX: 5, width: "calc(91% - 340px)" }}
           renderInput={(params) => (
             <TextField {...params} label="Class giá hạch toán" />
           )}
           value={
-            classPriceData.length > 0
-              ? classPriceData.find(
+            classesData.length > 0
+              ? classesData.find(
                   (classPrice) =>
                     classPrice.id === selectedDataGrid.classPriceID
                 )

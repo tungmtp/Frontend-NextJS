@@ -159,11 +159,18 @@ export default function ProductAttribute(parentProp) {
 
               console.log(addAttribute);
               if (parentProp.status == "add") {
-                if (addAttribute.relId !== null)
+                if (addAttribute.relId !== null) {
                   setProductRelation((prevState) => [
                     ...prevState,
                     addAttribute,
                   ]);
+                  if (parentProp.getProductRelationList != undefined) {
+                    parentProp.getProductRelationList((prevState) => [
+                      ...prevState,
+                      addAttribute,
+                    ]);
+                  }
+                }
               } else {
                 const postAttribute = async () => {
                   try {
@@ -229,6 +236,9 @@ export default function ProductAttribute(parentProp) {
                   (item) => item.id !== selectedAttribute.id
                 );
                 setProductRelation(updatedData);
+                if (parentProp.getProductRelationList != undefined) {
+                  parentProp.getProductRelationList(updatedData);
+                }
               } else {
                 const respone = deleteData(
                   "/product-service/productRelation",
