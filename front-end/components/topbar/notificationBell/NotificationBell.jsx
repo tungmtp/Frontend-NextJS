@@ -1,6 +1,8 @@
 import { Badge, Box, Menu, MenuItem, Typography } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import { asyncGetData } from "@/hook/Hook";
+import Link from "next/link";
 
 const options = [
   "Sản phẩm A đang dưới mức tồn kho tối thiểu",
@@ -10,17 +12,32 @@ const options = [
 ];
 export default function NotificationBell() {
   const [anchorElNotification, setAnchorElNotification] = React.useState(null);
+  const [inventoryLowCount, setInventoryLowCount] = useState([])
+
+
+
   const handleOpenNotification = (event) => {
     setAnchorElNotification(event.currentTarget);
   };
   const handleCloseNotification = () => {
     setAnchorElNotification(null);
   };
+
+  const getInventoryMessage = (messName) => {
+    asyncGetData(`/common-module/eventList/${messName}`)
+      .then(response => response.json())
+      .then(data => setInventoryLowCount(data))
+      .catch(e => console.log(e))
+  }
+  useEffect(() => {
+    getInventoryMessage("INVENTORY LOW COUNT")
+  }, [])
+
   return (
     <Box>
       {" "}
       <Badge
-        badgeContent={options.length}
+        badgeContent={inventoryLowCount.length}
         color="success"
         style={{ marginRight: 20 }}
       >
@@ -45,9 +62,14 @@ export default function NotificationBell() {
         open={Boolean(anchorElNotification)}
         onClose={handleCloseNotification}
       >
-        {options.map((setting) => (
-          <MenuItem key={setting} onClick={handleCloseNotification}>
-            <Typography textAlign="center">{setting}</Typography>
+        {inventoryLowCount.map((item) => (
+          <MenuItem key={item.id} onClick={handleCloseNotification}>
+            {(item.eventName == "INVENTORY LOW COUNT") ?
+              <Link href={"/products/controlMinimumInventory"}>{item.message}</Link>
+              :
+              <Typography textAlign="center">{item.message}</Typography>
+
+            }
           </MenuItem>
         ))}
       </Menu>

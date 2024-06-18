@@ -33,7 +33,7 @@ function MainLayout({ children }) {
         <Grid container spacing={0.5}>
             <Grid item xs={2}>
                 <Stack spacing={2} sx={{ p: 2 }}>
-                    <a >Add new request</a>
+                    <Link href={`/produce/addSupplyRequests/newrequest?id=${orderID}`} >Add new request</Link>
                     {orderID ? (listDate.map(
                         (item, index) => (<Link key={index} href={`/produce/addSupplyRequests/detail?id=${orderID}&&mdate=${item.ReqDate}`}>{item.ReqDate}</Link>)
                     )) : (<span></span>)}
