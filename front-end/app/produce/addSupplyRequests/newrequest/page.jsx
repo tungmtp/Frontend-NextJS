@@ -12,16 +12,21 @@ import { SaveCancel } from "@/components/select/SaveCancel";
 import { useSearchParams } from "next/navigation";
 import { useSupplyRequest } from "../SupplyRequest";
 
+// import {today} from 
+
+import { useRouter } from 'next/navigation';
+
 
 export default function NewRequest(props) {
 
     const [requestList, setRequestList] = useState([])
-    const [reqDay, setReqDay] = useState("")
+    const [reqDay, setReqDay] = useState(today())
     const [collectInput, setCollectInput] = useState({})
     const [orderID, setOrderID] = useState("")
 
     const searchParams = useSearchParams();
-    const { addNewListRequest } = useSupplyRequest();
+    const { getListRequestDate } = useSupplyRequest();
+    const router = useRouter();
 
     const getParam = () => {
         setOrderID(searchParams.get("id"));
@@ -35,9 +40,13 @@ export default function NewRequest(props) {
     const loadData = () => {
         asyncFetch("GET", `/produce-service/ordersProduce/orderRequestSumary/${orderID}`)
             .then(response => response.json())
-            .then(data => setRequestList(data))
+            .then(data => {
+                if (data) {
+                    setRequestList(data)
+                } else { setRequestList([]) }
+            }
+            )
             .catch(error => console.log(error))
-        setReqDay(props.requestDate)
     }
 
     const handleInputChange = (value, index) => {
@@ -54,18 +63,18 @@ export default function NewRequest(props) {
             .map((item, index) => ({ orderDetailID: item.OrderDetailID, quantity: collectInput[index] ? collectInput[index] : 0, reqDate: reqDay, markDone: false, generated: false }))
             .filter(item => item.quantity !== 0)
         console.log(data);
-        // asyncFetch("POST", "/produce-service/ordersProduce/addlist", data)
-        //     .then(response => {
-        //         if (response.ok) {
-        //             // props.emitParent("AddRequestOK", reqDay)
-        //         }
-        //     })
-        //     .catch(e => console.log(e));
-        addNewListRequest(data);
+        asyncFetch("POST", "/produce-service/ordersProduce/addlist", data)
+            .then(response => {
+                if (response.ok) {
+                    getListRequestDate(orderID)
+                    router.push(`/produce/addSupplyRequests?id=${orderID}`)
+                }
+            })
+            .catch(e => console.log(e));
     }
 
     const handleCancel = () => {
-        props.emitParent("Cancel");
+        router.push(`/produce/addSupplyRequests?id=${orderID}`);
     }
 
     useEffect(() => {

@@ -37,6 +37,8 @@ function MainLayout({ children }) {
                     {orderID ? (listDate.map(
                         (item, index) => (<Link key={index} href={`/produce/addSupplyRequests/detail?id=${orderID}&&mdate=${item.ReqDate}`}>{item.ReqDate}</Link>)
                     )) : (<span></span>)}
+                    <Link href={`/produce/addSupplyRequests/summary?id=${orderID}`}>Summary</Link>
+                    <Link href={`/produce/addSupplyRequests/diary?id=${orderID}`}>Summary</Link>
                 </Stack>
             </Grid>
             <Grid item xs={10}>

@@ -9,23 +9,25 @@ import { SaveCancel } from "@/components/select/SaveCancel";
 import { useSearchParams } from "next/navigation";
 import { useSupplyRequest } from "../SupplyRequest";
 
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 
 export default function RequestDetail(props) {
-    const [reqDay, setReqDay] = useState(props.requestDate)
+    const [reqDay, setReqDay] = useState("")
+    const [editDay, setEditDay] = useState("")
     const [reqList, setReqList] = useState([])
     const [collectInput, setCollectInput] = useState({})
     const [orderID, setOrderID] = useState("")
 
     const searchParams = useSearchParams();
-    const { addNewListRequest } = useSupplyRequest();
+    const { getListRequestDate } = useSupplyRequest();
 
     const router = useRouter();
 
     const getParam = () => {
         setOrderID(searchParams.get("id"));
         setReqDay(searchParams.get("mdate"))
+        setEditDay(searchParams.get("mdate"))
     }
 
     const getListRequest = () => {
@@ -59,23 +61,24 @@ export default function RequestDetail(props) {
                 id: item.id,
                 orderDetailID: item.OrderDetailID,
                 quantity: collectInput[index] ? collectInput[index] : 0,
-                reqDate: reqDay,
-                markDone: false,
-                generated: false
+                reqDate: editDay,
+                markDone: item.MarkDone,
+                generated: item.Generated
             }))
-            .filter(item => item.quantity !== 0);
+            .filter(item => !item.markDone && item.quantity !== 0);
         console.log(data);
-        // asyncFetch("POST", "/produce-service/ordersProduce/updatelist", data)
-        //     .then(response => {
-        //         if (response.ok) {
-        //             props.emitParent("UpdateRequestOK", reqDay)
-        //         }
-        //     })
-        //     .catch(e => console.log(e));
+        asyncFetch("PUT", "/produce-service/ordersProduce/updatelist", data)
+            .then(response => {
+                if (response.ok) {
+                    getListRequestDate(orderID)
+                    router.push(`/produce/addSupplyRequests?id=${orderID}`)
+                }
+            })
+            .catch(e => console.log(e));
     }
 
     const handleCancel = () => {
-        router.push('/new-page');
+        router.push(`/produce/addSupplyRequests?id=${orderID}`);
     }
 
     // useEffect(() => {
@@ -99,8 +102,8 @@ export default function RequestDetail(props) {
             <Stack spacing={2} direction="row" sx={{ m: 2 }}>
                 <DatePicker
                     label="Yêu cầu giao hàng ngày"
-                    value={dayjs(reqDay)}
-                    onChange={(e) => setReqDay(dayjs(e.toDate()).format("YYYY-MM-DD"))}
+                    value={dayjs(editDay)}
+                    onChange={(e) => setEditDay(dayjs(e.toDate()).format("YYYY-MM-DD"))}
                 />
                 <SaveCancel save={handleSave} cancel={handleCancel} />
             </Stack>
