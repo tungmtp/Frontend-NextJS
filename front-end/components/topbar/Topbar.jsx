@@ -281,7 +281,7 @@ export default function Topbar(ParentProp) {
                 <MenuItem key={item.link} onClick={handleClose}>
                   <Link
                     href={item.link}
-                    style={{ textDecoration: "none", color: "inherit" }}
+                    style={{ color: "inherit" }}
                     onClick={() => {
                       dispatch(setSelectedProduct(null));
                       dispatch(setSelectedCategory(null));
