@@ -46,7 +46,7 @@ export default function ImportAnotherStorageTable(props) {
   const date = new Date();
   const currentDate = dayjs(date).format("YYYY-MM-DD");
   const dateMinus = dayjs(date).subtract(7, "day").format("YYYY-MM-DD");
-  const [stockInList, setStockOutList] = useState([]);
+  const [stockOutList, setStockOutList] = useState([]);
   const [filterConditional, setFilterConditional] = useState({
     warehouseID: 2,
     startDate: dateMinus,
@@ -101,7 +101,7 @@ export default function ImportAnotherStorageTable(props) {
     };
     getStockOutByDate();
   }, [filterConditional, props.stockInDetail]);
-  // console.log("stockInList: ", stockInList);
+  // console.log("stockOutList: ", stockOutList);
   // const handleRowClick = (params) => {
   //   const getStockInDetail = async () => {
   //     const result = await getData(
@@ -236,7 +236,7 @@ export default function ImportAnotherStorageTable(props) {
       {/* <Grid item xs={12}>
         <DataGrid
           onRowClick={handleRowClick}
-          rows={stockInList}
+          rows={stockOutList}
           columns={columns}
           pageSize={1}
           pageSizeOptions={[12]}
@@ -265,8 +265,8 @@ export default function ImportAnotherStorageTable(props) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {stockInList &&
-                stockInList?.map((row, index) => (
+              {stockOutList &&
+                stockOutList?.map((row, index) => (
                   <TableRow
                     hover={!row.status}
                     key={index}

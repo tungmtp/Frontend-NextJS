@@ -12,6 +12,7 @@ import {
   updateCategoryProductFailure,
   updateCategoryProductStart,
   updateCategoryProductSuccess,
+  setSelectedCategory,
 } from "./categoryProductRedux";
 
 // export const login = async (dispatch, user) => {
@@ -57,6 +58,7 @@ export const deleteCategoryProduct = async (id, dispatch, serviceURL) => {
   try {
     const res = await deleteData(serviceURL, id);
     dispatch(deleteCategoryProductSuccess(id));
+    dispatch(setSelectedCategory(null));
   } catch (err) {
     dispatch(deleteCategoryProductFailure());
   }

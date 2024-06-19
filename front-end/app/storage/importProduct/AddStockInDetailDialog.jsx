@@ -8,12 +8,12 @@ import { NotifySnackbar } from "@/components/general/notifySnackbar/NotifySnackb
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
 import { Dialog } from "@mui/material";
-
+import { measureCategory } from "@/components/selectOptions";
 export default function AddStockInDetailDialog(props) {
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const [stockinDetail, setStockinDetail] = useState({
-    stockInID: props.stockin?.id,
+    stockInID: "",
     productID: "",
     measID: "",
     quality: 1,
@@ -27,7 +27,7 @@ export default function AddStockInDetailDialog(props) {
     importTax: 0,
     currency: "VND",
   });
-  console.log("ADDstockinDetail: ", stockinDetail);
+  // console.log("ADDstockinDetail: ", stockinDetail);
   const [seLectedMeasurement, setSeLectedMeasurement] = useState(null);
   useEffect(() => {
     setStockinDetail({
@@ -46,7 +46,22 @@ export default function AddStockInDetailDialog(props) {
       currency: "VND",
     });
   }, [props.stockin]);
-  const fetchMeasurementByProductID = useCallback(async (id) => {
+  // const fetchMeasurementByProductID = useCallback(async (id) => {
+  //   try {
+  //     const response = await getData(
+  //       `/product-service/product/oneForSelect/mayBeSell/${id}`
+  //     );
+  //     setSeLectedMeasurement(response[0]);
+  //     console.log(response[0]);
+  //     const updatedStockinDetail = { ...stockinDetail };
+  //     updatedStockinDetail.productID = id;
+  //     updatedStockinDetail.measID = response[0].measID;
+  //     setStockinDetail(updatedStockinDetail);
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   }
+  // }, []);
+  const fetchMeasurementByProductID = async (id) => {
     try {
       const response = await getData(
         `/product-service/product/oneForSelect/mayBeSell/${id}`
@@ -60,7 +75,7 @@ export default function AddStockInDetailDialog(props) {
     } catch (error) {
       console.error("Error fetching data:", error);
     }
-  }, []);
+  };
 
   const memoizedFetchMeasurementByProductID = useMemo(
     () => fetchMeasurementByProductID,
@@ -83,7 +98,7 @@ export default function AddStockInDetailDialog(props) {
           "/product-service/stockInDetail",
           stockinDetail
         );
-
+        props.setAddStockInDetail(result2);
         NotifySnackbar(enqueueSnackbar, "Thêm thành công", "success");
         props.handleClose();
       } catch (err) {
@@ -120,7 +135,7 @@ export default function AddStockInDetailDialog(props) {
               //   productID: id, // Set or update the ProductID attribute
               // };
               // setStockinDetail(updatedStockinDetail);
-              memoizedFetchMeasurementByProductID(id);
+              fetchMeasurementByProductID(id);
             }}
             byNameStr="/product-service/product/byNameStr/mayBeSell"
             firstCall="/product-service/product/firstCall/mayBeSell"
@@ -204,6 +219,22 @@ export default function AddStockInDetailDialog(props) {
               // console.log(event.target.value);
               // setStockinDetail(updatedStockinDetail);
             }}
+          />
+        </Grid>
+        <Grid item xs={12} md={6} lg={3}>
+          <TextField
+            fullWidth
+            inputprops={{
+              readOnly: true,
+            }}
+            id=""
+            label="Đơn vị gốc"
+            size="small"
+            value={
+              seLectedMeasurement?.measCatId
+                ? measureCategory[seLectedMeasurement.measCatId]
+                : ""
+            }
           />
         </Grid>
         <Grid item xs={12} md={6} lg={3}>

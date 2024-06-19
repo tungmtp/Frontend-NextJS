@@ -234,7 +234,7 @@ export default function ChildCategory(parentProp) {
     selectedCategory,
     handleClick
   );
-
+  console.log(selectedCategory);
   return (
     <Paper
       elevation={6}

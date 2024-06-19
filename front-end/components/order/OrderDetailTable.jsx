@@ -159,6 +159,7 @@ export default function OrderDetailTable(props) {
   };
   const handleOpenAddOrderDetail = () => {
     setOpenAddOderDetail(true);
+    handleClose();
   };
   const handleCloseAddOrderDetail = () => {
     setOpenAddOderDetail(false);

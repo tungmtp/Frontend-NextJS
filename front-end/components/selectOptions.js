@@ -25,7 +25,7 @@ export const measureCategory = {
   1: "m2",
   2: "md",
   3: "kg",
-  4: "",
+  4: "Không có",
   5: "Lít",
 };
 

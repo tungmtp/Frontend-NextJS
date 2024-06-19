@@ -5,7 +5,7 @@ import ImportTable from "./ImportTable";
 import DetailImportTable from "./DetailImportTable";
 
 export default function ImportProduct() {
-  const [stockInDetail, setStockInDetail] = useState([]);
+  const [stockInDetail, setStockInDetail] = useState(null);
 
   return (
     <Grid container spacing={3}>
@@ -16,7 +16,7 @@ export default function ImportProduct() {
         <ImportTable setStockInDetail={setStockInDetail} />
       </Grid>
       <Grid item xs={8}>
-        {stockInDetail?.length && stockInDetail?.length > 0 ? (
+        {stockInDetail ? (
           <DetailImportTable stockInDetail={stockInDetail} />
         ) : (
           <></>

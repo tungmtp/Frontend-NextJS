@@ -29,6 +29,7 @@ import {
 import { NotifySnackbar } from "@/components/general/notifySnackbar/NotifySnackbar";
 import { useSnackbar } from "notistack";
 import Tooltip from "@mui/material/Tooltip";
+
 export default function TreeViewComp(PropData) {
   const [selectedNodes, setSelectedNodes] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
@@ -290,7 +291,11 @@ export default function TreeViewComp(PropData) {
               // };
               // postCategoryProduct();
               addCategoryProduct(addCategory1, dispatch, PropData.serviceURL);
-
+              NotifySnackbar(
+                enqueueSnackbar,
+                "Thêm thư mục thành công",
+                "success"
+              );
               handleClose();
               //window.location.reload(false);
             },
@@ -329,7 +334,7 @@ export default function TreeViewComp(PropData) {
       event.preventDefault();
       NotifySnackbar(
         enqueueSnackbar,
-        "Bạn chưa chọn thư mục cần sửa!!",
+        "Bạn chưa chọn thư mục cần đổi tên!!",
         "warning"
       );
     } else {
@@ -371,7 +376,7 @@ export default function TreeViewComp(PropData) {
                 dispatch,
                 PropData.serviceURL
               );
-
+              NotifySnackbar(enqueueSnackbar, "Đổi tên thành công", "success");
               // const updatedCategoryData = categoryData.map((item) => {
               //   if (item.id === selectedSingleNode) {
               //     return { ...item, catName: catNewName };
