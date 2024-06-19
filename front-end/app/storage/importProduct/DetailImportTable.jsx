@@ -1,31 +1,65 @@
 import {
+  Button,
   Grid,
   Paper,
   Table,
+  TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
   Typography,
 } from "@mui/material";
-import React from "react";
+import dayjs from "dayjs";
+import React, { useEffect, useState } from "react";
+import { purposeStockIn, warehouseID } from "@/components/selectOptions";
+import AddStockInDetailDialog from "./AddStockInDetailDialog";
+import { getData } from "@/hook/Hook";
+export default function DetailImportTable(props) {
+  const [open, setOpenAddProduct] = useState(false);
+  const [stockIn, setStockIn] = useState([]);
+  const [addStockInDetail, setAddStockInDetail] = useState();
+  const handleOpen = () => {
+    setOpenAddProduct(true);
+  };
+  const handleClose = () => {
+    setOpenAddProduct(false);
+  };
 
-export default function DetailExportTable() {
+  const getStockInDetail = async () => {
+    const result = await getData(
+      `/product-service/stockIn/byStockInID/${props.stockInDetail}`
+    );
+    setStockIn(result);
+  };
+  useEffect(() => {
+    getStockInDetail();
+  }, [props.stockInDetail, addStockInDetail]);
+
+  // useEffect(() => {
+  //   setStockIn((prevState) => ({
+  //     ...prevState,
+  //     StockInDetail: [...(prevState[0]?.StockInDetail || []), addStockInDetail],
+  //   }));
+  // }, [addStockInDetail]);
+  console.log("stockInDetail: ", stockIn);
+  console.log("addStockInDetail: ", addStockInDetail);
+
   return (
     <Grid container rowSpacing={2} columnSpacing={5}>
       <Grid item xs={12}>
         <Typography variant="h5" color={"#a94442"}>
-          Nhập hàng của Thanh Thành Đạt đơn hàng số: 10129
+          Đơn hàng số: {stockIn[0]?.id}
         </Typography>
       </Grid>
       <Grid item xs={12} md={6}>
-        ID 176140 Ngày: 25/05/2024
+        Ngày: {dayjs(stockIn[0]?.slipDate).format("DD/MM/YYYY")}
       </Grid>
       <Grid item xs={12} md={6}>
-        Type: Bán hàng
+        Type: {purposeStockIn[stockIn[0]?.purpose]}
       </Grid>
       <Grid item xs={12} md={6}>
-        Kho Nhà máy Việt Á{" "}
+        {warehouseID[stockIn[0]?.warehouseID]}
         <span
           style={{
             color: "#c7254e",
@@ -33,11 +67,17 @@ export default function DetailExportTable() {
             borderRadius: "4px",
           }}
         >
-          Created by: nv_tam on 25/05/2024 10:59:01
+          Created by: {stockIn[0]?.createdBy} on{" "}
+          {dayjs(stockIn[0]?.createdOn).format("DD/MM/YYYY HH:MM:ss")}{" "}
         </span>
       </Grid>
       <Grid item xs={12} md={6}>
         KHÁCH LẺ
+      </Grid>
+      <Grid item xs={12}>
+        <Button variant="contained" onClick={handleOpen}>
+          Add
+        </Button>
       </Grid>
       <Grid item xs={12}>
         <TableContainer component={Paper}>
@@ -51,45 +91,30 @@ export default function DetailExportTable() {
                 <TableCell align="left">Số lượng xuất</TableCell>
               </TableRow>
             </TableHead>
-            {/* <TableBody>
-            {selectedOrderDelivery?.map((row, index) => (
-              <TableRow
-                hover
-                key={row.id}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell align="center">{index + 1}</TableCell>
-                <TableCell align="right">{row.partnerName}</TableCell>
-                <TableCell align="right">{row.deliveryAddress}</TableCell>
-                <TableCell align="left">
-                  {row.deliveryDetail?.map((item) => {
-                    return (
-                      <Box sx={{ mb: 1 }} key={item.id}>
-                        <span style={{ fontWeight: "bold", marginRight: 8 }}>
-                          {item.productName}
-                        </span>
-                        <span
-                          style={{
-                            fontStyle: "italic",
-                            color: "red",
-                            fontWeight: "bold",
-                            marginRight: 8,
-                          }}
-                        >
-                          {item.quantity} {item.MeasName}
-                        </span>
-                        <span> Loại: {item.quality}</span>
-                      </Box>
-                    );
-                  })}
-                </TableCell>
-                <TableCell align="left">cancel, Do it, ...</TableCell>
-              </TableRow>
-            ))}
-          </TableBody> */}
+            <TableBody>
+              {stockIn[0]?.StockInDetail?.map((row, index) => (
+                <TableRow
+                  hover
+                  key={row.id}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell align="center">{index + 1}</TableCell>
+                  <TableCell align="left">{row.nameStr}</TableCell>
+                  <TableCell align="left">{row.MeasName}</TableCell>
+                  <TableCell align="left">{row.quality}</TableCell>
+                  <TableCell align="left">{row.quantity}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
           </Table>
         </TableContainer>
       </Grid>
+      <AddStockInDetailDialog
+        open={open}
+        handleClose={handleClose}
+        stockin={stockIn[0] && stockIn[0]}
+        setAddStockInDetail={setAddStockInDetail}
+      />
     </Grid>
   );
 }

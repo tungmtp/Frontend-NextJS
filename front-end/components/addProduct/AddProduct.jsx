@@ -46,7 +46,7 @@ export default function AddProduct(props) {
   const [openConfirm, setOpenConfirm] = React.useState(false);
   const [productRelationList, setProductRelationList] = React.useState([]);
   const { enqueueSnackbar } = useSnackbar();
-
+  // console.log(productRelationList);
   useEffect(() => {
     const getClassPriceData = async () => {
       try {
@@ -297,17 +297,17 @@ export default function AddProduct(props) {
         />
         <Autocomplete
           id="combo-box-demo"
-          options={classPriceData}
+          options={classesData}
           sx={{ marginTop: 2, marginX: 5, width: "calc(91% - 340px)" }}
           renderInput={(params) => (
             <TextField {...params} label="Class giá hạch toán" />
           )}
           value={
-            classPriceData.length > 0 &&
-            classPriceData.find(
+            classesData.length > 0 &&
+            classesData.find(
               (classPrice) => classPrice.id === selectedDataGrid.classPriceID
             )
-              ? classPriceData.find(
+              ? classesData.find(
                   (classPrice) =>
                     classPrice.id === selectedDataGrid.classPriceID
                 )

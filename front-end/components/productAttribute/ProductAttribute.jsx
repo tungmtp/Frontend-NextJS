@@ -159,11 +159,18 @@ export default function ProductAttribute(parentProp) {
 
               console.log(addAttribute);
               if (parentProp.status == "add") {
-                if (addAttribute.relId !== null)
+                if (addAttribute.relId !== null) {
                   setProductRelation((prevState) => [
                     ...prevState,
                     addAttribute,
                   ]);
+                  if (parentProp.getProductRelationList != undefined) {
+                    parentProp.getProductRelationList((prevState) => [
+                      ...prevState,
+                      addAttribute,
+                    ]);
+                  }
+                }
               } else {
                 const postAttribute = async () => {
                   try {
@@ -229,6 +236,9 @@ export default function ProductAttribute(parentProp) {
                   (item) => item.id !== selectedAttribute.id
                 );
                 setProductRelation(updatedData);
+                if (parentProp.getProductRelationList != undefined) {
+                  parentProp.getProductRelationList(updatedData);
+                }
               } else {
                 const respone = deleteData(
                   "/product-service/productRelation",
@@ -334,52 +344,47 @@ export default function ProductAttribute(parentProp) {
     handleClick
   );
   return (
-    <Box elevation={6} sx={{ padding: 5, width: "100%" }}>
-      <div
+    <Grid
+      container
+      spacing={2}
+      // sx={{ padding: 5, width: "100%" }}
+    >
+      <Grid item xs={12}>
+        <Typography>Thuộc tính sản phẩm</Typography>
+      </Grid>
+      {/* <div
         style={{
+          padding: "10px",
+          marginLeft: "15px",
           display: "flex",
           flexDirection: "column",
-          height: "100%",
+          justifyContent: "space-between",
         }}
-      >
-        <Typography>Thuộc tính sản phẩm</Typography>
-        <div
-          style={{
-            padding: "10px",
-            marginLeft: "15px",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-          }}
-        >
-          <div style={{}}>
-            {breadcrumbs.map((Breadcrumb, index) => (
-              <Breadcrumbs
-                key={index}
-                separator={<NavigateNextIcon fontSize="small" />}
-                aria-label="breadcrumb"
-                sx={{ width: "100%", paddingTop: 1 }}
-              >
-                {Breadcrumb.map((item, index) => (
-                  <div key={index}>{item}</div>
-                ))}
-              </Breadcrumbs>
-            ))}
-          </div>
-          <Tooltip
-            title="Thêm sản phẩm mới"
-            placement="left"
-            sx={{ width: "200px" }}
+      > */}
+      {breadcrumbs.map((Breadcrumb, index) => (
+        <Grid item xs={12} key={index}>
+          <Breadcrumbs
+            key={index}
+            separator={<NavigateNextIcon fontSize="small" />}
+            aria-label="breadcrumb"
+            // sx={{ width: "100%", paddingTop: 1 }}
           >
-            <Button color="primary" aria-label="add" onClick={handleOpenAdd}>
-              <AddIcon /> Thêm thuộc tính
-            </Button>
-          </Tooltip>
-          <FormAddDialog open={openAddDialog} />
-          <FormDeleteDialog open={openDeleteDialog} />
-        </div>
-      </div>
-    </Box>
+            {Breadcrumb.map((item, index) => (
+              <div key={index}>{item}</div>
+            ))}
+          </Breadcrumbs>
+        </Grid>
+      ))}
+      <Grid item xs={12}>
+        <Tooltip title="Thêm thuộc tính" placement="left">
+          <Button color="primary" aria-label="add" onClick={handleOpenAdd}>
+            <AddIcon /> Thêm thuộc tính
+          </Button>
+        </Tooltip>
+      </Grid>
+      <FormAddDialog open={openAddDialog} />
+      <FormDeleteDialog open={openDeleteDialog} />
+    </Grid>
   );
 }
 

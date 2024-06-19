@@ -33,6 +33,7 @@ import Cookies from "js-cookie";
 import { NotifySnackbar } from "@/components/general/notifySnackbar/NotifySnackbar";
 import { useSnackbar } from "notistack";
 import { purpose, warehouseID } from "@/components/selectOptions";
+import PhysicalStock from "@/components/physicalStock/PhysicalStock";
 const username = Cookies.get("username");
 // const purpose = {
 //   1: "Bán hàng",
@@ -84,7 +85,7 @@ const AddOrderDelivery = () => {
 
   //   console.log(dayjs(rows[0].ngayGiao).format("YYYY-MM-DD"));
   console.log("orderDelivery:  ", orderDelivery);
-  // console.log("Delivery Detail:  ", rows);
+  console.log("Delivery Detail:  ", rows);
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
       event.defaultMuiPrevented = true;
@@ -183,6 +184,15 @@ const AddOrderDelivery = () => {
       headerName: "Tồn kho",
       type: "number",
       flex: 2,
+      renderCell: (param) => {
+        return (
+          <PhysicalStock
+            productID={param.row.productID}
+            measID={param.row.measID}
+            date={currentDate}
+          />
+        );
+      },
     },
     {
       field: "rateInRoot",

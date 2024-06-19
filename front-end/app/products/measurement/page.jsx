@@ -28,6 +28,8 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import { deleteData, getData, postData, putData } from "@/hook/Hook";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
+import { NotifySnackbar } from "@/components/general/notifySnackbar/NotifySnackbar";
+import { useSnackbar } from "notistack";
 const measureCategory = {
   1: "Diện tích",
   2: "Chiều dài",
@@ -48,6 +50,7 @@ const rows = [
 ];
 
 export default function Measurement() {
+  const { enqueueSnackbar } = useSnackbar();
   const [measurementData, setMeasurementData] = useState([]);
   const [selectedButtonGroup, setSelectedButtonGroup] = useState(1);
   const [selectedDataGrid, setSelectedDataGrid] = useState(null);
@@ -123,14 +126,14 @@ export default function Measurement() {
 
   // console.log(measurementData);
   const columns = [
-    { field: "index", headerName: "STT", width: 10 },
+    { field: "index", headerName: "STT", width: 1 },
     { field: "id", headerName: "id", width: 1 },
     { field: "measCatId", headerName: "measCatId", width: 5 },
 
     {
       field: "measName",
       headerName: "Đơn vị tính",
-      width: 300,
+      flex: 7,
 
       renderCell: (params) => {
         return (
@@ -148,16 +151,16 @@ export default function Measurement() {
         );
       },
     },
-    { field: "rateInRoot", headerName: "Tỷ lệ", width: 100 },
+    { field: "rateInRoot", headerName: "Tỷ lệ", flex: 2 },
 
-    { field: "length", headerName: "Chiều dài", width: 100 },
+    { field: "length", headerName: "Chiều dài", flex: 2 },
 
-    { field: "width", headerName: "Chiều rộng", width: 100 },
-    { field: "height", headerName: "Chiều cao", width: 100 },
+    { field: "width", headerName: "Chiều rộng", flex: 2 },
+    { field: "height", headerName: "Chiều cao", flex: 2 },
     {
       field: "measure",
       headerName: "Kích thước",
-      width: 200,
+      flex: 4,
       valueGetter: (value, row) => {
         switch (selectedButtonGroup) {
           case 1:
@@ -311,8 +314,14 @@ export default function Measurement() {
                     ...prevState,
                     addMeasurement2,
                   ]);
+                  NotifySnackbar(
+                    enqueueSnackbar,
+                    "Thêm thành công!!",
+                    "success"
+                  );
                 } catch (err) {
                   console.error("Error fetching data:", err);
+                  NotifySnackbar(enqueueSnackbar, "Có lỗi xảy ra!!", "error");
                 }
               };
               postMeasurement();
@@ -359,6 +368,7 @@ export default function Measurement() {
                 name="rateInRoot"
                 variant="outlined"
                 label="Tỉ lệ so với đơn vị gốc"
+                helperText="Mục này tự động tính"
                 value={rateInRoot}
                 onChange={(event) => setRateInRoot(event.target.value)}
                 sx={{ margin: 2 }}
@@ -402,18 +412,23 @@ export default function Measurement() {
             component: "form",
             onSubmit: (event) => {
               event.preventDefault();
-              const respone = deleteData(
-                "/product-service/Measurement",
-                selectedDataGrid.id
-              );
-              console.log(respone);
-              const updatedMeasurementData = measurementData.filter(
-                (item) => item.id !== selectedDataGrid.id
-              );
-              setMeasurementData(updatedMeasurementData);
-              setSelectedDataGrid(null);
-              handleCloseDelete();
-              alert("Xóa thành công");
+              try {
+                const respone = deleteData(
+                  "/product-service/Measurement",
+                  selectedDataGrid.id
+                );
+                console.log(respone);
+                const updatedMeasurementData = measurementData.filter(
+                  (item) => item.id !== selectedDataGrid.id
+                );
+                setMeasurementData(updatedMeasurementData);
+                setSelectedDataGrid(null);
+                handleCloseDelete();
+                NotifySnackbar(enqueueSnackbar, "Xóa thành công!!", "success");
+              } catch (e) {
+                console.log(e);
+                NotifySnackbar(enqueueSnackbar, "Có lỗi xảy ra!!", "error");
+              }
             },
           }}
         >
@@ -444,22 +459,27 @@ export default function Measurement() {
             component: "form",
             onSubmit: (event) => {
               event.preventDefault();
-              const respone = putData(
-                "/product-service/Measurement",
-                selectedDataGrid.id,
-                selectedDataGrid
-              );
-              console.log(respone);
-              const updatedMeasurementData = measurementData.map((item) => {
-                if (item.id === selectedDataGrid.id) {
-                  return selectedDataGrid;
-                }
-                return item;
-              });
-              setMeasurementData(updatedMeasurementData);
-              setSelectedDataGrid(null);
-              handleCloseFix();
-              alert("Lưu thành công");
+              try {
+                const respone = putData(
+                  "/product-service/Measurement",
+                  selectedDataGrid.id,
+                  selectedDataGrid
+                );
+                console.log(respone);
+                const updatedMeasurementData = measurementData.map((item) => {
+                  if (item.id === selectedDataGrid.id) {
+                    return selectedDataGrid;
+                  }
+                  return item;
+                });
+                setMeasurementData(updatedMeasurementData);
+                setSelectedDataGrid(null);
+                handleCloseFix();
+                NotifySnackbar(enqueueSnackbar, "Lưu thành công!!", "success");
+              } catch (error) {
+                console.log(error);
+                NotifySnackbar(enqueueSnackbar, "Có lỗi xảy ra!!", "error");
+              }
             },
           }}
         >
@@ -479,231 +499,240 @@ export default function Measurement() {
     );
   }
   return (
-    <Paper elevation={6} sx={{ paddingTop: 1, paddingLeft: 1, height: "84vh" }}>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-        }}
-      >
-        <div style={{ height: "73vh", flexGrow: 2 }}>
-          <ButtonGroup
-            variant="outlined"
-            aria-label="Basic button group"
-            sx={{ marginY: 2, marginLeft: 4, marginRight: 1 }}
-          >
-            <Button
-              onClick={() => handleButtonClick(1)}
-              variant={selectedButtonGroup === 1 ? "contained" : "outlined"}
-            >
-              Diện tích
-            </Button>
-            <Button
-              onClick={() => handleButtonClick(2)}
-              variant={selectedButtonGroup === 2 ? "contained" : "outlined"}
-            >
-              Chiều dài
-            </Button>
-            <Button
-              onClick={() => handleButtonClick(3)}
-              variant={selectedButtonGroup === 3 ? "contained" : "outlined"}
-            >
-              Khối lượng
-            </Button>
-            <Button
-              onClick={() => handleButtonClick(4)}
-              variant={selectedButtonGroup === 4 ? "contained" : "outlined"}
-            >
-              Đơn lẻ (unit)
-            </Button>
-            <Button
-              onClick={() => handleButtonClick(5)}
-              variant={selectedButtonGroup === 5 ? "contained" : "outlined"}
-            >
-              Thể tích
-            </Button>
-          </ButtonGroup>
-          <Fab
-            size="small"
-            color="primary"
-            aria-label="add"
-            onClick={handleOpenAdd}
-          >
-            <AddIcon />
-          </Fab>
-          <FormAddDialog open={openAddDialog} />
-          <DataGrid
-            rows={filteredMeasurement}
-            columns={columns}
-            pageSize={1}
-            disableRowSelectionOnClick
-            slots={{
-              toolbar: GridToolbar,
-            }}
-            initialState={{
-              columns: {
-                columnVisibilityModel: {
-                  id: false,
-                  measCatId: false,
-                  width: false,
-                  height: false,
-                  length: false,
-                },
-              },
-            }}
-          />
-        </div>
-        <Box
-          elevation={1}
-          sx={{
-            paddingX: 4,
-            py: 2,
-            flexGrow: 3,
-          }}
+    // <Box elevation={6} sx={{ paddingTop: 1, paddingLeft: 1, height: "84vh" }}>
+    <Grid container spacing={1}>
+      {/* <div
+      // style={{
+      //   display: "flex",
+      //   flexDirection: "row",
+      // }}
+      > */}
+      {/* <div style={{ height: "73vh", flexGrow: 2 }}> */}
+      <Grid item xs={12}>
+        <ButtonGroup
+          variant="outlined"
+          aria-label="Basic button group"
+          // sx={{ marginY: 2, marginLeft: 4, marginRight: 1 }}
         >
-          {selectedDataGrid ? (
-            <Paper
-              elevation={3}
-              sx={{
+          <Button
+            onClick={() => handleButtonClick(1)}
+            variant={selectedButtonGroup === 1 ? "contained" : "outlined"}
+          >
+            Diện tích
+          </Button>
+          <Button
+            onClick={() => handleButtonClick(2)}
+            variant={selectedButtonGroup === 2 ? "contained" : "outlined"}
+          >
+            Chiều dài
+          </Button>
+          <Button
+            onClick={() => handleButtonClick(3)}
+            variant={selectedButtonGroup === 3 ? "contained" : "outlined"}
+          >
+            Khối lượng
+          </Button>
+          <Button
+            onClick={() => handleButtonClick(4)}
+            variant={selectedButtonGroup === 4 ? "contained" : "outlined"}
+          >
+            Đơn lẻ (unit)
+          </Button>
+          <Button
+            onClick={() => handleButtonClick(5)}
+            variant={selectedButtonGroup === 5 ? "contained" : "outlined"}
+          >
+            Thể tích
+          </Button>
+        </ButtonGroup>
+        <Fab
+          size="small"
+          color="primary"
+          aria-label="add"
+          onClick={handleOpenAdd}
+          sx={{ marginLeft: 1 }}
+        >
+          <AddIcon />
+        </Fab>
+      </Grid>
+      <FormAddDialog open={openAddDialog} />
+      <Grid item sx={6} md={8}>
+        <DataGrid
+          rows={filteredMeasurement}
+          columns={columns}
+          pageSize={1}
+          disableRowSelectionOnClick
+          slots={{
+            toolbar: GridToolbar,
+          }}
+          initialState={{
+            columns: {
+              columnVisibilityModel: {
+                id: false,
+                measCatId: false,
+                width: false,
+                height: false,
+                length: false,
+              },
+            },
+          }}
+          sx={{ height: "79vh" }}
+        />
+      </Grid>
+
+      {/* <Box
+      // elevation={1}
+      // sx={{
+      //   paddingX: 4,
+      //   py: 2,
+      //   flexGrow: 3,
+      // }}
+      > */}
+      <Grid item sx={6} md={4}>
+        {selectedDataGrid ? (
+          <Paper
+            elevation={3}
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              flexDirection: "column",
+
+              maxWidth: "447px",
+              flexGrow: 1,
+            }}
+          >
+            <TextField
+              id="measName"
+              variant="outlined"
+              label="Đơn vị tính"
+              required
+              value={selectedDataGrid?.measName}
+              onChange={(event) => {
+                const updatedSelectedDataGrid = { ...selectedDataGrid };
+                updatedSelectedDataGrid.measName = event.target.value;
+                setSelectedDataGrid(updatedSelectedDataGrid);
+              }}
+              sx={{ marginTop: 4, marginX: 5 }}
+            />
+            <TextField
+              id="standard-basic"
+              variant="outlined"
+              type="number"
+              label="Chiều dài (mm)"
+              sx={{ marginTop: 2, marginX: 5 }}
+              value={selectedDataGrid?.length}
+              onChange={(event) => {
+                const updatedSelectedDataGrid = { ...selectedDataGrid };
+                updatedSelectedDataGrid.length = Number(event.target.value);
+
+                setSelectedDataGrid(updatedSelectedDataGrid);
+              }}
+            />
+            <TextField
+              id="standard-basic"
+              variant="outlined"
+              type="number"
+              label="Chiều rộng (mm)"
+              value={selectedDataGrid?.width || ""}
+              onChange={(event) => {
+                const updatedSelectedDataGrid = { ...selectedDataGrid };
+                updatedSelectedDataGrid.width = Number(event.target.value);
+                setSelectedDataGrid(updatedSelectedDataGrid);
+              }}
+              sx={{ marginTop: 2, marginX: 5 }}
+            />
+            <TextField
+              id="standard-basic"
+              variant="outlined"
+              type="number"
+              label="Chiều cao (mm)"
+              value={selectedDataGrid?.height}
+              onChange={(event) => {
+                const updatedSelectedDataGrid = { ...selectedDataGrid };
+                updatedSelectedDataGrid.height = Number(event.target.value);
+                setSelectedDataGrid(updatedSelectedDataGrid);
+              }}
+              sx={{ marginTop: 2, marginX: 5 }}
+            />
+            <FormControlLabel
+              control={<Checkbox />}
+              label="Là đơn vị gốc "
+              sx={{ marginTop: 2, marginX: 5 }}
+              checked={selectedDataGrid?.isRoot}
+              onClick={(event) => {
+                const updatedSelectedDataGrid = { ...selectedDataGrid };
+                updatedSelectedDataGrid.isRoot = !selectedDataGrid?.isRoot;
+                setSelectedDataGrid(updatedSelectedDataGrid);
+              }}
+            />
+
+            {selectedButtonGroup !== 4 && (
+              <TextField
+                id="standard-basic"
+                variant="outlined"
+                type="number"
+                label="Tỉ lệ so với đơn vị gốc"
+                sx={{ marginY: 2, marginX: 5 }}
+                value={calculateRateInRoot(selectedDataGrid)}
+                onChange={(event) => {
+                  const updatedSelectedDataGrid = { ...selectedDataGrid };
+                  updatedSelectedDataGrid.rateInRoot = Number(
+                    event.target.value
+                  );
+                  setSelectedDataGrid(updatedSelectedDataGrid);
+                }}
+              />
+            )}
+            <TextField
+              id="standard-basic"
+              variant="outlined"
+              type="number"
+              label="Đóng gói"
+              sx={{ marginY: 2, marginX: 5 }}
+              value={selectedDataGrid?.upc}
+              onChange={(event) => {
+                const updatedSelectedDataGrid = { ...selectedDataGrid };
+                updatedSelectedDataGrid.upc = Number(event.target.value);
+                setSelectedDataGrid(updatedSelectedDataGrid);
+              }}
+            />
+            <div
+              style={{
                 display: "flex",
                 justifyContent: "center",
-                flexDirection: "column",
-
-                maxWidth: "447px",
-                flexGrow: 1,
+                paddingBottom: 6,
               }}
             >
-              <TextField
-                id="measName"
-                variant="outlined"
-                label="Đơn vị tính"
-                required
-                value={selectedDataGrid?.measName}
-                onChange={(event) => {
-                  const updatedSelectedDataGrid = { ...selectedDataGrid };
-                  updatedSelectedDataGrid.measName = event.target.value;
-                  setSelectedDataGrid(updatedSelectedDataGrid);
-                }}
-                sx={{ marginTop: 4, marginX: 5 }}
-              />
-              <TextField
-                id="standard-basic"
-                variant="outlined"
-                type="number"
-                label="Chiều dài (mm)"
-                sx={{ marginTop: 2, marginX: 5 }}
-                value={selectedDataGrid?.length}
-                onChange={(event) => {
-                  const updatedSelectedDataGrid = { ...selectedDataGrid };
-                  updatedSelectedDataGrid.length = Number(event.target.value);
-
-                  setSelectedDataGrid(updatedSelectedDataGrid);
-                }}
-              />
-              <TextField
-                id="standard-basic"
-                variant="outlined"
-                type="number"
-                label="Chiều rộng (mm)"
-                value={selectedDataGrid?.width || ""}
-                onChange={(event) => {
-                  const updatedSelectedDataGrid = { ...selectedDataGrid };
-                  updatedSelectedDataGrid.width = Number(event.target.value);
-                  setSelectedDataGrid(updatedSelectedDataGrid);
-                }}
-                sx={{ marginTop: 2, marginX: 5 }}
-              />
-              <TextField
-                id="standard-basic"
-                variant="outlined"
-                type="number"
-                label="Chiều cao (mm)"
-                value={selectedDataGrid?.height}
-                onChange={(event) => {
-                  const updatedSelectedDataGrid = { ...selectedDataGrid };
-                  updatedSelectedDataGrid.height = Number(event.target.value);
-                  setSelectedDataGrid(updatedSelectedDataGrid);
-                }}
-                sx={{ marginTop: 2, marginX: 5 }}
-              />
-              <FormControlLabel
-                control={<Checkbox />}
-                label="Là đơn vị gốc "
-                sx={{ marginTop: 2, marginX: 5 }}
-                checked={selectedDataGrid?.isRoot}
-                onClick={(event) => {
-                  const updatedSelectedDataGrid = { ...selectedDataGrid };
-                  updatedSelectedDataGrid.isRoot = !selectedDataGrid?.isRoot;
-                  setSelectedDataGrid(updatedSelectedDataGrid);
-                }}
-              />
-
-              {selectedButtonGroup !== 4 && (
-                <TextField
-                  id="standard-basic"
-                  variant="outlined"
-                  type="number"
-                  label="Tỉ lệ so với đơn vị gốc"
-                  sx={{ marginY: 2, marginX: 5 }}
-                  value={calculateRateInRoot(selectedDataGrid)}
-                  onChange={(event) => {
-                    const updatedSelectedDataGrid = { ...selectedDataGrid };
-                    updatedSelectedDataGrid.rateInRoot = Number(
-                      event.target.value
-                    );
-                    setSelectedDataGrid(updatedSelectedDataGrid);
-                  }}
-                />
-              )}
-              <TextField
-                id="standard-basic"
-                variant="outlined"
-                type="number"
-                label="Đóng gói"
-                sx={{ marginY: 2, marginX: 5 }}
-                value={selectedDataGrid?.upc}
-                onChange={(event) => {
-                  const updatedSelectedDataGrid = { ...selectedDataGrid };
-                  updatedSelectedDataGrid.upc = Number(event.target.value);
-                  setSelectedDataGrid(updatedSelectedDataGrid);
-                }}
-              />
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  paddingBottom: 6,
+              <Button
+                variant="contained"
+                sx={{ marginX: 2 }}
+                onClick={() => {
+                  setSelectedDataGrid(null);
                 }}
               >
-                <Button
-                  variant="contained"
-                  sx={{ marginX: 2 }}
-                  onClick={() => {
-                    setSelectedDataGrid(null);
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button variant="contained" onClick={handleOpenFix}>
-                  Save
-                </Button>
-                <FormFixDialog open={openFixDialog} />
-                <Button
-                  color="error"
-                  variant="contained"
-                  sx={{ marginX: 2 }}
-                  onClick={handleOpenDelete}
-                >
-                  Delete
-                </Button>
-                <FormDeleteDialog open={openDeleteDialog} />
-              </div>
-            </Paper>
-          ) : (
-            <></>
-          )}
-        </Box>
-      </div>
-    </Paper>
+                Cancel
+              </Button>
+              <Button variant="contained" onClick={handleOpenFix}>
+                Save
+              </Button>
+              <FormFixDialog open={openFixDialog} />
+              <Button
+                color="error"
+                variant="contained"
+                sx={{ marginX: 2 }}
+                onClick={handleOpenDelete}
+              >
+                Delete
+              </Button>
+              <FormDeleteDialog open={openDeleteDialog} />
+            </div>
+          </Paper>
+        ) : (
+          <></>
+        )}
+      </Grid>
+
+      {/* </div> */}
+    </Grid>
   );
 }

@@ -92,34 +92,41 @@ export default function AddExportProduct() {
       }
     };
     getOrderDetailData();
-    return () => {
-      // if (changePage) {
-      alert("chuyen trang!!!");
-      // }
+    // return () => {
+    //   // if (changePage) {
+    //   alert("chuyen trang!!!");
+    //   // }
 
-      // putData("/business-service/orderDelivery", orderDeliveryID, {
-      //   inProcess: false,
-      // });
-    };
+    //   // putData("/business-service/orderDelivery", orderDeliveryID, {
+    //   //   inProcess: false,
+    //   // });
+    // };
   }, []);
 
-  // React.useEffect(() => {
-  //   const handleBeforeUnload = (event) => {
-  //     // Custom logic before leaving the page
-  //     event.preventDefault();
-  //     // event.returnValue = true;
-  //     alert("Doing something before leaving the page");
+  React.useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      // Custom logic before leaving the page
+      event.preventDefault();
+      event.returnValue = true;
 
-  //     // Show confirmation dialog
-  //     // Required for showing the dialog
-  //   };
+      putData("/business-service/orderDelivery", orderDeliveryID, {
+        inProcess: false,
+      });
+      PostDataMessage(
+        "/business-service/orderDelivery/sendMessage/orderDeliveryID/normal",
+        orderDeliveryID
+      );
+      console.log("có thực hiện");
+      // Show confirmation dialog
+      // Required for showing the dialog
+    };
 
-  //   window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("beforeunload", handleBeforeUnload);
 
-  //   return () => {
-  //     window.removeEventListener("beforeunload", handleBeforeUnload);
-  //   };
-  // }, []);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
   return (
     <Grid container spacing={4}>
       <Grid item xs={12}>

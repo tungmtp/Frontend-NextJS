@@ -26,18 +26,19 @@ import { getData } from "@/hook/Hook";
 import dayjs from "dayjs";
 import { NotifySnackbar } from "@/components/general/notifySnackbar/NotifySnackbar";
 import { useSnackbar } from "notistack";
-export default function ManyProductOneStorage() {
+import SelectAttributeTreeView from "@/components/select/SelectAttributeTreeView";
+export default function StockByAttribute() {
   const { enqueueSnackbar } = useSnackbar();
   const date = new Date();
   const currentDate = dayjs(date).format("YYYY-MM-DD");
   const dateMinus = dayjs(date).subtract(7, "day").format("YYYY-MM-DD");
   const [data, setdata] = useState(null);
-  const [fromDate, setFromDate] = useState(dateMinus);
+  const [selectedAttribute, setSelectedAttribute] = useState("");
   const [toDate, setToDate] = useState(currentDate);
   const [wareHouseID, setWareHouseID] = useState(2);
   const [quality, setQuality] = useState(1);
   const handleFilter = async () => {
-    if (fromDate === "" || toDate === "" || quality === "") {
+    if (selectedAttribute === "" || toDate === "" || quality === "") {
       NotifySnackbar(
         enqueueSnackbar,
         `Vui lòng nhập đủ các trường!!`,
@@ -45,38 +46,21 @@ export default function ManyProductOneStorage() {
       );
     } else {
       const result = await getData(
-        `/product-service/product/allProductInOneWarehouse/${wareHouseID}/${fromDate}/${toDate}/${quality}`
+        `/product-service/product/allProductByAttrAtAllWarehouse/${selectedAttribute}/${toDate}`
       );
       setdata(result);
     }
   };
-  console.log(quality);
+  console.log(data);
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <Typography variant="h4">Tồn các sản phẩm trong một kho</Typography>
+        <Typography variant="h4">Tồn các sản phẩm theo thuộc tính</Typography>
       </Grid>
-      <Grid item xs={12} md={6} lg={4}>
-        <DatePicker
-          sx={{ width: "100%" }}
-          label="Ngày đầu"
-          value={dayjs(fromDate)}
-          onChange={(newValue) => {
-            const newFromDate = newValue.format("YYYY-MM-DD");
-            if (dayjs(newFromDate).isBefore(dayjs(toDate))) {
-              setFromDate(newFromDate);
-            } else {
-              setFromDate("");
-              NotifySnackbar(
-                enqueueSnackbar,
-                '"Ngày đầu" phải trước "Ngày cuối"',
-                "error"
-              );
-            }
-          }}
-        />
+      <Grid item xs={12} md={6} lg={3}>
+        <SelectAttributeTreeView setSelectedAttribute={setSelectedAttribute} />
       </Grid>
-      <Grid item xs={12} md={6} lg={4}>
+      <Grid item xs={12} md={6} lg={3}>
         <DatePicker
           sx={{ width: "100%" }}
           label="Ngày cuối"
@@ -96,32 +80,8 @@ export default function ManyProductOneStorage() {
           }}
         />
       </Grid>
-      {/* <Grid item xs={12} md={6} lg={4}>
-        <SelectTreeView />
-      </Grid> */}
 
-      <Grid item xs={12} md={6} lg={6}>
-        <FormControl sx={{ width: "100%" }} size="small">
-          <InputLabel id="partner-type-label">Kiểm tra tại kho</InputLabel>
-          <Select
-            sx={{ width: "100%" }}
-            labelId="partner-type-label"
-            id="partner-type-select"
-            label="Kiểm tra tại kho"
-            value={wareHouseID}
-            onChange={(event) => {
-              setWareHouseID(Number(event.target.value));
-            }}
-          >
-            {Object.keys(filterWarehouseID).map((key) => (
-              <MenuItem key={key} value={key}>
-                {filterWarehouseID[key]}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Grid>
-      <Grid item xs={12} md={6} lg={5}>
+      <Grid item xs={12} md={6} lg={3}>
         <TextField
           variant="outlined"
           label="Chất lượng"
@@ -162,13 +122,13 @@ export default function ManyProductOneStorage() {
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
                     <TableCell align="center">{index + 1}</TableCell>
-                    <TableCell align="left">{row.NameStr}</TableCell>
+                    <TableCell align="left">{row.ProductName}</TableCell>
                     <TableCell align="left">{row.MeasName}</TableCell>
                     <TableCell align="left">{row.tonDK}</TableCell>
-                    <TableCell align="left">{row.mNhap}</TableCell>
-                    <TableCell align="left">{row.mXuat}</TableCell>
+                    <TableCell align="left">{row.Nhap}</TableCell>
+                    <TableCell align="left">{row.Xuat}</TableCell>
                     <TableCell align="left">{row.tonCK}</TableCell>
-                    <TableCell align="left">{row.quydoi}</TableCell>
+                    <TableCell align="left">{row.QuyDoi}</TableCell>
                   </TableRow>
                 ))}
             </TableBody>

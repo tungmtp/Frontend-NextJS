@@ -92,7 +92,7 @@ export default function ChildCategory(parentProp) {
     }
   };
   useEffect(() => {
-    if (!hasChildren(selectedCategory)) {
+    if (!hasChildren(selectedCategory) && selectedCategory) {
       const getProductData = async () => {
         try {
           const result = await getDataById(
@@ -234,7 +234,7 @@ export default function ChildCategory(parentProp) {
     selectedCategory,
     handleClick
   );
-
+  console.log(selectedCategory);
   return (
     <Paper
       elevation={6}
@@ -264,7 +264,9 @@ export default function ChildCategory(parentProp) {
           >
             {breadcrumbs}
           </Breadcrumbs>
-          {!hasChildren(selectedCategory) && !parentProp.openAddProduct ? (
+          {!hasChildren(selectedCategory) &&
+          !parentProp.openAddProduct &&
+          selectedCategory ? (
             <Tooltip title="Thêm sản phẩm mới" placement="left">
               <Fab
                 size="small"
@@ -283,9 +285,9 @@ export default function ChildCategory(parentProp) {
           <AddProduct
             handleCloseAddproduct={parentProp?.handleCloseAddproduct}
           />
-        ) : selectedProduct != null ? (
+        ) : selectedProduct ? (
           <DetailProduct />
-        ) : !hasChildren(selectedCategory) ? (
+        ) : !hasChildren(selectedCategory) && selectedCategory ? (
           <div style={{ height: "91%" }}>
             <DataGrid
               rows={productData}

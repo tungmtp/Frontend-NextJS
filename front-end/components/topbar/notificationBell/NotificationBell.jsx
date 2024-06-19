@@ -1,4 +1,11 @@
-import { Badge, Box, Menu, MenuItem, Typography } from "@mui/material";
+import {
+  Badge,
+  Box,
+  IconButton,
+  Menu,
+  MenuItem,
+  Typography,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { asyncGetData } from "@/hook/Hook";
@@ -12,9 +19,7 @@ const options = [
 ];
 export default function NotificationBell() {
   const [anchorElNotification, setAnchorElNotification] = React.useState(null);
-  const [inventoryLowCount, setInventoryLowCount] = useState([])
-
-
+  const [inventoryLowCount, setInventoryLowCount] = useState([]);
 
   const handleOpenNotification = (event) => {
     setAnchorElNotification(event.currentTarget);
@@ -25,27 +30,26 @@ export default function NotificationBell() {
 
   const getInventoryMessage = (messName) => {
     asyncGetData(`/common-module/eventList/${messName}`)
-      .then(response => response.json())
-      .then(data => setInventoryLowCount(data))
-      .catch(e => console.log(e))
-  }
+      .then((response) => response.json())
+      .then((data) => setInventoryLowCount(data))
+      .catch((e) => console.log(e));
+  };
   useEffect(() => {
-    getInventoryMessage("INVENTORY LOW COUNT")
-  }, [])
+    getInventoryMessage("INVENTORY LOW COUNT");
+  }, []);
 
   return (
     <Box>
       {" "}
-      <Badge
-        badgeContent={inventoryLowCount.length}
-        color="success"
-        style={{ marginRight: 20 }}
-      >
-        <NotificationsIcon
-          onClick={handleOpenNotification}
-          style={{ color: "white" }}
-        />
-      </Badge>
+      <IconButton onClick={handleOpenNotification}>
+        <Badge
+          badgeContent={inventoryLowCount.length}
+          color="success"
+          style={{ marginRight: 20 }}
+        >
+          <NotificationsIcon style={{ color: "white" }} />
+        </Badge>
+      </IconButton>
       <Menu
         sx={{ mt: "30px" }}
         id="menu-appbar"
@@ -64,12 +68,13 @@ export default function NotificationBell() {
       >
         {inventoryLowCount.map((item) => (
           <MenuItem key={item.id} onClick={handleCloseNotification}>
-            {(item.eventName == "INVENTORY LOW COUNT") ?
-              <Link href={"/products/controlMinimumInventory"}>{item.message}</Link>
-              :
+            {item.eventName == "INVENTORY LOW COUNT" ? (
+              <Link href={"/products/controlMinimumInventory"}>
+                {item.message}
+              </Link>
+            ) : (
               <Typography textAlign="center">{item.message}</Typography>
-
-            }
+            )}
           </MenuItem>
         ))}
       </Menu>

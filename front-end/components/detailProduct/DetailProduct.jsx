@@ -19,11 +19,16 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import ProductAttribute from "../productAttribute/ProductAttribute";
 import { NotifySnackbar } from "@/components/general/notifySnackbar/NotifySnackbar";
 import { useSnackbar } from "notistack";
-import { Grid } from "@mui/material";
+import { Divider, Grid, Typography } from "@mui/material";
+import PhysicalStock from "../physicalStock/PhysicalStock";
+import dayjs from "dayjs";
 export default function DetailProduct() {
+  const date = new Date();
+  const currentDate = dayjs(date).format("YYYY-MM-DD");
   const selectedProduct = useSelector(
     (state) => state.categoryProduct.selectedProduct
   );
+
   const [classPriceData, setClassPriceData] = useState([]);
   const [classesData, setClassesData] = useState([]);
   const [measurementData, setMeasurementData] = useState([]);
@@ -35,7 +40,7 @@ export default function DetailProduct() {
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
 
-  // console.log(measurementData);
+  console.log(selectedDataGrid);
   useEffect(() => {
     const getClassPriceData = async () => {
       try {
@@ -173,112 +178,112 @@ export default function DetailProduct() {
   //   event.preventDefault();
   //   setOpenAddDialog(true);
   // };
-  const handleClose = (event) => {
-    event.preventDefault();
-    setOpenAddDialog(false);
-  };
-  function FormAddDialog(open) {
-    let selectedClassId = "";
-    let selectedDefaultMeas = "";
-    let selectedDateEffected = "";
-    return (
-      <React.Fragment>
-        <Dialog
-          open={open.open}
-          onClose={handleClose}
-          PaperProps={{
-            component: "form",
-            onSubmit: (event) => {
-              event.preventDefault();
-              const formData = new FormData(event.currentTarget);
-              const formJson = Object.fromEntries(formData.entries());
+  // const handleClose = (event) => {
+  //   event.preventDefault();
+  //   setOpenAddDialog(false);
+  // };
+  // function FormAddDialog(open) {
+  //   let selectedClassId = "";
+  //   let selectedDefaultMeas = "";
+  //   let selectedDateEffected = "";
+  //   return (
+  //     <React.Fragment>
+  //       <Dialog
+  //         open={open.open}
+  //         onClose={handleClose}
+  //         PaperProps={{
+  //           component: "form",
+  //           onSubmit: (event) => {
+  //             event.preventDefault();
+  //             const formData = new FormData(event.currentTarget);
+  //             const formJson = Object.fromEntries(formData.entries());
 
-              const dateEffected = selectedDateEffected;
-              const classId = selectedClassId;
-              const DefaultMeas = selectedDefaultMeas;
-              const price = formJson.price;
+  //             const dateEffected = selectedDateEffected;
+  //             const classId = selectedClassId;
+  //             const DefaultMeas = selectedDefaultMeas;
+  //             const price = formJson.price;
 
-              const addClassPrice = {
-                classId: classId,
-                defaultMeas: DefaultMeas,
-                dateEffected: dateEffected,
-                price: Number(price),
-              };
-              console.log(addClassPrice);
+  //             const addClassPrice = {
+  //               classId: classId,
+  //               defaultMeas: DefaultMeas,
+  //               dateEffected: dateEffected,
+  //               price: Number(price),
+  //             };
+  //             console.log(addClassPrice);
 
-              const postMeasurement = async () => {
-                try {
-                  const result = await postData(
-                    "/product-service/classPrice",
-                    addClassPrice
-                  );
-                  const addClassPrice2 = result;
-                  setClassPriceData((prevState) => [
-                    ...prevState,
-                    addClassPrice2,
-                  ]);
-                } catch (err) {
-                  console.error("Error fetching data:", err);
-                }
-              };
-              postMeasurement();
+  //             const postMeasurement = async () => {
+  //               try {
+  //                 const result = await postData(
+  //                   "/product-service/classPrice",
+  //                   addClassPrice
+  //                 );
+  //                 const addClassPrice2 = result;
+  //                 setClassPriceData((prevState) => [
+  //                   ...prevState,
+  //                   addClassPrice2,
+  //                 ]);
+  //               } catch (err) {
+  //                 console.error("Error fetching data:", err);
+  //               }
+  //             };
+  //             postMeasurement();
 
-              handleClose(event);
-            },
-          }}
-        >
-          <DialogTitle>Thêm giá hạch toán</DialogTitle>
-          <DialogContent>
-            <Autocomplete
-              disablePortal
-              name="classId"
-              options={classesData}
-              sx={{ margin: 2 }}
-              renderInput={(params) => (
-                <TextField {...params} label="Tên Class" />
-              )}
-              onChange={(event, value) => {
-                selectedClassId = value.id;
-              }}
-              //   onChange={handleOnChange}
-            />
-            <Autocomplete
-              disablePortal
-              name="defaultMeas"
-              options={measurementData}
-              sx={{ margin: 2 }}
-              renderInput={(params) => (
-                <TextField {...params} label="Đơn vị mặc định" />
-              )}
-              onChange={(event, value) => {
-                selectedDefaultMeas = value.id;
-              }}
-            />
-            <DatePicker
-              name="dateEffected"
-              label="Ngày áp dụng"
-              sx={{ margin: 2 }}
-              onChange={(newValue) => {
-                selectedDateEffected = newValue.format(
-                  "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
-                );
-              }}
-            />
-            <TextField
-              name="price"
-              variant="outlined"
-              label="Giá thành"
-              sx={{ margin: 2, marginBottom: 22 }}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button type="submit">Save</Button>
-          </DialogActions>
-        </Dialog>
-      </React.Fragment>
-    );
-  }
+  //             handleClose(event);
+  //           },
+  //         }}
+  //       >
+  //         <DialogTitle>Thêm giá hạch toán</DialogTitle>
+  //         <DialogContent>
+  //           <Autocomplete
+  //             disablePortal
+  //             name="classId"
+  //             options={classesData}
+  //             sx={{ margin: 2 }}
+  //             renderInput={(params) => (
+  //               <TextField {...params} label="Tên Class" />
+  //             )}
+  //             onChange={(event, value) => {
+  //               selectedClassId = value.id;
+  //             }}
+  //             //   onChange={handleOnChange}
+  //           />
+  //           <Autocomplete
+  //             disablePortal
+  //             name="defaultMeas"
+  //             options={measurementData}
+  //             sx={{ margin: 2 }}
+  //             renderInput={(params) => (
+  //               <TextField {...params} label="Đơn vị mặc định" />
+  //             )}
+  //             onChange={(event, value) => {
+  //               selectedDefaultMeas = value.id;
+  //             }}
+  //           />
+  //           <DatePicker
+  //             name="dateEffected"
+  //             label="Ngày áp dụng"
+  //             sx={{ margin: 2 }}
+  //             onChange={(newValue) => {
+  //               selectedDateEffected = newValue.format(
+  //                 "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
+  //               );
+  //             }}
+  //           />
+  //           <TextField
+  //             name="price"
+  //             variant="outlined"
+  //             label="Giá thành"
+  //             sx={{ margin: 2, marginBottom: 22 }}
+  //           />
+  //         </DialogContent>
+  //         <DialogActions>
+  //           <Button onClick={handleClose}>Cancel</Button>
+  //           <Button type="submit">Save</Button>
+  //         </DialogActions>
+  //       </Dialog>
+  //     </React.Fragment>
+  //   );
+  // }
   const handleOpenDelete = (event) => {
     setOpenDeleteDialog(true);
     // setAddCategory({ isChildOf: selectedSingleNode });
@@ -331,7 +336,7 @@ export default function DetailProduct() {
           }}
         >
           <DialogTitle>Xóa {selectedDataGrid.nameStr}</DialogTitle>
-          <DialogContent>Bạn chắc chắn muốn xóa thư mục này?</DialogContent>
+          <DialogContent>Bạn chắc chắn muốn xóa sản phẩm này?</DialogContent>
           <DialogActions>
             <Button onClick={handleCloseDelete}>Cancel</Button>
             <Button type="submit">Confirm</Button>
@@ -412,153 +417,144 @@ export default function DetailProduct() {
     );
   }
   return (
-    <Box
-      sx={{
-        width: "100%",
-        height: "100%",
-        overflow: "auto",
-      }}
+    <Grid
+      container
+      spacing={2}
+      sx={{ px: 4 }}
+      // sx={{
+      //   width: "100%",
+      //   height: "100%",
+      //   overflow: "auto",
+      // }}
     >
-      <FormAddDialog open={openAddDialog} />
-      <Box
-        sx={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          flexWrap: "wrap",
-        }}
-      >
-        <Grid container spacing={1}>
-          <Grid item xs={11}>
-            <TextField
-              fullWidth
-              id="nameStr"
-              variant="outlined"
-              label="Tên sản phẩm"
-              sx={{ marginTop: 2, marginLeft: 5 }}
-              value={selectedDataGrid?.nameStr}
-              onChange={(event) => {
-                const updatedSelectedDataGrid = { ...selectedDataGrid };
-                updatedSelectedDataGrid.nameStr = event.target.value;
+      {/* <FormAddDialog open={openAddDialog} /> */}
 
-                setSelectedDataGrid(updatedSelectedDataGrid);
-              }}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <Autocomplete
-              id=""
-              options={measurementData}
-              sx={{ marginTop: 2, marginLeft: 5 }}
-              renderInput={(params) => (
-                <TextField {...params} label="Đơn vị quy chuẩn" />
-              )}
-              value={
-                measurementData.length > 0 &&
-                measurementData.find(
+      <Grid item xs={12}>
+        <TextField
+          fullWidth
+          id="nameStr"
+          variant="outlined"
+          label="Tên sản phẩm"
+          // sx={{ marginTop: 2, marginLeft: 5 }}
+          value={selectedDataGrid?.nameStr}
+          onChange={(event) => {
+            const updatedSelectedDataGrid = { ...selectedDataGrid };
+            updatedSelectedDataGrid.nameStr = event.target.value;
+
+            setSelectedDataGrid(updatedSelectedDataGrid);
+          }}
+        />
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <Autocomplete
+          id=""
+          options={measurementData}
+          // sx={{ marginTop: 2, marginLeft: 5 }}
+          renderInput={(params) => (
+            <TextField {...params} label="Đơn vị quy chuẩn" />
+          )}
+          value={
+            measurementData.length > 0 &&
+            measurementData.find(
+              (measurement) => measurement.id === selectedDataGrid.measID
+            )
+              ? measurementData.find(
                   (measurement) => measurement.id === selectedDataGrid.measID
                 )
-                  ? measurementData.find(
-                      (measurement) =>
-                        measurement.id === selectedDataGrid.measID
-                    )
-                  : null
-              }
-              onChange={(event, value) => {
-                if (value) {
-                  const updatedSelectedDataGrid = { ...selectedDataGrid };
-                  updatedSelectedDataGrid.measID = value.id;
-                  console.log(value);
-                  setSelectedDataGrid(updatedSelectedDataGrid);
-                }
-              }}
-              //   onChange={handleOnChange}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <Autocomplete
-              id=""
-              options={["None", ...segmmentData]}
-              isOptionEqualToValue={(option, value) => option.id === value?.id}
-              sx={{ marginTop: 2, marginRight: 5 }}
-              renderInput={(params) => (
-                <TextField {...params} label="Công đoạn sản xuất" />
-              )}
-              value={
-                segmmentData.length > 0 &&
-                segmmentData.find(
+              : null
+          }
+          onChange={(event, value) => {
+            if (value) {
+              const updatedSelectedDataGrid = { ...selectedDataGrid };
+              updatedSelectedDataGrid.measID = value.id;
+              console.log(value);
+              setSelectedDataGrid(updatedSelectedDataGrid);
+            }
+          }}
+          //   onChange={handleOnChange}
+        />
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <Autocomplete
+          id=""
+          options={["None", ...segmmentData]}
+          isOptionEqualToValue={(option, value) => option.id === value?.id}
+          // sx={{ marginTop: 2, marginRight: 5 }}
+          renderInput={(params) => (
+            <TextField {...params} label="Công đoạn sản xuất" />
+          )}
+          value={
+            segmmentData.length > 0 &&
+            segmmentData.find(
+              (segmment) => segmment.id === selectedDataGrid.segmentID
+            )
+              ? segmmentData.find(
                   (segmment) => segmment.id === selectedDataGrid.segmentID
                 )
-                  ? segmmentData.find(
-                      (segmment) => segmment.id === selectedDataGrid.segmentID
-                    )
-                  : null
-              }
-              onChange={(event, value) => {
-                if (value && value != "None") {
-                  const updatedSelectedDataGrid = { ...selectedDataGrid };
-                  updatedSelectedDataGrid.segmentID = value.id;
-                  setSelectedDataGrid(updatedSelectedDataGrid);
-                } else {
-                  const updatedSelectedDataGrid = { ...selectedDataGrid };
-                  updatedSelectedDataGrid.segmentID = "";
-                  setSelectedDataGrid(updatedSelectedDataGrid);
-                }
-              }}
-              //   onChange={handleOnChange}
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <TextField
-              fullWidth
-              id="minimumStock"
-              variant="outlined"
-              label="Tồn kho tối thiểu"
-              type="number"
-              sx={{ marginTop: 2, marginLeft: 5 }}
-              value={selectedDataGrid?.minimumStock}
-              onChange={(event) => {
-                const updatedSelectedDataGrid = { ...selectedDataGrid };
-                updatedSelectedDataGrid.minimumStock = Number(
-                  event.target.value
-                );
+              : null
+          }
+          onChange={(event, value) => {
+            if (value && value != "None") {
+              const updatedSelectedDataGrid = { ...selectedDataGrid };
+              updatedSelectedDataGrid.segmentID = value.id;
+              setSelectedDataGrid(updatedSelectedDataGrid);
+            } else {
+              const updatedSelectedDataGrid = { ...selectedDataGrid };
+              updatedSelectedDataGrid.segmentID = "";
+              setSelectedDataGrid(updatedSelectedDataGrid);
+            }
+          }}
+          //   onChange={handleOnChange}
+        />
+      </Grid>
+      <Grid item xs={12} md={4}>
+        <TextField
+          fullWidth
+          id="minimumStock"
+          variant="outlined"
+          label="Tồn kho tối thiểu"
+          type="number"
+          // sx={{ marginTop: 2, marginLeft: 5 }}
+          value={selectedDataGrid?.minimumStock}
+          onChange={(event) => {
+            const updatedSelectedDataGrid = { ...selectedDataGrid };
+            updatedSelectedDataGrid.minimumStock = Number(event.target.value);
 
-                setSelectedDataGrid(updatedSelectedDataGrid);
-              }}
-            />
-          </Grid>
-          <Grid item xs={8}>
-            <Autocomplete
-              id="combo-box-demo"
-              options={classPriceData}
-              sx={{ marginTop: 2, marginX: 5 }}
-              renderInput={(params) => (
-                <TextField {...params} label="Class giá hạch toán" />
-              )}
-              value={
-                classPriceData.length > 0 &&
-                classPriceData.find(
+            setSelectedDataGrid(updatedSelectedDataGrid);
+          }}
+        />
+      </Grid>
+      <Grid item xs={12} md={8}>
+        <Autocomplete
+          id="combo-box-demo"
+          options={classesData}
+          // sx={{ marginTop: 2, marginX: 5 }}
+          renderInput={(params) => (
+            <TextField {...params} label="Class giá hạch toán" />
+          )}
+          value={
+            classesData.length > 0 &&
+            classesData.find(
+              (classPrice) => classPrice.id === selectedDataGrid.classPriceID
+            )
+              ? classesData.find(
                   (classPrice) =>
                     classPrice.id === selectedDataGrid.classPriceID
                 )
-                  ? classPriceData.find(
-                      (classPrice) =>
-                        classPrice.id === selectedDataGrid.classPriceID
-                    )
-                  : null
-              }
-              onChange={(event, value) => {
-                if (value) {
-                  const updatedSelectedDataGrid = { ...selectedDataGrid };
-                  updatedSelectedDataGrid.classPriceID = value.id;
-                  console.log(value);
-                  setSelectedDataGrid(updatedSelectedDataGrid);
-                }
-              }}
-              //   onChange={handleOnChange}
-            />
-          </Grid>
-        </Grid>
+              : null
+          }
+          onChange={(event, value) => {
+            if (value) {
+              const updatedSelectedDataGrid = { ...selectedDataGrid };
+              updatedSelectedDataGrid.classPriceID = value.id;
+              console.log(value);
+              setSelectedDataGrid(updatedSelectedDataGrid);
+            }
+          }}
+          //   onChange={handleOnChange}
+        />
+      </Grid>
+      <Grid item xs={12} md={4}>
         <FormControlLabel
           control={
             <Checkbox
@@ -571,8 +567,10 @@ export default function DetailProduct() {
             />
           }
           label="Có thể mua"
-          sx={{ marginTop: 2, marginX: 5 }}
+          // sx={{ marginTop: 2, marginX: 5 }}
         />
+      </Grid>
+      <Grid item xs={12} md={4}>
         <FormControlLabel
           control={
             <Checkbox
@@ -586,8 +584,10 @@ export default function DetailProduct() {
             />
           }
           label="Có thể bán"
-          sx={{ marginTop: 2, marginX: 5 }}
+          // sx={{ marginTop: 2, marginX: 5 }}
         />
+      </Grid>
+      <Grid item xs={12} md={4}>
         <FormControlLabel
           control={
             <Checkbox
@@ -601,8 +601,10 @@ export default function DetailProduct() {
             />
           }
           label="Có thể sản xuất"
-          sx={{ marginTop: 2, marginX: 5 }}
+          // sx={{ marginTop: 2, marginX: 5 }}
         />
+      </Grid>
+      <Grid item xs={12} md={4}>
         <FormControlLabel
           control={
             <Checkbox
@@ -616,8 +618,10 @@ export default function DetailProduct() {
             />
           }
           label="Có thể bán mà không có SP tồn kho"
-          sx={{ marginTop: 2, marginX: 5 }}
+          // sx={{ marginTop: 2, marginX: 5 }}
         />
+      </Grid>
+      <Grid item xs={12} md={4}>
         <FormControlLabel
           control={
             <Checkbox
@@ -631,15 +635,17 @@ export default function DetailProduct() {
             />
           }
           label="Không sử dụng sản phẩm này nữa"
-          sx={{ marginTop: 2, marginX: 5 }}
+          // sx={{ marginTop: 2, marginX: 5 }}
         />
-
+      </Grid>
+      <Grid item xs={12}>
         <TextField
+          fullWidth
           multiline
           id=""
           variant="outlined"
           label="Ghi chú"
-          sx={{ marginTop: 2, marginLeft: 5, width: "91%" }}
+          // sx={{ marginTop: 2, marginLeft: 5, width: "91%" }}
           value={selectedDataGrid?.comment ? selectedDataGrid.comment : ""}
           onChange={(event) => {
             const updatedSelectedDataGrid = { ...selectedDataGrid };
@@ -648,50 +654,62 @@ export default function DetailProduct() {
             setSelectedDataGrid(updatedSelectedDataGrid);
           }}
         />
+      </Grid>
+      <Grid item xs={6}>
         <ProductAttribute
           title={"attName"}
           serviceURL={"/product-service/ProductAttribute"}
         />
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            paddingBottom: 6,
-            width: "100%",
-            position: "sticky",
-            bottom: 0,
-            height: "80px",
-            background: "rgb(239,239,239,0.8)",
+      </Grid>
+      <Grid item xs={2}>
+        <Typography variant="h7" sx={{ fontWeight: "Bold", color: "red" }}>
+          {" "}
+          Tồn kho vật lý:
+        </Typography>
+      </Grid>
+      <Grid item xs={2}>
+        <PhysicalStock
+          productID={selectedProduct.id}
+          measID={selectedProduct.measID}
+          date={currentDate}
+        />
+      </Grid>
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          paddingBottom: 6,
+          width: "100%",
+          position: "sticky",
+          bottom: 0,
+          height: "80px",
+          background: "rgb(239,239,239,0.8)",
+        }}
+      >
+        <Button
+          variant="contained"
+          sx={{ margin: 2 }}
+          onClick={() => {
+            dispatch(setSelectedProduct(null));
           }}
         >
-          <Button
-            variant="contained"
-            sx={{ margin: 2 }}
-            onClick={() => {
-              dispatch(setSelectedProduct(null));
-            }}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="contained"
-            sx={{ margin: 2 }}
-            onClick={handleOpenFix}
-          >
-            Save
-          </Button>
-          <FormFixDialog open={openFixDialog} />
-          <Button
-            color="error"
-            variant="contained"
-            sx={{ margin: 2 }}
-            onClick={handleOpenDelete}
-          >
-            Delete
-          </Button>
-          <FormDeleteDialog open={openDeleteDialog} />
-        </div>
-      </Box>
-    </Box>
+          Cancel
+        </Button>
+        <Button variant="contained" sx={{ margin: 2 }} onClick={handleOpenFix}>
+          Save
+        </Button>
+        <FormFixDialog open={openFixDialog} />
+        <Button
+          color="error"
+          variant="contained"
+          sx={{ margin: 2 }}
+          onClick={handleOpenDelete}
+        >
+          Delete
+        </Button>
+        <FormDeleteDialog open={openDeleteDialog} />
+      </div>
+    </Grid>
   );
 }

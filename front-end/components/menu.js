@@ -4,22 +4,28 @@ export const mnu = {
     { title: "Thông tin về công ty", link: "/home/info" },
   ],
   products: [
-    { title: "Sản phẩm Explorer", link: "/products/category" },
-    { title: "Thêm sản phẩm", link: "/products/addProduct" },
-    { title: "Danh mục đơn vị tính", link: "/products/measurement" },
-    { title: "Thuộc tính sản phẩm", link: "/products/attribute" },
-    { title: "Danh mục Class", link: "/products/classes" },
-    { title: "Giá hạch toán", link: "/products/classPrice" },
-    { title: "Tồn vật tư đầu kỳ", link: "/products/beginningInventory" },
+    { title: "(#) Sản phẩm Explorer (X)", link: "/products/category" },
+    { title: "(#) Thêm sản phẩm (X)", link: "/products/addProduct" },
+    { title: "(#) Danh mục đơn vị tính (X)", link: "/products/measurement" },
+    { title: "(#) Thuộc tính sản phẩm (X)", link: "/products/attribute" },
+    { title: "(#) Danh mục Class (X)", link: "/products/classes" },
+    { title: "(#) Giá hạch toán (X)", link: "/products/classPrice" },
+    { title: "(#) Tồn vật tư đầu kỳ", link: "/products/beginningInventory" },
     {
-      title: "Kiểm soát tồn kho tối thiểu",
+      title: "(#) Kiểm soát tồn kho tối thiểu",
       link: "/products/controlMinimumInventory",
     },
   ],
   produce: [
-    { title: "Các công đoạn sản xuất", link: "/produce/segment" },
-    { title: "Tạo mã và định mưc cho BTP", link: "/produce/BTPdifinition" },
-    { title: "Xử lý yêu cầu cung ứng", link: "/produce/supplyRequests" },
+    { title: "(#) Các công đoạn sản xuất (X)", link: "/produce/segment" },
+    {
+      title: "(#) Tạo mã và định mưc cho BTP (X)",
+      link: "/produce/BTPdifinition",
+    },
+    {
+      title: "(#) Xử lý yêu cầu cung ứng ",
+      link: "/produce/supplyRequests",
+    },
     {
       title: "Lên lịch sản xuất đơn lẻ",
       link: "/produce/scheduleSingleProduction",
@@ -49,7 +55,7 @@ export const mnu = {
       link: "/produce/productionControl",
     },
     {
-      title: "Nhập kết quả sản xuất",
+      title: "(#) Nhập kết quả sản xuất ",
       link: "/produce/enterProductionResult",
     },
     {
@@ -67,55 +73,61 @@ export const mnu = {
   ],
 
   storage: [
-    { title: "Danh mục nhập kho hàng hóa", link: "/storage/importProduct" },
-    { title: "Danh mục tạm nhập", link: "/storage/temporaryImport" },
-    { title: "Danh mục xuất kho hàng hóa", link: "/storage/exportProduct" },
     {
-      title: "Tồn 01 sản phẩm ở 01 kho",
+      title: "(#) Danh mục nhập kho hàng hóa (X)",
+      link: "/storage/importProduct",
+    },
+    { title: "(#) Danh mục tạm nhập", link: "/storage/temporaryImport" },
+    {
+      title: "(#) Danh mục xuất kho hàng hóa (X)",
+      link: "/storage/exportProduct",
+    },
+    {
+      title: "(#) Tồn 01 sản phẩm ở 01 kho (X)",
       link: "/storage/oneProductOneStorage",
     },
     {
-      title: "Tồn 01 sản phẩm ở các kho",
+      title: "(#) Tồn 01 sản phẩm ở các kho (X)",
       link: "/storage/oneProductManyStorage",
     },
     {
-      title: "Tồn các sản phẩm ở 01 kho",
+      title: "(#) Tồn các sản phẩm ở 01 kho (X)",
       link: "/storage/manyProductOneStorage",
     },
+    // {
+    //   title: "(#) Tồn sản phẩm theo mã màu",
+    //   link: "/storage/storeByColor",
+    // },
     {
-      title: "Tồn sản phẩm theo mã màu",
-      link: "/storage/storeByColor",
+      title: "(#) Tồn sản phẩm theo thuộc tính (X)",
+      link: "/storage/stockByAttribute",
     },
     {
-      title: "Tồn sản phẩm theo thương hiệu",
-      link: "/storage/storeByBrand",
+      title: "(#) Tồn sản phẩm theo Class (X)",
+      link: "/storage/stockByClass",
     },
     {
-      title: "Tồn sản phẩm theo Class",
-      link: "/storage/storeByClass",
-    },
-    {
-      title: "Xuất chuyển sang kho khác",
+      title: "(#) Xuất chuyển sang kho khác (X)",
       link: "/storage/exportAnotherStorage",
     },
     {
-      title: "Nhập từ kho khác chuyển đến",
+      title: "(#) Nhập từ kho khác chuyển đến (X)",
       link: "/storage/importAnotherStorage",
     },
     {
-      title: "Thu hồi hàng thừa",
+      title: "(#) Thu hồi hàng thừa",
       link: "/storage/recoveryProduct",
     },
     {
-      title: "Cập nhật kiểm kê thừa thiếu",
+      title: "(#) Cập nhật kiểm kê thừa thiếu",
       link: "/storage/updateSurplusInventory",
     },
   ],
   business: [
-    { title: "Danh sách đối tác", link: "/business/partner" },
-    { title: "Danh sách liên hệ", link: "/business/contact" },
-    { title: "Bán hàng", link: "/business/order" },
-    { title: "Lịch giao hàng", link: "/business/orderDelivery" },
+    { title: "(#) Danh sách đối tác (X)", link: "/business/partner" },
+    { title: "(#) Danh sách liên hệ (X)", link: "/business/contact" },
+    { title: "(#) Bán hàng (X)", link: "/business/order" },
+    { title: "(#) Lịch giao hàng (X)", link: "/business/orderDelivery" },
     { title: "Công nợ theo nhân viên", link: "/business/debtByEmployee" },
     { title: "Công nợ một đại lý (toàn bộ)", link: "/business/debtAgentAll" },
     { title: "Công nợ một đại lý (NX-TT)", link: "/business/debtAgentNXTT" },
@@ -136,7 +148,7 @@ export const mnu = {
     },
   ],
   purchase: [
-    { title: "Danh mục đơn hàng mua", link: "/purchase/purchaseOrder" },
+    { title: "(#) Danh mục đơn hàng mua", link: "/purchase/purchaseOrder" },
     {
       title: "Xử lý yêu cầu mua vật tư",
       link: "/purchase/purchaseMaterialRequest",

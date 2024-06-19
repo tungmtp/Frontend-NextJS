@@ -84,7 +84,7 @@ export default function AddDetailImport(props) {
   };
 
   return (
-    <Grid container spacing={4}>
+    <Grid container spacing={2}>
       <Grid item xs={12}>
         <Typography variant="h6">Thêm mặt hàng:</Typography>
       </Grid>
