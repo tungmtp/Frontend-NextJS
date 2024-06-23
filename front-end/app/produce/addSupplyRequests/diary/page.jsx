@@ -56,11 +56,32 @@ export default function diary() {
         <>
             {reqListDate.map(itemDate => (
                 <Fragment key={itemDate.ReqDate}>
-                    <h2>{itemDate.ReqDate}</h2>
-                    {reqList.filter(itemReq => itemReq.ReqDate === itemDate.ReqDate)
-                        .map(item => (
-                            <p key={item.ReqID}>{item.Quantity}</p>
-                        ))}
+                    <h2>{itemDate.ReqDate.split("-").reverse().join("-")}</h2>
+                    <TableContainer component={Paper}>
+                        <Table sx={{ minWidth: 650 }} aria-labelledby="tableTitle" size="small">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell align="center" sx={{ border: 1 }}><b>Sản phẩm</b></TableCell>
+                                    <TableCell align="center" sx={{ border: 1 }}>DVT</TableCell>
+                                    <TableCell align="center" sx={{ border: 1 }}>Chất lượng</TableCell>
+                                    <TableCell align="center" sx={{ border: 1 }}>Yêu cầu giao</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {
+                                    reqList.filter(itemReq => itemReq.ReqDate === itemDate.ReqDate)
+                                        .map(item => (
+                                            <TableRow>
+                                                <TableCell align="center" sx={{ border: 1 }}>{item.productName}</TableCell>
+                                                <TableCell align="center" sx={{ border: 1 }}>{item.MeasName}</TableCell>
+                                                <TableCell align="center" sx={{ border: 1 }}>{item.quality}</TableCell>
+                                                <TableCell align="center" sx={{ border: 1 }}>{item.Quantity}</TableCell>
+                                            </TableRow>
+                                        ))
+                                }
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
                 </Fragment>
             ))}
         </>

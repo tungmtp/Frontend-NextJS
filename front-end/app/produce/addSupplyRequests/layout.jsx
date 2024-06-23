@@ -35,10 +35,10 @@ function MainLayout({ children }) {
                 <Stack spacing={2} sx={{ p: 2 }}>
                     <Link href={`/produce/addSupplyRequests/newrequest?id=${orderID}`} >Add new request</Link>
                     {orderID ? (listDate.map(
-                        (item, index) => (<Link key={index} href={`/produce/addSupplyRequests/detail?id=${orderID}&&mdate=${item.ReqDate}`}>{item.ReqDate}</Link>)
+                        (item, index) => (<Link key={index} href={`/produce/addSupplyRequests/detail?id=${orderID}&&mdate=${item.ReqDate}`}>{item.ReqDate.split("-").reverse().join("-")}</Link>)
                     )) : (<span></span>)}
                     <Link href={`/produce/addSupplyRequests/summary?id=${orderID}`}>Summary</Link>
-                    <Link href={`/produce/addSupplyRequests/diary?id=${orderID}`}>Summary</Link>
+                    <Link href={`/produce/addSupplyRequests/diary?id=${orderID}`}>Diary</Link>
                 </Stack>
             </Grid>
             <Grid item xs={10}>
