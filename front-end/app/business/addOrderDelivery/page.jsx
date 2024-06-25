@@ -15,13 +15,20 @@ import {
   GridRowEditStopReasons,
 } from "@mui/x-data-grid";
 import dayjs from "dayjs";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import {
   FormControl,
   Grid,
   InputLabel,
   MenuItem,
+  Paper,
   Select,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   TextField,
   Typography,
 } from "@mui/material";
@@ -71,6 +78,8 @@ const AddOrderDelivery = () => {
   let orderName = searchParams.get("name");
   const date = new Date();
   const currentDate = dayjs(date).format("YYYY-MM-DD");
+  const [scheduleDate, setScheduleDate] = React.useState(currentDate);
+  const [onClick, setOnClick] = React.useState(false);
   const [orderDelivery, setOrderDelivery] = React.useState({
     orderID: orderID,
     deliveryDate: currentDate,
@@ -93,68 +102,104 @@ const AddOrderDelivery = () => {
   };
   const calculateQualityRate = (itemQuanlity, rateInRoot) => {
     if (rateInRoot == 0) {
-      return itemQuanlity;
+      return itemQuanlity.toFixed(2);
     } else {
-      return rateInRoot * itemQuanlity;
+      return (rateInRoot * itemQuanlity).toFixed(2);
     }
   };
   React.useEffect(() => {
-    const getOrderDetailData = async () => {
+    const getOrderDetailsBySchedule = async () => {
       try {
         const result = await getData(
-          `/business-service/orderDetail/byOrderID/${orderID}`
+          `/business-service/orderDetail/BySchedule/${scheduleDate}/${orderID}`
         );
 
-        // Map through the results and fetch product names
-        const resultWithIndex = await Promise.all(
-          result.map(async (row, index) => {
-            try {
-              const productResult = await getData(
-                `/product-service/product/oneForSelect/mayBeSell/${row.productID}`
-              );
-              return {
-                orderDeliveryID: "",
-                orderDetailID: row.id,
-                productID: row.productID,
-                id: row.id,
-                quality: row.quality,
-                quantity: row.quantity,
-                measID: row.measID,
-                price: row.price,
-                vat: 0,
-                index: index + 1,
-                nameStr: productResult[0].nameStr,
-                measName: productResult[0].measName,
-                measCatId: productResult[0].measCatId,
-                rateInRoot: productResult[0].rateInRoot,
-              };
-            } catch (err) {
-              console.error("Error fetching product data:", err);
-              return {
-                orderDeliveryID: "",
-                orderDetailID: row.id,
-                productID: row.productID,
-                id: row.id,
-                quality: row.quality,
-                quantity: row.quantity,
-                measID: row.measID,
-                price: row.price,
-                vat: row.vat,
-                index: index + 1,
-                nameStr: "Unknown Product",
-              };
-            }
-          })
-        );
-
+        const resultWithIndex = result?.map((item, index) => {
+          return {
+            orderDeliveryID: "",
+            orderDetailID: item.Id,
+            orderProduceID: item.scheduleID,
+            productID: item.productID,
+            id: item.scheduleID,
+            quality: item.quality,
+            quantity: item.scheduleQty,
+            measID: item.measID,
+            price: item.price,
+            vat: 0,
+            index: index + 1,
+            nameStr: item.productName,
+            measName: item.MeasName,
+            measCatId: item.MeasCatId,
+            rateInRoot: item.RateInRoot,
+            scheduleDate: item.scheduleDate,
+          };
+        });
+        console.log("Mới nè", resultWithIndex);
         setRows(resultWithIndex);
+        setOnClick(false);
       } catch (err) {
-        console.error("Error fetching order detail data:", err);
+        console.error("Error fetching data:", err);
       }
     };
+    getOrderDetailsBySchedule();
+  }, [scheduleDate]);
+  // React.useEffect(() => {
+  //   const getOrderDetailData = async () => {
+  //     try {
+  //       const result = await getData(
+  //         `/business-service/orderDetail/byOrderID/${orderID}`
+  //       );
 
-    getOrderDetailData();
-  }, []);
+  //       // Map through the results and fetch product names
+  //       const resultWithIndex = await Promise.all(
+  //         result.map(async (row, index) => {
+  //           try {
+  //             const productResult = await getData(
+  //               `/product-service/product/oneForSelect/mayBeSell/${row.productID}`
+  //             );
+  //             return {
+  //               orderDeliveryID: "",
+  //               orderDetailID: row.id,
+  //               productID: row.productID,
+  //               id: row.id,
+  //               quality: row.quality,
+  //               quantity: row.quantity,
+  //               measID: row.measID,
+  //               price: row.price,
+  //               vat: 0,
+  //               index: index + 1,
+  //               nameStr: productResult[0].nameStr,
+  //               measName: productResult[0].measName,
+  //               measCatId: productResult[0].measCatId,
+  //               rateInRoot: productResult[0].rateInRoot,
+  //             };
+  //           } catch (err) {
+  //             console.error("Error fetching product data:", err);
+  //             return {
+  //               orderDeliveryID: "",
+  //               orderDetailID: row.id,
+  //               productID: row.productID,
+  //               id: row.id,
+  //               quality: row.quality,
+  //               quantity: row.quantity,
+  //               measID: row.measID,
+  //               price: row.price,
+  //               vat: row.vat,
+  //               index: index + 1,
+  //               nameStr: "Unknown Product",
+  //             };
+  //           }
+  //         })
+  //       );
+
+  //       setRows(resultWithIndex);
+  //     } catch (err) {
+  //       console.error("Error fetching order detail data:", err);
+  //     }
+  //   };
+
+  //   getOrderDetailData();
+  // }, []);
 
   const columns = [
     { field: "index", headerName: "STT", flex: 1 },
@@ -214,31 +259,13 @@ const AddOrderDelivery = () => {
       },
     },
     {
-      field: "price",
-      headerName: "Giá bán/ĐV gốc",
-      type: "number",
-      flex: 3,
-      editable: true,
-    },
-    {
       field: "vat",
       headerName: "VAT",
       flex: 3,
       type: "number",
       editable: true,
     },
-    {
-      field: "thanhTien",
-      headerName: "Thành tiền",
-      type: "number",
-      flex: 4,
-      valueGetter: (params) => {
-        return (
-          params.row.price *
-          calculateQualityRate(params.row.quantity, params.row.rateInRoot)
-        );
-      },
-    },
+
     {
       field: "actions",
       type: "actions",
@@ -324,6 +351,10 @@ const AddOrderDelivery = () => {
   const isAnyRowInEditMode = Object.values(rowModesModel).some(
     (row) => row.mode === GridRowModes.Edit
   );
+
+  const handleRowClick = () => {
+    setOnClick(true);
+  };
   const handleSubmit = (event) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
@@ -369,14 +400,7 @@ const AddOrderDelivery = () => {
     }
   };
   return (
-    <Grid
-      container
-      justifyContent="center"
-      spacing={{ xs: 2, md: 3 }}
-      columns={{ xs: 1, sm: 8, md: 12 }}
-      component={"form"}
-      onSubmit={handleSubmit}
-    >
+    <Grid container justifyContent="center" spacing={{ xs: 2, md: 3 }}>
       <Grid item xs={12}>
         <Typography variant="h5" gutterBottom>
           Yêu cầu giao hàng cho{" "}
@@ -389,136 +413,204 @@ const AddOrderDelivery = () => {
           </span>
         </Typography>
       </Grid>
-      <Grid item xs={1} sm={4} md={3}>
-        <DatePicker
-          sx={{ width: "100%" }}
-          label="Ngày giao"
-          value={dayjs(orderDelivery?.deliveryDate)}
-          onChange={(newValue) => {
-            const updatedOrderDelivery = { ...orderDelivery };
-            updatedOrderDelivery.deliveryDate = newValue.format("YYYY-MM-DD");
-            setOrderDelivery(updatedOrderDelivery);
-          }}
-        />
+      <Grid item xs={12} md={3}>
+        <Grid container justifyContent="center" spacing={{ xs: 2, md: 3 }}>
+          <Grid item xs={12}>
+            <DatePicker
+              sx={{ width: "100%" }}
+              label="Ngày dự kiến giao"
+              value={dayjs(scheduleDate)}
+              onChange={(newValue) => {
+                const newScheduleDate = newValue.format("YYYY-MM-DD");
+                setScheduleDate(newScheduleDate);
+              }}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TableContainer component={Paper}>
+              <Table aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell align="left">STT</TableCell>
+                    <TableCell align="left">Ngày kiến giao hàng</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {rows &&
+                    rows?.map((row, index) => (
+                      <TableRow
+                        hover={!row.status}
+                        key={index}
+                        sx={
+                          row.status
+                            ? { backgroundColor: "#c0c0c0" }
+                            : {
+                                cursor: "pointer",
+                              }
+                        }
+                        onClick={() => handleRowClick(row.id)}
+                      >
+                        <TableCell align="center">{index + 1}</TableCell>
+                        <TableCell align="left">
+                          {dayjs(row.scheduleDate).format("DD/MM/YYYY")}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Grid>
+        </Grid>
       </Grid>
-      <Grid item xs={1} sm={4} md={3}>
-        <DatePicker
-          sx={{ width: "100%" }}
-          label="Ngày hứa thanh toán"
-          value={dayjs(orderDelivery?.paymentDate)}
-          onChange={(newValue) => {
-            const updatedOrderDelivery = { ...orderDelivery };
-            updatedOrderDelivery.paymentDate = newValue.format("YYYY-MM-DD");
-            setOrderDelivery(updatedOrderDelivery);
-          }}
-        />
-      </Grid>
-      <Grid item xs={1} sm={4} md={3}>
-        <FormControl sx={{ width: "100%" }} size="small">
-          <InputLabel id="partner-type-label">Mục đích giao</InputLabel>
-          <Select
-            sx={{ width: "100%" }}
-            labelId="partner-type-label"
-            id="partner-type-select"
-            value={orderDelivery?.purpose}
-            label="Mục đích giao"
-            onChange={(event) => {
-              const updatedOrderDelivery = { ...orderDelivery };
-              updatedOrderDelivery.purpose = Number(event.target.value);
-              setOrderDelivery(updatedOrderDelivery);
-            }}
+      {onClick ? (
+        <Grid item xs={12} md={9}>
+          <Grid
+            container
+            justifyContent="center"
+            spacing={{ xs: 2, md: 3 }}
+            columns={{ xs: 1, sm: 8, md: 12 }}
+            component={"form"}
+            onSubmit={handleSubmit}
           >
-            {Object.keys(purpose).map((key) => (
-              <MenuItem key={key} value={key}>
-                {getPurposeName(key)}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Grid>
-      <Grid item xs={1} sm={4} md={3}>
-        <FormControl sx={{ width: "100%" }} size="small">
-          <InputLabel id="partner-type-label">Xuất từ kho</InputLabel>
-          <Select
-            sx={{ width: "100%" }}
-            labelId="partner-type-label"
-            id="partner-type-select"
-            value={orderDelivery?.warehouseID}
-            label="Xuất từ kho"
-            onChange={(event) => {
-              const updatedOrderDelivery = { ...orderDelivery };
-              updatedOrderDelivery.warehouseID = Number(event.target.value);
-              setOrderDelivery(updatedOrderDelivery);
-            }}
-          >
-            {Object.keys(warehouseID).map((key) => (
-              <MenuItem key={key} value={key}>
-                {getWarehouseIDName(key)}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Grid>
-      <Grid item xs={1} sm={8} md={12}>
-        <TextField
-          multiline
-          name="deliveryAddress"
-          variant="outlined"
-          label="Địa chỉ gia hàng"
-          sx={{ width: "100%" }}
-          // value={orderDelivery?.deliveryAddress}
-          // onChange={(event) => {
-          //   const updatedOrderDelivery = { ...orderDelivery };
-          //   updatedOrderDelivery.deliveryAddress = event.target.value;
-          //   setOrderDelivery(updatedOrderDelivery);
-          // }}
-        />
-      </Grid>
-      <Grid item xs={1} sm={7} md={11.5}>
-        <DataGrid
-          sx={{
-            "&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell": {
-              py: "4px",
-            },
-            "&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell": {
-              py: "8px",
-            },
-            "&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell": {
-              py: "11px",
-            },
-          }}
-          rows={rows}
-          columns={columns}
-          editMode="row"
-          rowModesModel={rowModesModel}
-          onRowModesModelChange={handleRowModesModelChange}
-          onRowEditStop={handleRowEditStop}
-          processRowUpdate={processRowUpdate}
-          getRowHeight={() => "auto"}
-          autoHeight
-          // slots={{
-          //   toolbar: EditToolbar,
-          // }}
-          slotProps={{
-            toolbar: { setRows, setRowModesModel },
-          }}
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <Box mt={2} display="flex" justifyContent="flex-start">
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ mr: 2 }}
-            type="submit"
-          >
-            Save
-          </Button>
-          <Link href="/business/order">
-            <Button variant="outlined">Cancel</Button>
-          </Link>
-        </Box>
-      </Grid>
+            <Grid item xs={1} sm={4} md={3}>
+              <DatePicker
+                sx={{ width: "100%" }}
+                label="Ngày giao"
+                value={dayjs(orderDelivery?.deliveryDate)}
+                onChange={(newValue) => {
+                  const updatedOrderDelivery = { ...orderDelivery };
+                  updatedOrderDelivery.deliveryDate =
+                    newValue.format("YYYY-MM-DD");
+                  setOrderDelivery(updatedOrderDelivery);
+                }}
+              />
+            </Grid>
+            <Grid item xs={1} sm={4} md={3}>
+              <DatePicker
+                sx={{ width: "100%" }}
+                label="Ngày hứa thanh toán"
+                value={dayjs(orderDelivery?.paymentDate)}
+                onChange={(newValue) => {
+                  const updatedOrderDelivery = { ...orderDelivery };
+                  updatedOrderDelivery.paymentDate =
+                    newValue.format("YYYY-MM-DD");
+                  setOrderDelivery(updatedOrderDelivery);
+                }}
+              />
+            </Grid>
+            <Grid item xs={1} sm={4} md={3}>
+              <FormControl sx={{ width: "100%" }} size="small">
+                <InputLabel id="partner-type-label">Mục đích giao</InputLabel>
+                <Select
+                  sx={{ width: "100%" }}
+                  labelId="partner-type-label"
+                  id="partner-type-select"
+                  value={orderDelivery?.purpose}
+                  label="Mục đích giao"
+                  onChange={(event) => {
+                    const updatedOrderDelivery = { ...orderDelivery };
+                    updatedOrderDelivery.purpose = Number(event.target.value);
+                    setOrderDelivery(updatedOrderDelivery);
+                  }}
+                >
+                  {Object.keys(purpose).map((key) => (
+                    <MenuItem key={key} value={key}>
+                      {getPurposeName(key)}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={1} sm={4} md={3}>
+              <FormControl sx={{ width: "100%" }} size="small">
+                <InputLabel id="partner-type-label">Xuất từ kho</InputLabel>
+                <Select
+                  sx={{ width: "100%" }}
+                  labelId="partner-type-label"
+                  id="partner-type-select"
+                  value={orderDelivery?.warehouseID}
+                  label="Xuất từ kho"
+                  onChange={(event) => {
+                    const updatedOrderDelivery = { ...orderDelivery };
+                    updatedOrderDelivery.warehouseID = Number(
+                      event.target.value
+                    );
+                    setOrderDelivery(updatedOrderDelivery);
+                  }}
+                >
+                  {Object.keys(warehouseID).map((key) => (
+                    <MenuItem key={key} value={key}>
+                      {getWarehouseIDName(key)}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={1} sm={8} md={12}>
+              <TextField
+                multiline
+                name="deliveryAddress"
+                variant="outlined"
+                label="Địa chỉ gia hàng"
+                sx={{ width: "100%" }}
+                // value={orderDelivery?.deliveryAddress}
+                // onChange={(event) => {
+                //   const updatedOrderDelivery = { ...orderDelivery };
+                //   updatedOrderDelivery.deliveryAddress = event.target.value;
+                //   setOrderDelivery(updatedOrderDelivery);
+                // }}
+              />
+            </Grid>
+            <Grid item xs={1} sm={7} md={11.5}>
+              <DataGrid
+                sx={{
+                  "&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell": {
+                    py: "4px",
+                  },
+                  "&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell": {
+                    py: "8px",
+                  },
+                  "&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell": {
+                    py: "11px",
+                  },
+                }}
+                rows={rows}
+                columns={columns}
+                editMode="row"
+                rowModesModel={rowModesModel}
+                onRowModesModelChange={handleRowModesModelChange}
+                onRowEditStop={handleRowEditStop}
+                processRowUpdate={processRowUpdate}
+                getRowHeight={() => "auto"}
+                autoHeight
+                // slots={{
+                //   toolbar: EditToolbar,
+                // }}
+                slotProps={{
+                  toolbar: { setRows, setRowModesModel },
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Box mt={2} display="flex" justifyContent="flex-start">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{ mr: 2 }}
+                  type="submit"
+                >
+                  Save
+                </Button>
+                <Link href="/business/order">
+                  <Button variant="outlined">Cancel</Button>
+                </Link>
+              </Box>
+            </Grid>
+          </Grid>
+        </Grid>
+      ) : (
+        <Grid item xs={12} md={9}></Grid>
+      )}
     </Grid>
   );
 };
