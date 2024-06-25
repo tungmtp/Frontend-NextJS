@@ -89,8 +89,8 @@ export default function SelectNewsky(props) {
         alert("Sẽ mở dialog lọc sản phẩm");
         break;
       default:
-        if (mInput.length > 2 && mInput.startsWith("++")) {
-          debouncedFetchOptions(inputValue.substring(2, inputValue.length));
+        if (mInput.length > 2 && mInput.slice(-2) == "++") {
+          debouncedFetchOptions(inputValue.substring(0, inputValue.length - 2));
         }
     }
     return () => {

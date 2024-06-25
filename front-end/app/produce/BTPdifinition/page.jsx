@@ -3,7 +3,7 @@ import SelectNewsky from "@/components/select/SelectNewsky";
 import { Box, Button, Grid } from "@mui/material";
 import { useEffect, useState, Fragment } from "react";
 import { BomOutput } from "./BomOutput";
-import { getData, asyncGetData } from "@/hook/Hook";
+import { getData, asyncGetData, today } from "@/hook/Hook";
 import { BomInput } from "./BomInput";
 import { BomDetail } from "./BomDetail";
 
@@ -80,7 +80,8 @@ export default function BTPdifinition() {
       <Grid item xs={4} sx={{ m: 0 }}>
         <Button disabled={addButtonDisabled} variant="contained" color="primary" onClick={() => { setBomOutputIDSelected(""); setAction("AddBomOutput") }}>Add</Button>
         <Button disabled={bomList && !bomList.length} variant="contained" color="primary" sx={{ ml: 2 }}>Clone</Button>
-        <Button variant="contained" color="primary" sx={{ ml: 2 }}>Map</Button>
+        {/* <Button variant="contained" color="primary" sx={{ ml: 2 }}>Map</Button> */}
+        <a href={`/produce/BTPdifinition/extract?productId=${productId}&&measId=${defaultMeasId}`} target="_blank"><Button variant="contained" color="primary" sx={{ ml: 2 }}>Map</Button></a>
       </Grid>
       <Grid item xs={7}>
         {bomList.map((bom, index) => (
