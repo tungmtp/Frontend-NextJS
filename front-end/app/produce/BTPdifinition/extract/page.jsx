@@ -7,6 +7,13 @@ import { useSearchParams } from "next/navigation";
 import { today } from "@/hook/Hook"
 import SelectNewsky from "@/components/select/SelectNewsky";
 
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+
 export default function ExtractBom() {
     const [productId, setProductId] = useState("")
     const [measId, setMeasId] = useState("")
@@ -17,7 +24,22 @@ export default function ExtractBom() {
     const [keyRender, setKeyRender] = useState(1)
     const [arrLevel, setArrLevel] = useState([])
     const [showLevel, setShowLevel] = useState(2)
+    const [idxClick, setIdxClick] = useState(0)
     const searchParams = useSearchParams()
+
+    const [open, setOpen] = useState(false);
+    const [daySelected, setDaySelected] = useState(today())
+
+    const handleClickOpen = (index, reqDate) => {
+        setIdxClick(index)
+        setDaySelected(reqDate);
+        console.log(reqDate)
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
 
     const getParam = () => {
         setProductId(searchParams.get("productId"))
@@ -26,12 +48,12 @@ export default function ExtractBom() {
     }
 
     const getExtractBomData = () => {
-        console.log(`/produce-service/bom/extract/${productId}/${measId}/${today()}/${quantity}`)
+        // console.log(`/produce-service/bom/extract/${productId}/${measId}/${today()}/${quantity}`)
 
         asyncGetData(`/produce-service/bom/extract/${productId}/${measId}/${today()}/${quantity}`)
             .then(response => response.json())
             .then(data => {
-                console.log(data)
+                // console.log(data)
                 if (data) {
                     const { minLevel, maxLevel } = data.reduce(
                         (acc, item) => {
@@ -142,14 +164,48 @@ export default function ExtractBom() {
                                             <TableCell align="left" sx={{ border: 1 }}><Box sx={{ ml: item.bomLevel - 1 }}>{item.productName}</Box></TableCell>
                                             <TableCell align="left" sx={{ border: 1 }}>{item.MeasName}</TableCell>
                                             <TableCell align="right" sx={{ border: 1 }}>{item.inputQuantity.toFixed(2)}</TableCell>
-                                            <TableCell align="left" sx={{ border: 1 }}>{item.reqDate.split("-").reverse().join("-")}</TableCell>
+                                            <TableCell align="left" sx={{ border: 1 }} onDoubleClick={() => handleClickOpen(index, item.reqDate)}>{item.reqDate.split("-").reverse().join("-")}</TableCell>
                                         </TableRow>
                                     ))
                             }
                         </TableBody>
                     </Table>
                 </TableContainer>
-                <p></p>
+                <Dialog
+                    open={open}
+                    onClose={handleClose}
+                    PaperProps={{
+                        component: 'form',
+                        onSubmit: (event) => {
+                            event.preventDefault();
+                            const formData = new FormData(event.currentTarget);
+                            const formJson = Object.fromEntries(formData.entries());
+                            const email = formJson.email;
+                            console.log(email);
+                            handleClose();
+                        },
+                    }}
+                >
+                    <DialogTitle>Điều chỉnh ngày có hàng</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            Hãy gõ vào ngày vật tư hoặc bán thành phẩm này có thể có mặt tại nhà máy
+                        </DialogContentText>
+                        <TextField
+                            autoFocus
+                            id="name"
+                            name="email"
+                            label="Ngày điều chỉnh"
+                            fullWidth
+                            value={daySelected ? daySelected : today()}
+                            onChange={(e) => setDaySelected(e.target.value)}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose}>Cancel</Button>
+                        <Button type="submit">Subscribe</Button>
+                    </DialogActions>
+                </Dialog>
             </Grid>
         </Grid>
     )
