@@ -272,3 +272,14 @@ export function today(mday = new Date(), dateFormat = "ISO") {
   }
   return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
 }
+
+export function selectMaxDate(date1, date2) {
+  var d1 = new Date(date1)
+  var d2 = new Date(date2)
+  let diff = d2 - d1
+  if (diff > 0) {
+    return date2
+  } else {
+    return date1
+  }
+}

@@ -4,7 +4,7 @@ import { Grid, Table, TableContainer, TableHead, TableRow, TableCell, TableBody,
 import Paper from '@mui/material/Paper';
 import { asyncGetData } from "@/hook/Hook";
 import { useSearchParams } from "next/navigation";
-import { today } from "@/hook/Hook"
+import { today, selectMaxDate } from "@/hook/Hook"
 import SelectNewsky from "@/components/select/SelectNewsky";
 
 import Dialog from '@mui/material/Dialog';
@@ -24,16 +24,45 @@ export default function ExtractBom() {
     const [keyRender, setKeyRender] = useState(1)
     const [arrLevel, setArrLevel] = useState([])
     const [showLevel, setShowLevel] = useState(2)
-    const [idxClick, setIdxClick] = useState(0)
+    const [idxClick, setIdxClick] = useState({})
     const searchParams = useSearchParams()
 
     const [open, setOpen] = useState(false);
     const [daySelected, setDaySelected] = useState(today())
 
-    const handleClickOpen = (index, reqDate) => {
-        setIdxClick(index)
-        setDaySelected(reqDate);
-        console.log(reqDate)
+    const fixDate = (valFixDate) => {
+        let xDate = valFixDate.split("/").reverse().join("-")
+        let date2 = new Date(daySelected)
+        let date1 = new Date(idxClick.reqDate)
+        let diffInMs, diffInDay
+        diffInMs = date2 - date1
+        diffInDay = diffInMs / (1000 * 60 * 60 * 24);
+        console.log("Chenh lech ngay: ", diffInDay)
+        let arrLength = extractBomData.length
+        let level, defaultDate, id, bomId
+        let i
+        for (i = 0; i++; i <= arrLength) {
+
+            if (extractBomData[i].productId == idxClick.productId) {
+                extractBomData[i].dateFix = selectMaxDate(daySelected, extractBomData[i].reqDate)
+            }
+
+            if (extractBomData[i].bomLevel < idxClick.bomLevel) {
+                if (extractBomData[i].bomId !== null) {
+                    extractBomData[i].dateFix = selectMaxDate(daySelected, extractBomData[i].reqDate)
+                } else {
+                    extractBomData[i].dateFix = extractBomData[i].reqDate
+                }
+            } else {
+                extractBomData[i].dateFix = extractBomData[i].reqDate
+            }
+        }
+    }
+
+    const handleClickOpen = (item) => {
+        setIdxClick({ ...item })
+        setDaySelected(item.reqDate);
+        console.log(item.reqDate)
         setOpen(true);
     };
 
@@ -154,6 +183,7 @@ export default function ExtractBom() {
                                 <TableCell align="center" sx={{ border: 1 }}>DVT</TableCell>
                                 <TableCell align="center" sx={{ border: 1 }}>Số lượng</TableCell>
                                 <TableCell align="center" sx={{ border: 1 }}>Ngày đáp ứng</TableCell>
+                                <TableCell align="center" sx={{ border: 1 }}>Ngày cân đối</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -164,7 +194,8 @@ export default function ExtractBom() {
                                             <TableCell align="left" sx={{ border: 1 }}><Box sx={{ ml: item.bomLevel - 1 }}>{item.productName}</Box></TableCell>
                                             <TableCell align="left" sx={{ border: 1 }}>{item.MeasName}</TableCell>
                                             <TableCell align="right" sx={{ border: 1 }}>{item.inputQuantity.toFixed(2)}</TableCell>
-                                            <TableCell align="left" sx={{ border: 1 }} onDoubleClick={() => handleClickOpen(index, item.reqDate)}>{item.reqDate.split("-").reverse().join("-")}</TableCell>
+                                            <TableCell align="left" sx={{ border: 1 }} onDoubleClick={() => handleClickOpen(item)}>{item.reqDate.split("-").reverse().join("-")}</TableCell>
+                                            <TableCell align="left" sx={{ border: 1 }}>{item.dateFix ? item.dateFix : ""}</TableCell>
                                         </TableRow>
                                     ))
                             }
@@ -182,6 +213,7 @@ export default function ExtractBom() {
                             const formJson = Object.fromEntries(formData.entries());
                             const email = formJson.email;
                             console.log(email);
+                            fixDate(email)
                             handleClose();
                         },
                     }}
@@ -197,8 +229,8 @@ export default function ExtractBom() {
                             name="email"
                             label="Ngày điều chỉnh"
                             fullWidth
-                            value={daySelected ? daySelected : today()}
-                            onChange={(e) => setDaySelected(e.target.value)}
+                            value={(daySelected ? daySelected : today()).split("-").reverse().join("/")}
+                            onChange={(e) => setDaySelected((e.target.value).split("/").reverse().join("-"))}
                         />
                     </DialogContent>
                     <DialogActions>
