@@ -39,12 +39,14 @@ export default function ExtractBom() {
         diffInDay = diffInMs / (1000 * 60 * 60 * 24);
         console.log("Chenh lech ngay: ", diffInDay)
         let arrLength = extractBomData.length
+        console.log(arrLength)
         let level, defaultDate, id, bomId
         let i
-        for (i = 0; i++; i <= arrLength) {
-
+        for (i = 0; i < arrLength; i++) {
+            console.log(i)
             if (extractBomData[i].productId == idxClick.productId) {
                 extractBomData[i].dateFix = selectMaxDate(daySelected, extractBomData[i].reqDate)
+                console.log(i)
             }
 
             if (extractBomData[i].bomLevel < idxClick.bomLevel) {
