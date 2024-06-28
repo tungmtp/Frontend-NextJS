@@ -12,7 +12,6 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 export default function ExtractBom() {
     const [productId, setProductId] = useState("")
@@ -30,35 +29,81 @@ export default function ExtractBom() {
     const [open, setOpen] = useState(false);
     const [daySelected, setDaySelected] = useState(today())
 
-    const fixDate = (valFixDate) => {
-        let xDate = valFixDate.split("/").reverse().join("-")
-        let date2 = new Date(daySelected)
-        let date1 = new Date(idxClick.reqDate)
-        let diffInMs, diffInDay
-        diffInMs = date2 - date1
-        diffInDay = diffInMs / (1000 * 60 * 60 * 24);
-        console.log("Chenh lech ngay: ", diffInDay)
-        let arrLength = extractBomData.length
-        console.log(arrLength)
-        let level, defaultDate, id, bomId
-        let i
-        for (i = 0; i < arrLength; i++) {
-            console.log(i)
-            if (extractBomData[i].productId == idxClick.productId) {
-                extractBomData[i].dateFix = selectMaxDate(daySelected, extractBomData[i].reqDate)
-                console.log(i)
-            }
+    function setNewDateForNextLevel(level, maxDate, timeOfDelay) {
+        // console.log("level ", level)
+        if (level - 1 >= arrLevel[arrLevel.length - 1]) {
+            // console.log("Run next level")
+            let arrLength = extractBomData.length
+            let i
+            for (i = 0; i < arrLength; i++) {
 
-            if (extractBomData[i].bomLevel < idxClick.bomLevel) {
-                if (extractBomData[i].bomId !== null) {
-                    extractBomData[i].dateFix = selectMaxDate(daySelected, extractBomData[i].reqDate)
-                } else {
+                if (extractBomData[i].bomLevel == level - 1) {
+                    console.log("Run next level", level - 1, " maxDate: ", maxDate, " timeOfDelay: ", extractBomData[i].timeOfDelay, " convert maxDate + timeOfDelay: ", today(maxDate + extractBomData[i].timeOfDelay * 1000 * 60 * 60 * 24))
+                    if (!extractBomData[i].bomID) {
+                        extractBomData[i].dateFix = extractBomData[i].reqDate
+                    } else {
+                        extractBomData[i].dateFix = today(maxDate.getTime() + timeOfDelay * 1000 * 60 * 60 * 24)
+                    }
+                }
+            }
+        }
+    }
+
+    function setNewDateForThisLevel(level, maxDate) {
+        let i
+        let arrLength = arrLevel.length
+        for (i = 0; i < arrLength; i++) {
+            if (extractBomData[i].bomLevel == level) {
+                if (!extractBomData[i].dateFix) {
                     extractBomData[i].dateFix = extractBomData[i].reqDate
                 }
+            }
+        }
+
+    }
+
+    const fixDate = (valFixDate) => {
+        let arrLength = extractBomData.length;
+        let i, j
+        for (i = 0; i < arrLength; i++) {
+            // console.log(extractBomData[i].productID, i, idxClick.productID)
+            if (extractBomData[i].productID == idxClick.productID) {
+                extractBomData[i].dateFix = selectMaxDate(daySelected, extractBomData[i].reqDate)
             } else {
                 extractBomData[i].dateFix = extractBomData[i].reqDate
             }
         }
+
+        let reverseArrLevel = arrLevel.reverse()
+        // console.log("Reverse: ", reverseArrLevel)
+        let arrLvlLength = arrLevel.length
+        let dateMs, maxDateInMsCurrent, maxDateInMsNext, timeOfDelayInMs
+        for (i = 0; i < arrLvlLength; i++) {
+            // console.log("level ", reverseArrLevel[i])
+            const { minReqDate, maxReqDate, timeOfDelay } = extractBomData.filter(item => item.bomLevel == reverseArrLevel[i]).reduce(
+                (acc, xItem) => {
+                    if (xItem.dateFix) {
+                        let maxDate = selectMaxDate(xItem.dateFix, xItem.reqDate)
+                        dateMs = new Date(maxDate) // loi o day
+                    } else dateMs = new Date(xItem.reqDate)
+
+                    acc.timeOfDelay = xItem.timeOfDelay
+                    if (dateMs < acc.minReqDate) acc.minReqDate = dateMs
+                    if (dateMs > acc.maxReqDate) acc.maxReqDate = dateMs
+                    return acc;
+                },
+                { minReqDate: Infinity, maxReqDate: -Infinity, timeOfDelay: 0 }
+            )
+            maxDateInMsCurrent = maxReqDate
+            timeOfDelayInMs = timeOfDelay * 1000 * 60 * 60 * 24
+            if (i == 0) {
+                setNewDateForThisLevel(reverseArrLevel[i], maxDateInMsCurrent)
+            }
+            setNewDateForNextLevel(reverseArrLevel[i], maxDateInMsCurrent, timeOfDelay)
+        }
+
+        // them muc chuyen doi dateFix ve reqDate roi xoa dateFix
+
     }
 
     const handleClickOpen = (item) => {
@@ -194,7 +239,7 @@ export default function ExtractBom() {
                                     .map((item, index) => (
                                         <TableRow hover key={index}>
                                             <TableCell align="left" sx={{ border: 1 }}><Box sx={{ ml: item.bomLevel - 1 }}>{item.productName}</Box></TableCell>
-                                            <TableCell align="left" sx={{ border: 1 }}>{item.MeasName}</TableCell>
+                                            <TableCell align="left" sx={{ border: 1 }}>{item.bomLevel + " - " + item.timeOfDelay}</TableCell>
                                             <TableCell align="right" sx={{ border: 1 }}>{item.inputQuantity.toFixed(2)}</TableCell>
                                             <TableCell align="left" sx={{ border: 1 }} onDoubleClick={() => handleClickOpen(item)}>{item.reqDate.split("-").reverse().join("-")}</TableCell>
                                             <TableCell align="left" sx={{ border: 1 }}>{item.dateFix ? item.dateFix : ""}</TableCell>
