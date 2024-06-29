@@ -24,6 +24,7 @@ export default function ExtractBom() {
     const [arrLevel, setArrLevel] = useState([])
     const [showLevel, setShowLevel] = useState(2)
     const [idxClick, setIdxClick] = useState({})
+    const [maxDateProduce, setMaxDateProduce] = useState("")
     const searchParams = useSearchParams()
 
     const [open, setOpen] = useState(false);
@@ -74,7 +75,7 @@ export default function ExtractBom() {
             }
         }
 
-        let reverseArrLevel = arrLevel.reverse()
+        let reverseArrLevel = arrLevel.slice().reverse()
         // console.log("Reverse: ", reverseArrLevel)
         let arrLvlLength = arrLevel.length
         let dateMs, maxDateInMsCurrent, maxDateInMsNext, timeOfDelayInMs
@@ -103,7 +104,21 @@ export default function ExtractBom() {
         }
 
         // them muc chuyen doi dateFix ve reqDate roi xoa dateFix
+        for (i = 0; i < arrLength; i++) {
+            extractBomData[i].reqDate = extractBomData[i].dateFix
+            extractBomData[i].dateFix = null
+        }
 
+        const { maxDateFix } = extractBomData.reduce(
+            (acc, item) => {
+                let dateMs = new Date(item.reqDate)
+                // if (dateMs<acc.minDateFix) acc.minDateFix = dateMs
+                if (dateMs > acc.maxDateFix) { acc.maxDateFix = dateMs }
+                return acc
+            },
+            { maxDateFix: -Infinity }
+        )
+        setMaxDateProduce(today(maxDateFix.getTime(), "VN"))
     }
 
     const handleClickOpen = (item) => {
@@ -131,18 +146,22 @@ export default function ExtractBom() {
             .then(data => {
                 // console.log(data)
                 if (data) {
-                    const { minLevel, maxLevel } = data.reduce(
+                    const { minLevel, maxLevel, maxDateDefault } = data.reduce(
                         (acc, item) => {
                             if (item.bomLevel < acc.minLevel) acc.minLevel = item.bomLevel;
                             if (item.bomLevel > acc.maxLevel) acc.maxLevel = item.bomLevel;
+                            let dateMs = new Date(item.reqDate)
+                            if (dateMs > acc.maxDateDefault) acc.maxDateDefault = dateMs
                             return acc;
                         },
-                        { minLevel: Infinity, maxLevel: -Infinity }
+                        { minLevel: Infinity, maxLevel: -Infinity, maxDateDefault: -Infinity }
                     );
                     const levelArray = Array.from(
                         { length: maxLevel - minLevel + 1 },
                         (_, index) => minLevel + index
                     );
+
+                    setMaxDateProduce(today(maxDateDefault.getTime(), "VN"))
 
                     setArrLevel([...levelArray])
 
@@ -222,6 +241,9 @@ export default function ExtractBom() {
                 </TextField>
             </Grid>
             <Grid item xs={12}>
+                <h2>Có thể trả hàng cho khách vào ngày {maxDateProduce}</h2>
+            </Grid>
+            <Grid item xs={12}>
                 <TableContainer component={Paper}>
                     <Table sx={{ minWidth: 650 }} aria-labelledby="tableTitle" size="small">
                         <TableHead>
@@ -230,7 +252,7 @@ export default function ExtractBom() {
                                 <TableCell align="center" sx={{ border: 1 }}>DVT</TableCell>
                                 <TableCell align="center" sx={{ border: 1 }}>Số lượng</TableCell>
                                 <TableCell align="center" sx={{ border: 1 }}>Ngày đáp ứng</TableCell>
-                                <TableCell align="center" sx={{ border: 1 }}>Ngày cân đối</TableCell>
+                                <TableCell align="center" sx={{ border: 1 }}>Công đoạn</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -238,11 +260,11 @@ export default function ExtractBom() {
                                 extractBomData.filter(item => item.bomLevel <= showLevel)
                                     .map((item, index) => (
                                         <TableRow hover key={index}>
-                                            <TableCell align="left" sx={{ border: 1 }}><Box sx={{ ml: item.bomLevel - 1 }}>{item.productName}</Box></TableCell>
-                                            <TableCell align="left" sx={{ border: 1 }}>{item.bomLevel + " - " + item.timeOfDelay}</TableCell>
+                                            <TableCell align="left" sx={{ border: 1 }}><Box sx={{ ml: item.bomLevel - 1, color: item.bomID ? "blue" : "red" }}>{item.productName}</Box></TableCell>
+                                            <TableCell align="left" sx={{ border: 1 }}>{item.MeasName}</TableCell>
                                             <TableCell align="right" sx={{ border: 1 }}>{item.inputQuantity.toFixed(2)}</TableCell>
                                             <TableCell align="left" sx={{ border: 1 }} onDoubleClick={() => handleClickOpen(item)}>{item.reqDate.split("-").reverse().join("-")}</TableCell>
-                                            <TableCell align="left" sx={{ border: 1 }}>{item.dateFix ? item.dateFix : ""}</TableCell>
+                                            <TableCell align="left" sx={{ border: 1 }}>{item.segmentName}</TableCell>
                                         </TableRow>
                                     ))
                             }
