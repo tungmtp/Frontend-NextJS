@@ -28,18 +28,27 @@ import {
 import Link from "next/link";
 import { DatePicker } from "@mui/x-date-pickers";
 import { useRouter, useSearchParams } from "next/navigation";
-import { PostDataMessage, getData, postData, putData } from "@/hook/Hook";
+import {
+  PostDataMessage,
+  deleteData,
+  getData,
+  postData,
+  putData,
+} from "@/hook/Hook";
 import Cookies from "js-cookie";
 import { NotifySnackbar } from "@/components/general/notifySnackbar/NotifySnackbar";
 import { useSnackbar } from "notistack";
 import { purpose, warehouseID } from "@/components/selectOptions";
 import { measureCategory } from "@/components/selectOptions";
+import PhysicalStock from "@/components/physicalStock/PhysicalStock";
 const username = Cookies.get("username");
 export default function AddDetailExportTable(props) {
   const { enqueueSnackbar } = useSnackbar();
   const [rows, setRows] = React.useState([]);
   const [rowModesModel, setRowModesModel] = React.useState({});
   const router = useRouter();
+  const date = new Date();
+  const currentDate = dayjs(date).format("YYYY-MM-DDTHH:mm:ss");
   console.log(props.deliveryDetail);
   React.useEffect(() => {
     if (props.deliveryDetail) {
@@ -85,14 +94,29 @@ export default function AddDetailExportTable(props) {
       field: "quantity",
       headerName: "SL xuất",
       type: "number",
-      flex: 2,
+      flex: 1,
       editable: true,
+    },
+    {
+      field: "inUse",
+      headerName: "In use",
+      type: "number",
+      flex: 1,
     },
     {
       field: "tonKho",
       headerName: "Tồn kho",
       type: "number",
-      flex: 3,
+      flex: 1,
+      renderCell: (param) => {
+        return (
+          <PhysicalStock
+            productID={param.row.productID}
+            measID={param.row.measID}
+            date={currentDate}
+          />
+        );
+      },
     },
     {
       field: "actions",
@@ -190,7 +214,7 @@ export default function AddDetailExportTable(props) {
         "warning"
       );
     } else {
-      console.log("stockout:  ", props.stockout);
+      // console.log("stockout:  ", props.stockout);
 
       const postOrderDelivery = async () => {
         try {
@@ -220,9 +244,13 @@ export default function AddDetailExportTable(props) {
             "/business-service/orderDelivery/sendMessage/orderDeliveryID/success",
             props.orderDeliveryID
           );
+          deleteData(
+            `/common-module/eventList/byEventIdAndEventName/ORDER DELIVERY DO IT`,
+            props.orderDeliveryID
+          );
           putData("/business-service/orderDelivery", props.orderDeliveryID, {
             completed: true,
-            inProcess: false,
+            // inProcess: false,
           });
         } catch (err) {
           console.error("Error post ordersProduce :", err);
@@ -278,18 +306,23 @@ export default function AddDetailExportTable(props) {
             <Button
               variant="outlined"
               onClick={() => {
-                PostDataMessage(
-                  "/business-service/orderDelivery/sendMessage/orderDeliveryID/normal",
+                deleteData(
+                  `/common-module/eventList/byEventIdAndEventName/ORDER DELIVERY DO IT`,
                   props.orderDeliveryID
                 );
-                putData(
-                  "/business-service/orderDelivery",
-                  props.orderDeliveryID,
-                  {
-                    completed: false,
-                    inProcess: false,
-                  }
-                );
+                // PostDataMessage(
+                //   "/business-service/orderDelivery/sendMessage/orderDeliveryID/normal",
+                //   props.orderDeliveryID
+                // );
+                // putData(
+                //   "/business-service/orderDelivery",
+                //   props.orderDeliveryID,
+                //   {
+                //     completed: false,
+                //     inProcess: false,
+                //   }
+                // );
+                window.close();
               }}
             >
               Cancel

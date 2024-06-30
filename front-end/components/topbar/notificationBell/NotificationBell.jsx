@@ -51,7 +51,7 @@ export default function NotificationBell() {
         </Badge>
       </IconButton>
       <Menu
-        sx={{ mt: "30px" }}
+        sx={{ mt: "30px", maxHeight: 400 }}
         id="menu-appbar"
         anchorEl={anchorElNotification}
         anchorOrigin={{
@@ -67,7 +67,11 @@ export default function NotificationBell() {
         onClose={handleCloseNotification}
       >
         {inventoryLowCount.map((item) => (
-          <MenuItem key={item.id} onClick={handleCloseNotification}>
+          <MenuItem
+            key={item.id}
+            onClick={handleCloseNotification}
+            sx={{ textWrap: "wrap", width: 500 }}
+          >
             {item.eventName == "INVENTORY LOW COUNT" ? (
               <Link href={"/products/controlMinimumInventory"}>
                 {item.message}

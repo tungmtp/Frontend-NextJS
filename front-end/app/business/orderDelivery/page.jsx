@@ -21,7 +21,7 @@ import {
   Paper,
 } from "@mui/material";
 import { useRouter, useSearchParams } from "next/navigation";
-import { getData, putData } from "@/hook/Hook";
+import { PostDataMessage, getData, putData } from "@/hook/Hook";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
@@ -51,9 +51,10 @@ export default function OrderDelivery() {
   const { enqueueSnackbar } = useSnackbar();
   const date = new Date();
   const currentDate = dayjs(date).format("YYYY-MM-DD");
-  const [selectedOrderDelivery, setSelectedOrderDelivery] = React.useState();
+  const [selectedOrderDelivery, setSelectedOrderDelivery] = React.useState([]);
   const [deliveryDate, setDeliveryDate] = React.useState(currentDate);
-  const [eventSourceData, setEventSourceData] = React.useState(null);
+  const [eventList, setEventList] = React.useState([]);
+  const [eventSourceData, setEventSourceData] = React.useState([]);
   // const [orderDeliveryDetailList, setOrderDeliveryDetailList] = React.useState(
   //   []
   // );
@@ -69,33 +70,118 @@ export default function OrderDelivery() {
         const response = await getData(
           `/business-service/orderDeliverySql/${deliveryDate}`
         );
-        // console.log(response);
+        const eventListResult = await getData(
+          "/common-module/eventList/ORDER DELIVERY DO IT"
+        );
+        console.log(eventListResult);
+        setEventList(eventListResult);
         setSelectedOrderDelivery(response);
       } catch (error) {
         console.log(error);
       }
     };
     getOrderDelivery();
+    // const handleNewDataFromEventSource = (event) => {
+    //   const dataFromEventSource = event.detail;
+    //   console.log("Received new data from eventSource: ", dataFromEventSource);
+    //   // console.log(dataFromEventSource.headers.UserName[0]);
+    //   if (
+    //     dataFromEventSource.headers.RequestType[0] ===
+    //     "SENDMESSAGE_orderDelivery"
+    //   ) {
+    //     setEventSourceData(dataFromEventSource);
+    //     if (dataFromEventSource.headers.Status[0] === "process") {
+    //       setSelectedOrderDelivery((prevState) =>
+    //         prevState?.map((item) => {
+    //           if (item.id === dataFromEventSource.body) {
+    //             item.inProcess = true;
+    //             return item;
+    //           }
+    //           return item;
+    //         })
+    //       );
+    //     } else if (dataFromEventSource.headers.Status[0] === "success") {
+    //       setSelectedOrderDelivery((prevState) =>
+    //         prevState?.map((item) => {
+    //           if (item.id === dataFromEventSource.body) {
+    //             item.inProcess = false;
+    //             item.completed = true;
+    //             return item;
+    //           }
+    //           return item;
+    //         })
+    //       );
+    //     } else if (dataFromEventSource.headers.Status[0] === "cancel") {
+    //       setSelectedOrderDelivery((prevState) =>
+    //         prevState?.map((item) => {
+    //           if (item.id === dataFromEventSource.body) {
+    //             item.inProcess = false;
+    //             item.completed = false;
+    //             item.cancel = true;
+    //             return item;
+    //           }
+    //           return item;
+    //         })
+    //       );
+    //     } else if (dataFromEventSource.headers.Status[0] === "normal") {
+    //       setSelectedOrderDelivery((prevState) =>
+    //         prevState?.map((item) => {
+    //           if (item.id === dataFromEventSource.body) {
+    //             item.inProcess = false;
+    //             item.completed = false;
+    //             item.cancel = false;
+    //             return item;
+    //           }
+    //           return item;
+    //         })
+    //       );
+    //     }
+    //   }
+    // };
     const handleNewDataFromEventSource = (event) => {
       const dataFromEventSource = event.detail;
       console.log("Received new data from eventSource: ", dataFromEventSource);
-      console.log(dataFromEventSource.headers.UserName[0]);
+      if (
+        dataFromEventSource.body.eventName === "ORDER DELIVERY DO IT" &&
+        dataFromEventSource.headers.RequestType[0] === "ADD_EVENT"
+      ) {
+        setEventList((prevEventList) => [
+          ...prevEventList,
+          dataFromEventSource.body,
+        ]);
+        console.log("ADD EVENT: ", dataFromEventSource);
+      }
+      if (
+        dataFromEventSource.headers.RequestType[0] === "DELETE_EVENT" &&
+        dataFromEventSource.headers.UserName[0] !== "SERVER"
+      ) {
+        setEventList((prevEventList) =>
+          prevEventList.filter(
+            (event) => event.eventId !== dataFromEventSource.body[0]?.eventId
+          )
+        );
+
+        console.log("DELETE EVENT: ", dataFromEventSource);
+      }
+      if (
+        dataFromEventSource.headers.RequestType[0] === "DELETE_EVENT" &&
+        dataFromEventSource.headers.UserName[0] === "SERVER"
+      ) {
+        setEventList((prevEventList) =>
+          prevEventList.filter(
+            (event) => event.eventId !== dataFromEventSource.body.eventId
+          )
+        );
+
+        console.log("DELETE EVENT: ", dataFromEventSource);
+      }
       if (
         dataFromEventSource.headers.RequestType[0] ===
         "SENDMESSAGE_orderDelivery"
       ) {
         setEventSourceData(dataFromEventSource);
-        if (dataFromEventSource.headers.Status[0] === "process") {
-          setSelectedOrderDelivery((prevState) =>
-            prevState?.map((item) => {
-              if (item.id === dataFromEventSource.body) {
-                item.inProcess = true;
-                return item;
-              }
-              return item;
-            })
-          );
-        } else if (dataFromEventSource.headers.Status[0] === "success") {
+
+        if (dataFromEventSource.headers.Status[0] === "success") {
           setSelectedOrderDelivery((prevState) =>
             prevState?.map((item) => {
               if (item.id === dataFromEventSource.body) {
@@ -201,7 +287,12 @@ export default function OrderDelivery() {
                 <TableRow
                   key={row.id}
                   sx={
-                    row.inProcess === true
+                    // row.inProcess === true
+                    //   ? {
+                    //       "&:last-child td, &:last-child th": { border: 0 },
+                    //       backgroundColor: "#f89595",
+                    //     }
+                    eventList.some((item) => item.eventId === row.id)
                       ? {
                           "&:last-child td, &:last-child th": { border: 0 },
                           backgroundColor: "#f89595",
@@ -248,7 +339,7 @@ export default function OrderDelivery() {
                     })}
                   </TableCell>
                   <TableCell align="left">
-                    {row.inProcess === true ? (
+                    {eventList.some((item) => item.eventId === row.id) ? (
                       <Link
                         href={{}}
                         onClick={() => {
@@ -261,7 +352,25 @@ export default function OrderDelivery() {
                       >
                         In process
                       </Link>
-                    ) : row.completed === true || row.cancel ? (
+                    ) : row.cancel ? (
+                      <>
+                        <Link
+                          href={""}
+                          onClick={() => {
+                            event.preventDefault();
+                            putData("/business-service/orderDelivery", row.id, {
+                              cancel: false,
+                            });
+                            PostDataMessage(
+                              "/business-service/orderDelivery/sendMessage/orderDeliveryID/normal",
+                              row.id
+                            );
+                          }}
+                        >
+                          Reactivate
+                        </Link>
+                      </>
+                    ) : row.completed === true ? (
                       <></>
                     ) : (
                       <Box sx={{ display: "flex", flexDirection: "column" }}>
@@ -294,6 +403,10 @@ export default function OrderDelivery() {
                             putData("/business-service/orderDelivery", row.id, {
                               cancel: true,
                             });
+                            PostDataMessage(
+                              "/business-service/orderDelivery/sendMessage/orderDeliveryID/cancel",
+                              row.id
+                            );
                           }}
                         >
                           cancel
