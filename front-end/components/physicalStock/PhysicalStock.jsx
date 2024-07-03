@@ -14,5 +14,5 @@ export default function PhysicalStock(props) {
     };
     getPhysicalStock();
   }, []);
-  return <Box> {physicalStock && physicalStock[0].tonkho}</Box>;
+  return <Box> {physicalStock && physicalStock[0]?.tonkho}</Box>;
 }

@@ -12,8 +12,15 @@ import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import TreeViewComp from "@/components/treeview/TreeViewComp";
 import ChildCategory from "@/components/childcategory/ChildCategory";
+import SelectNewsky from "@/components/select/SelectNewsky";
+import { useDispatch } from "react-redux";
+import {
+  setSelectedCategory,
+  setSelectedProduct,
+} from "@/redux/categoryProductRedux";
 
 export default function Category() {
+  const dispatch = useDispatch();
   const [openAddProduct, setOpenAddProduct] = useState(false);
   const handleOpenAddproduct = () => {
     setOpenAddProduct(true);
@@ -25,6 +32,30 @@ export default function Category() {
     <div>
       <Grid container spacing={4}>
         <Grid item xs={2.5}>
+          <Box sx={{ pb: "10px" }}>
+            <SelectNewsky
+              lblinput="Tìm kiếm sản phẩm"
+              emitParent={(id) => {
+                if (id !== "") {
+                  const getProduct = async () => {
+                    const response = await getData(
+                      `/product-service/product/${id}`
+                    );
+                    console.log(response);
+                    dispatch(setSelectedCategory(response?.extraCategoryID));
+                    dispatch(setSelectedProduct(response));
+                  };
+                  getProduct();
+                } else {
+                  dispatch(setSelectedCategory(null));
+                  dispatch(setSelectedProduct(null));
+                }
+              }}
+              byNameStr="/product-service/product/byNameStr"
+              firstCall="/product-service/product/firstCall"
+              // currentItemLink="/product-service/product/oneForSelect"
+            />
+          </Box>
           <TreeViewComp
             serviceURL={"/product-service/category"}
             title={"catName"}

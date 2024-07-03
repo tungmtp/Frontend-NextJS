@@ -90,6 +90,9 @@ export default function DetailProduct() {
     };
     getClassPriceData();
   }, []);
+  useEffect(() => {
+    setSelectedDataGrid(selectedProduct);
+  }, [selectedProduct]);
 
   const columns = [
     { field: "index", headerName: "STT", width: 10 },
