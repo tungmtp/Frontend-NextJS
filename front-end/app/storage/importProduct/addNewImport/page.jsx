@@ -110,12 +110,12 @@ export default function AddNewImport() {
       </Grid>
       <Grid item xs={12} md={6} lg={3}>
         <FormControl sx={{ width: "100%" }} size="small">
-          <InputLabel id="partner-type-label">nhập vào kho</InputLabel>
+          <InputLabel id="partner-type-label">Nhập vào kho</InputLabel>
           <Select
             sx={{ width: "100%" }}
             labelId="partner-type-label"
             id="partner-type-select"
-            label="Xuất từ kho"
+            label="Nhập vào kho"
             value={stockin?.warehouseID}
             onChange={(event) => {
               const updatedStockin = { ...stockin };

@@ -100,8 +100,8 @@ export default function AddDetailImport(props) {
             // setStockinDetail(updatedStockinDetail);
             memoizedFetchMeasurementByProductID(id);
           }}
-          byNameStr="/product-service/product/byNameStr/mayBeSell"
-          firstCall="/product-service/product/firstCall/mayBeSell"
+          byNameStr="/product-service/product/byNameStr"
+          firstCall="/product-service/product/firstCall"
           currentItemLink="/product-service/product/oneForSelect"
         />
       </Grid>

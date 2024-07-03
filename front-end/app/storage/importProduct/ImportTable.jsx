@@ -58,28 +58,29 @@ export default function ImportTable(props) {
       const result = await getData(
         `/product-service/stockIn/byDate?startDate=${filterConditional.startDate}&endDate=${filterConditional.endDate}`
       );
-      const stockInListWithstatus = await Promise.all(
-        result.map(async (item) => {
-          try {
-            const response = await getData(
-              `/product-service/stockIn/findByRelatedTableAndRelatedID/StockOut/${item.relatedID}`
-            );
-            // console.log(response);
-            return {
-              ...item,
-              status: response !== null,
-            };
-          } catch (error) {
-            console.error("Error checking stock:", error);
-            return {
-              ...item,
-              status: false,
-            };
-          }
-        })
-      );
-      setStockInList(stockInListWithstatus);
-      // setStockInList(result);
+      // const stockInListWithstatus = await Promise.all(
+      //   result.map(async (item) => {
+      //     try {
+      //       const response = await getData(
+      //         `/product-service/stockIn/findByRelatedTableAndRelatedID/StockOut/${item.relatedID}`
+      //       );
+      //       // console.log(response);
+      //       return {
+      //         ...item,
+      //         status: response !== null,
+      //       };
+      //     } catch (error) {
+      //       console.error("Error checking stock:", error);
+      //       return {
+      //         ...item,
+      //         status: false,
+      //       };
+      //     }
+      //   })
+      // );
+      // setStockInList(stockInListWithstatus);
+
+      setStockInList(result);
     };
     getStockInByDate();
   }, [filterConditional]);
@@ -186,6 +187,7 @@ export default function ImportTable(props) {
       </Grid>
       <Grid item xs={12}>
         <DataGrid
+          sx={{ minHeight: "200px" }}
           onRowClick={handleRowClick}
           rows={stockInList}
           columns={columns}
