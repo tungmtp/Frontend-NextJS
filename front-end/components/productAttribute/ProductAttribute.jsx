@@ -34,8 +34,11 @@ import { TreeItem, useTreeItem } from "@mui/x-tree-view/TreeItem";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import clsx from "clsx";
+import { NotifySnackbar } from "@/components/general/notifySnackbar/NotifySnackbar";
+import { useSnackbar } from "notistack";
 
 export default function ProductAttribute(parentProp) {
+  const { enqueueSnackbar } = useSnackbar();
   const [categoryAttribute, setCategoryAttribute] = useState([]);
   const [selectedAttribute, setSelectedAttribute] = useState();
   const [productRelation, setProductRelation] = useState([]);
@@ -183,6 +186,11 @@ export default function ProductAttribute(parentProp) {
                       ...prevState,
                       addAttribute1,
                     ]);
+                    NotifySnackbar(
+                      enqueueSnackbar,
+                      "Thêm thuộc tính thành công!!!",
+                      "success"
+                    );
                   } catch (err) {
                     console.error("Error fetching data:", err);
                   }
@@ -251,7 +259,11 @@ export default function ProductAttribute(parentProp) {
                 setProductRelation(updatedData);
               }
               handleCloseDelete();
-              alert("Xóa thành công");
+              NotifySnackbar(
+                enqueueSnackbar,
+                "Xóa thuộc tính thành công !!!",
+                "success"
+              );
             },
           }}
         >
@@ -346,7 +358,7 @@ export default function ProductAttribute(parentProp) {
   return (
     <Grid
       container
-      spacing={2}
+      spacing={0}
       // sx={{ padding: 5, width: "100%" }}
     >
       <Grid item xs={12}>
@@ -502,8 +514,10 @@ function TreeViewComp(PropData) {
 
   return (
     <div>
-      <Box sx={{ minHeight: 110 }}>
-        <div style={{ overflow: "auto", height: "79vh" }}>
+      <Box sx={{ height: "500px" }}>
+        <div
+        // style={{ overflow: "auto", height: "79vh" }}
+        >
           <TreeView
             aria-label="rich object"
             defaultCollapseIcon={<ExpandMoreIcon />}

@@ -88,7 +88,7 @@ export default function DetailImportTable(props) {
                 <TableCell align="left">Sản phẩm</TableCell>
                 <TableCell align="left">ĐVT</TableCell>
                 <TableCell align="left">Chất lượng</TableCell>
-                <TableCell align="left">Số lượng xuất</TableCell>
+                <TableCell align="left">Số lượng nhập</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

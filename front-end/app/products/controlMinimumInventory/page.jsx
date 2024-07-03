@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { asyncGetData } from "@/hook/Hook";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
@@ -17,7 +17,6 @@ export default function ControlMinimumInventory() {
       flex: 40,
 
       renderCell: (params) => {
-
         return (
           <Link
             href={"#"}
@@ -25,10 +24,10 @@ export default function ControlMinimumInventory() {
             key={params.row.id}
             color="inherit"
             variant="body1"
-          // onClick={() => {
-          //   setSelectedDataGrid(params.row);
-          // }
-          // } 
+            // onClick={() => {
+            //   setSelectedDataGrid(params.row);
+            // }
+            // }
           >
             {params.row.productName}
           </Link>
@@ -39,11 +38,11 @@ export default function ControlMinimumInventory() {
     { field: "minimumStock", headerName: "Tối thiểu", flex: 10 },
 
     {
-      field: "mm", headerName: "Tồn kho", flex: 20,
+      field: "mm",
+      headerName: "Tồn kho",
+      flex: 20,
       renderCell: (params) => {
-        return (
-          params.row.tonDK + params.row.Nhap - params.row.Xuat
-        );
+        return params.row.tonDK + params.row.Nhap - params.row.Xuat;
       },
     },
   ];
@@ -52,17 +51,16 @@ export default function ControlMinimumInventory() {
     return row.productID;
   }
 
-
   const getDataInventory = () => {
     asyncGetData("/common-module/eventList/inventoryLow")
-      .then(response => response.json())
-      .then(data => setInventoryLow(data))
-      .catch(e => console.log(e))
-  }
+      .then((response) => response.json())
+      .then((data) => setInventoryLow(data))
+      .catch((e) => console.log(e));
+  };
 
   useEffect(() => {
     getDataInventory();
-  }, [])
+  }, []);
 
   return (
     <Grid container spacing={0.5}>
@@ -72,7 +70,6 @@ export default function ControlMinimumInventory() {
           rows={inventoryLow}
           columns={columns}
           pageSize={1}
-
           initialState={{
             columns: {
               columnVisibilityModel: {
@@ -86,7 +83,7 @@ export default function ControlMinimumInventory() {
             },
           }}
           pageSizeOptions={[5]}
-        // sx={{ height: "305px", minWidth: "305px" }}
+          sx={{ height: "85vh", minWidth: "305px" }}
         />
       </Grid>
     </Grid>

@@ -28,7 +28,13 @@ import {
 import Link from "next/link";
 import { DatePicker } from "@mui/x-date-pickers";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { PostDataMessage, getData, postData, putData } from "@/hook/Hook";
+import {
+  PostDataMessage,
+  deleteData,
+  getData,
+  postData,
+  putData,
+} from "@/hook/Hook";
 import Cookies from "js-cookie";
 import { NotifySnackbar } from "@/components/general/notifySnackbar/NotifySnackbar";
 import { useSnackbar } from "notistack";
@@ -57,32 +63,51 @@ export default function AddExportProduct() {
   });
   const [stockoutDetail, setStockoutDetail] = React.useState();
   const [changePage, setChangePage] = React.useState(false);
-  // console.log("selectedOrderDelivery: ", selectedOrderDelivery);
+  console.log("selectedOrderDelivery: ", selectedOrderDelivery);
   // console.log(
   //   "selectedOrderDeliveryDetail: ",
   //   selectedOrderDelivery[0]?.deliveryDetail
   // );
   // console.log("stockout: ", stockout);
   // console.log("stockoutDetail: ", stockoutDetail);
+
+  /*
+  post eventList
+  eventName: "ORDER DELIVERY DO IT",
+  eventId: orderDeliveryID,
+  userDispatch: username,
+  instantData: "inProcess" ,
+  timeOfDelay:5,
+  thêm 1 cái api xóa do it theo eventId và eventName
+  */
   React.useEffect(() => {
-    PostDataMessage(
-      "/business-service/orderDelivery/sendMessage/orderDeliveryID/process",
-      orderDeliveryID
-    );
-    putData("/business-service/orderDelivery", orderDeliveryID, {
-      inProcess: true,
+    // PostDataMessage(
+    //   "/business-service/orderDelivery/sendMessage/orderDeliveryID/process",
+    //   orderDeliveryID
+    // );
+    //Kiểm soát do it status
+    postData("/common-module/eventList", {
+      eventName: "ORDER DELIVERY DO IT",
+      eventId: orderDeliveryID,
+      userDispatch: username,
+      instantData: "inProcess",
+      timeOfDelay: 1,
+      createdBy: username,
     });
+    // putData("/business-service/orderDelivery", orderDeliveryID, {
+    //   inProcess: true,
+    // });
     const getOrderDetailData = async () => {
       try {
         const result = await getData(
           `/business-service/orderDeliverySql/byId/${orderDeliveryID}`
         );
-        console.log("SelectedOrderDelivery: ", result);
+        // console.log("SelectedOrderDelivery: ", result);
         const updateStockout = { ...stockout };
         updateStockout.comment = result[0].deliveryAddress;
         updateStockout.purpose = result[0].purpose;
         updateStockout.paymentDate = result[0].paymentDate;
-        updateStockout.slipDate = result[0].deliveryDate;
+        // updateStockout.slipDate = result[0].deliveryDate;
         updateStockout.warehouseID = result[0].warehouseID;
         setSelectedOrderDelivery(result);
         setStockout(updateStockout);
@@ -106,17 +131,20 @@ export default function AddExportProduct() {
   React.useEffect(() => {
     const handleBeforeUnload = (event) => {
       // Custom logic before leaving the page
-      event.preventDefault();
-      event.returnValue = true;
-
-      putData("/business-service/orderDelivery", orderDeliveryID, {
-        inProcess: false,
-      });
-      PostDataMessage(
-        "/business-service/orderDelivery/sendMessage/orderDeliveryID/normal",
+      // event.preventDefault();
+      // event.returnValue = true;
+      deleteData(
+        `/common-module/eventList/byEventIdAndEventName/ORDER DELIVERY DO IT`,
         orderDeliveryID
       );
-      console.log("có thực hiện");
+      // putData("/business-service/orderDelivery", orderDeliveryID, {
+      //   inProcess: false,
+      // });
+      // PostDataMessage(
+      //   "/business-service/orderDelivery/sendMessage/orderDeliveryID/normal",
+      //   orderDeliveryID
+      // );
+      // console.log("có thực hiện");
       // Show confirmation dialog
       // Required for showing the dialog
     };
@@ -125,6 +153,25 @@ export default function AddExportProduct() {
 
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
+  React.useEffect(() => {
+    const handleNewDataFromEventSource = (event) => {
+      const dataFromEventSource = event.detail;
+      // console.log("Received new data from eventSource: ", dataFromEventSource);
+
+      if (dataFromEventSource.headers.RequestType[0] === "DELETE_EVENT") {
+        if (orderDeliveryID === dataFromEventSource.body.eventId) {
+          window.close();
+        }
+
+        // console.log("DELETE EVENT: ", dataFromEventSource);
+      }
+    };
+    window.addEventListener("newDataEvent", handleNewDataFromEventSource);
+
+    return () => {
+      window.removeEventListener("newDataEvent", handleNewDataFromEventSource);
     };
   }, []);
   return (

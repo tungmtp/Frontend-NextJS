@@ -3,14 +3,14 @@ import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import debounce from "lodash.debounce";
 import { getData } from "@/hook/Hook";
-// import ItemAddDialog from "../dialog/productDialog/ProductAddDialog";
+import ItemAddDialog from "../dialog/productDialog/ProductAddDialog";
 
 export default function SelectNewsky(props) {
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [selectedValue, setSelectedValue] = useState(null);
-
+  const [openAddItem, setOpenAddItem] = useState(false);
   const handleSelectionChange = (event, value) => {
     setSelectedValue(value);
     if (props.emitParent !== undefined) {
@@ -82,8 +82,8 @@ export default function SelectNewsky(props) {
         // setOptions([]);
         break;
       case "**":
-        // setOpenAddItem(true);
-        alert("Sẽ mở dialog thêm sản phẩm");
+        setOpenAddItem(true);
+        //alert("Sẽ mở dialog thêm sản phẩm");
         break;
       case "FF":
         alert("Sẽ mở dialog lọc sản phẩm");
@@ -97,48 +97,60 @@ export default function SelectNewsky(props) {
       debouncedFetchOptions.cancel();
     };
   }, [inputValue]);
+
+  const handleCloseAddproduct = () => {
+    setOpenAddItem(false);
+  };
   return (
-    <Autocomplete
-      fullWidth
-      size="small"
-      disabled={props.disabled == undefined ? false : true}
-      // sx={
-      //   props?.style && typeof props?.style === "object"
-      //     ? props.style
-      //     : { m: 2 }
-      // }
-      inputValue={inputValue}
-      open={open}
-      onOpen={() => setOpen(true)}
-      onClose={() => setOpen(false)}
-      getOptionLabel={(option) => option.nameStr || ""} // Adjust based on your data
-      renderOption={(props, option) => {
-        return (
-          <li {...props} key={option.id}>
-            {option.nameStr}
-          </li>
-        );
-      }}
-      options={options && options?.status != 404 ? options : []}
-      onInputChange={(event, newInputValue) => {
-        setInputValue(newInputValue);
-      }}
-      onChange={handleSelectionChange}
-      value={selectedValue}
-      isOptionEqualToValue={(option, value) => option?.id === value?.id}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          label={props.lblinput ? props.lblinput : "Search input"}
-          variant="outlined"
-          InputProps={{
-            ...params.InputProps, //style: { fontSize: `12 !important` },
-            endAdornment: (
-              <React.Fragment>{params.InputProps.endAdornment}</React.Fragment>
-            ),
-          }}
-        />
-      )}
-    />
+    <>
+      <Autocomplete
+        fullWidth
+        size="small"
+        disabled={props.disabled == undefined ? false : true}
+        // sx={
+        //   props?.style && typeof props?.style === "object"
+        //     ? props.style
+        //     : { m: 2 }
+        // }
+        inputValue={inputValue}
+        open={open}
+        onOpen={() => setOpen(true)}
+        onClose={() => setOpen(false)}
+        getOptionLabel={(option) => option.nameStr || ""} // Adjust based on your data
+        renderOption={(props, option) => {
+          return (
+            <li {...props} key={option.id}>
+              {option.nameStr}
+            </li>
+          );
+        }}
+        options={options && options?.status != 404 ? options : []}
+        onInputChange={(event, newInputValue) => {
+          setInputValue(newInputValue);
+        }}
+        onChange={handleSelectionChange}
+        value={selectedValue}
+        isOptionEqualToValue={(option, value) => option?.id === value?.id}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label={props.lblinput ? props.lblinput : "Search input"}
+            variant="outlined"
+            InputProps={{
+              ...params.InputProps, //style: { fontSize: `12 !important` },
+              endAdornment: (
+                <React.Fragment>
+                  {params.InputProps.endAdornment}
+                </React.Fragment>
+              ),
+            }}
+          />
+        )}
+      />
+      <ItemAddDialog
+        open={openAddItem}
+        handleCloseAddproduct={handleCloseAddproduct}
+      />
+    </>
   );
 }
