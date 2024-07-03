@@ -32,14 +32,14 @@ export default function ExtractBom() {
 
     function setNewDateForNextLevel(level, maxDate, timeOfDelay) {
         // console.log("level ", level)
-        if (level - 1 >= arrLevel[arrLevel.length - 1]) {
-            // console.log("Run next level")
+        if (level - 1 >= arrLevel[0]) {
+            // console.log("Run next level", level)
             let arrLength = extractBomData.length
             let i
             for (i = 0; i < arrLength; i++) {
 
                 if (extractBomData[i].bomLevel == level - 1) {
-                    console.log("Run next level", level - 1, " maxDate: ", maxDate, " timeOfDelay: ", extractBomData[i].timeOfDelay, " convert maxDate + timeOfDelay: ", today(maxDate + extractBomData[i].timeOfDelay * 1000 * 60 * 60 * 24))
+                    // console.log("Run next level", level - 1, " maxDate: ", maxDate, " timeOfDelay: ", extractBomData[i].timeOfDelay, " convert maxDate + timeOfDelay: ", today(maxDate + extractBomData[i].timeOfDelay * 1000 * 60 * 60 * 24))
                     if (!extractBomData[i].bomID) {
                         extractBomData[i].dateFix = extractBomData[i].reqDate
                     } else {
@@ -77,7 +77,7 @@ export default function ExtractBom() {
 
         let reverseArrLevel = arrLevel.slice().reverse()
         // console.log("Reverse: ", reverseArrLevel)
-        let arrLvlLength = arrLevel.length
+        let arrLvlLength = extractBomData.length
         let dateMs, maxDateInMsCurrent, maxDateInMsNext, timeOfDelayInMs
         for (i = 0; i < arrLvlLength; i++) {
             // console.log("level ", reverseArrLevel[i])
@@ -146,6 +146,7 @@ export default function ExtractBom() {
             .then(data => {
                 // console.log(data)
                 if (data) {
+                    //Lấy ra bom level nhỏ nhất và lớn nhất để sau đó tạo array cho mục điều khiển cấp độ bảng.
                     const { minLevel, maxLevel, maxDateDefault } = data.reduce(
                         (acc, item) => {
                             if (item.bomLevel < acc.minLevel) acc.minLevel = item.bomLevel;
