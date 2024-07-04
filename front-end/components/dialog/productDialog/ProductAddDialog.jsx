@@ -296,7 +296,7 @@ export default function ProductAddDialog(props) {
         overflow: "auto",
       }}
       open={props.open}
-      // onSubmit={handleOpenConfirm}
+    // onSubmit={handleOpenConfirm}
     >
       <Typography
         sx={{
@@ -366,8 +366,8 @@ export default function ProductAddDialog(props) {
           value={
             measurementData.length > 0
               ? measurementData.find(
-                  (measurement) => measurement.id === selectedDataGrid.measID
-                )
+                (measurement) => measurement.id === selectedDataGrid.measID
+              )
               : ""
           }
           onChange={(event, value) => {
@@ -377,7 +377,7 @@ export default function ProductAddDialog(props) {
               setSelectedDataGrid(updatedSelectedDataGrid);
             }
           }}
-          //   onChange={handleOnChange}
+        //   onChange={handleOnChange}
         />
         <Autocomplete
           disablePortal
@@ -390,8 +390,8 @@ export default function ProductAddDialog(props) {
           value={
             segmmentData.length > 0
               ? segmmentData.find(
-                  (segmment) => segmment.id === selectedDataGrid.segmentID
-                )
+                (segmment) => segmment.id === selectedDataGrid.segmentID
+              )
               : ""
           }
           onChange={(event, value) => {
@@ -405,7 +405,7 @@ export default function ProductAddDialog(props) {
               setSelectedDataGrid(updatedSelectedDataGrid);
             }
           }}
-          //   onChange={handleOnChange}
+        //   onChange={handleOnChange}
         />
         <TextField
           required
@@ -434,9 +434,9 @@ export default function ProductAddDialog(props) {
           value={
             classesData.length > 0
               ? classesData.find(
-                  (classPrice) =>
-                    classPrice.id === selectedDataGrid.classPriceID
-                )
+                (classPrice) =>
+                  classPrice.id === selectedDataGrid.classPriceID
+              )
               : ""
           }
           onChange={(event, value) => {
@@ -446,7 +446,7 @@ export default function ProductAddDialog(props) {
               setSelectedDataGrid(updatedSelectedDataGrid);
             }
           }}
-          //   onChange={handleOnChange}
+        //   onChange={handleOnChange}
         />
         <FormControlLabel
           control={

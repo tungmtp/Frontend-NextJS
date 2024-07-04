@@ -39,11 +39,11 @@ export default function ExtractBom() {
             for (i = 0; i < arrLength; i++) {
 
                 if (extractBomData[i].bomLevel == level - 1) {
-                    // console.log("Run next level", level - 1, " maxDate: ", maxDate, " timeOfDelay: ", extractBomData[i].timeOfDelay, " convert maxDate + timeOfDelay: ", today(maxDate + extractBomData[i].timeOfDelay * 1000 * 60 * 60 * 24))
+                    console.log("Run next level", level - 1, " maxDate: ", maxDate, " timeOfDelay: ", extractBomData[i].timeOfDelay, " convert maxDate + timeOfDelay: ", today(maxDate + extractBomData[i].timeOfDelay * 1000 * 60 * 60 * 24))
                     if (!extractBomData[i].bomID) {
                         extractBomData[i].dateFix = extractBomData[i].reqDate
                     } else {
-                        extractBomData[i].dateFix = today(maxDate.getTime() + timeOfDelay * 1000 * 60 * 60 * 24)
+                        extractBomData[i].dateFix = selectMaxDate(today(maxDate.getTime() + timeOfDelay * 1000 * 60 * 60 * 24), extractBomData[i].dateFix)
                     }
                 }
             }
@@ -52,7 +52,7 @@ export default function ExtractBom() {
 
     function setNewDateForThisLevel(level, maxDate) {
         let i
-        let arrLength = arrLevel.length
+        let arrLength = extractBomData.length
         for (i = 0; i < arrLength; i++) {
             if (extractBomData[i].bomLevel == level) {
                 if (!extractBomData[i].dateFix) {
@@ -77,8 +77,8 @@ export default function ExtractBom() {
 
         let reverseArrLevel = arrLevel.slice().reverse()
         // console.log("Reverse: ", reverseArrLevel)
-        let arrLvlLength = extractBomData.length
-        let dateMs, maxDateInMsCurrent, maxDateInMsNext, timeOfDelayInMs
+        let arrLvlLength = reverseArrLevel.length
+        let dateMs, maxDateInMsCurrent //, maxDateInMsNext, timeOfDelayInMs
         for (i = 0; i < arrLvlLength; i++) {
             // console.log("level ", reverseArrLevel[i])
             const { minReqDate, maxReqDate, timeOfDelay } = extractBomData.filter(item => item.bomLevel == reverseArrLevel[i]).reduce(
@@ -96,10 +96,11 @@ export default function ExtractBom() {
                 { minReqDate: Infinity, maxReqDate: -Infinity, timeOfDelay: 0 }
             )
             maxDateInMsCurrent = maxReqDate
-            timeOfDelayInMs = timeOfDelay * 1000 * 60 * 60 * 24
-            if (i == 0) {
-                setNewDateForThisLevel(reverseArrLevel[i], maxDateInMsCurrent)
-            }
+            console.log("level & maxDateInMsCurrent ", reverseArrLevel[i], " ", maxDateInMsCurrent)
+            // timeOfDelayInMs = timeOfDelay * 1000 * 60 * 60 * 24
+            // if (i == 0) {
+            //     // setNewDateForThisLevel(reverseArrLevel[i], maxDateInMsCurrent)
+            // }
             setNewDateForNextLevel(reverseArrLevel[i], maxDateInMsCurrent, timeOfDelay)
         }
 
@@ -124,7 +125,7 @@ export default function ExtractBom() {
     const handleClickOpen = (item) => {
         setIdxClick({ ...item })
         setDaySelected(item.reqDate);
-        console.log(item.reqDate)
+        console.log("handleClickOpen: ", item.reqDate)
         setOpen(true);
     };
 
