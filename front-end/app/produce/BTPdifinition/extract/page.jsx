@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState, Fragment } from "react"
-import { Grid, Table, TableContainer, TableHead, TableRow, TableCell, TableBody, TextField, Button, Box, MenuItem } from "@mui/material";
+import { Grid, Table, TableContainer, TableHead, TableRow, TableCell, TableBody, TextField, Button, Box, MenuItem, Stack } from "@mui/material";
 import Paper from '@mui/material/Paper';
 import { asyncGetData } from "@/hook/Hook";
 import { useSearchParams } from "next/navigation";
@@ -28,7 +28,9 @@ export default function ExtractBom() {
     const searchParams = useSearchParams()
 
     const [open, setOpen] = useState(false);
-    const [daySelected, setDaySelected] = useState(today())
+    const [daySelected, setDaySelected] = useState("")
+    const [defaultDate, setDefaultDate] = useState("")
+    const [reqId, setReqId] = useState("")
 
     function setNewDateForNextLevel(level, maxDate, timeOfDelay) {
         // console.log("level ", level)
@@ -137,12 +139,15 @@ export default function ExtractBom() {
         setProductId(searchParams.get("productId"))
         setMeasId(searchParams.get("measId"))
         setDefaultMeasId(searchParams.get("measId"))
+        setDefaultDate(searchParams.get("reqDate"))
+        setQuantity(Number(searchParams.get("qty")))
+        setReqId(searchParams.get("reqId"))
     }
 
     const getExtractBomData = () => {
         // console.log(`/produce-service/bom/extract/${productId}/${measId}/${today()}/${quantity}`)
 
-        asyncGetData(`/produce-service/bom/extract/${productId}/${measId}/${today()}/${quantity}`)
+        asyncGetData(`/produce-service/bom/extract/${productId}/${measId}/${defaultDate}/${quantity}`)
             .then(response => response.json())
             .then(data => {
                 // console.log(data)
@@ -243,7 +248,16 @@ export default function ExtractBom() {
                 </TextField>
             </Grid>
             <Grid item xs={12}>
-                <h2>Có thể trả hàng cho khách vào ngày {maxDateProduce}</h2>
+                <Stack spacing={2} direction="row" sx={{ m: 2 }}>
+                    <h2>Có thể trả hàng cho khách vào ngày {maxDateProduce}</h2>
+                    {reqId ? (<Button
+                        variant="contained"
+                        sx={{ marginX: 2 }}
+                        onClick={() => alert("Tính năng đang xay dựng")}
+                    >
+                        Save plan
+                    </Button>) : (<span></span>)}
+                </Stack>
             </Grid>
             <Grid item xs={12}>
                 <TableContainer component={Paper}>

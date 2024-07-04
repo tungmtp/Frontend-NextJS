@@ -81,7 +81,10 @@ export default function BTPdifinition() {
         <Button disabled={addButtonDisabled} variant="contained" color="primary" onClick={() => { setBomOutputIDSelected(""); setAction("AddBomOutput") }}>Add</Button>
         <Button disabled={bomList && !bomList.length} variant="contained" color="primary" sx={{ ml: 2 }}>Clone</Button>
         {/* <Button variant="contained" color="primary" sx={{ ml: 2 }}>Map</Button> */}
-        <a href={`/produce/BTPdifinition/extract?productId=${productId}&&measId=${defaultMeasId}`} target="_blank"><Button variant="contained" color="primary" sx={{ ml: 2 }}>Map</Button></a>
+        <a href={`/produce/BTPdifinition/extract?productId=${productId}&&measId=${defaultMeasId}&&qty=100&&reqDate=${today()}`}
+          target="_blank">
+          <Button variant="contained" color="primary" sx={{ ml: 2 }}>Map</Button>
+        </a>
       </Grid>
       <Grid item xs={7}>
         {bomList.map((bom, index) => (

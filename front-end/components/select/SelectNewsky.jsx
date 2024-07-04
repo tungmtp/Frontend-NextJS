@@ -57,7 +57,7 @@ export default function SelectNewsky(props) {
         console.log(props.lblinput, props.disabled);
       } else {
         fetchFirstCall(props.currentItem).then((items) => {
-          let xx = items.find((item) => item.id == props.currentItem);
+          let xx = items.find((item) => item.id.toUpperCase() == props.currentItem.toUpperCase());
           setSelectedValue(xx);
           setOptions(items);
         });

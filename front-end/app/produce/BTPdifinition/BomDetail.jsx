@@ -42,9 +42,9 @@ export const BomDetail = (props) => {
         default:
             return (
                 <Fragment>
-                    <h4>Action: {props.action}</h4>
+                    {/* <h4>Action: {props.action}</h4>
                     <h4>Bom Input ID: {props.bomInputId}</h4>
-                    <h4>Bom Output ID: {props.bomOutputId}</h4>
+                    <h4>Bom Output ID: {props.bomOutputId}</h4> */}
                 </Fragment>
             )
     }
