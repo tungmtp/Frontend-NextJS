@@ -432,7 +432,7 @@ const AddOrderDelivery = () => {
                 <TableHead>
                   <TableRow>
                     <TableCell align="left">STT</TableCell>
-                    <TableCell align="left">Ngày kiến giao hàng</TableCell>
+                    <TableCell align="left">Ngày dự kiến giao hàng</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>

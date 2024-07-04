@@ -295,7 +295,7 @@ export default function AddNewOrder(props) {
           byNameStr="/business-service/partner/byNameStr"
           firstCall="/business-service/partner/firstCall"
           currentItemLink="/business-service/partner/oneForSelect"
-          style={style}
+          // style={style}
         />
       </Grid>
       <Grid item xs={12} md={6} lg={3}>

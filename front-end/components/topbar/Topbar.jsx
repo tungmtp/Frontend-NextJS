@@ -46,6 +46,7 @@ import {
 import NewskyLogoLight from "../../img/newskyLogoLight.jpg";
 import { mnu } from "@/components/menu";
 import NotificationBell from "./notificationBell/NotificationBell";
+import { useRouter } from "next/navigation";
 const category = {
   NEWSKY: "home",
   "Sản xuất": "produce",
@@ -129,6 +130,7 @@ export default function Topbar(ParentProp) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [currentMenu, setCurrentMenu] = useState([]);
   const dispatch = useDispatch();
+  const router = useRouter();
   const handleClick = (event, key) => {
     setAnchorEl(event.currentTarget);
     setCurrentMenu(mnu[category[key]] || []);
@@ -321,7 +323,16 @@ export default function Topbar(ParentProp) {
             >
               {settings.map((setting) => (
                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
+                  <Typography
+                    textAlign="center"
+                    onClick={() => {
+                      Cookies.remove("token");
+                      Cookies.remove("username");
+                      router.push("/login");
+                    }}
+                  >
+                    {setting}
+                  </Typography>
                 </MenuItem>
               ))}
             </Menu>
