@@ -1,5 +1,5 @@
 "use client";
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
@@ -35,12 +35,13 @@ import {
 import Link from "next/link";
 import { DatePicker } from "@mui/x-date-pickers";
 import { useRouter, useSearchParams } from "next/navigation";
-import { getData, postData } from "@/hook/Hook";
+import { asyncFetch, getData, postData } from "@/hook/Hook";
 import Cookies from "js-cookie";
 import { NotifySnackbar } from "@/components/general/notifySnackbar/NotifySnackbar";
 import { useSnackbar } from "notistack";
 import { purpose, warehouseID } from "@/components/selectOptions";
 import PhysicalStock from "@/components/physicalStock/PhysicalStock";
+import OrderDeliveryList from "./OrderDeliveryList";
 const username = Cookies.get("username");
 // const purpose = {
 //   1: "Bán hàng",
@@ -80,6 +81,7 @@ const AddOrderDelivery = () => {
   const currentDate = dayjs(date).format("YYYY-MM-DD");
   const [scheduleDate, setScheduleDate] = React.useState(currentDate);
   const [onClick, setOnClick] = React.useState(false);
+  const [showList, setShowList] = React.useState(false);
   const [orderDelivery, setOrderDelivery] = React.useState({
     orderID: orderID,
     deliveryDate: currentDate,
@@ -91,10 +93,27 @@ const AddOrderDelivery = () => {
     purpose: 1,
     paymentDate: currentDate,
   });
+  const [reqDate, setReqDate] = useState(currentDate);
+  const [listDate, setListDate] = useState([]);
+  useEffect(() => {
+    if (orderID) {
+      asyncFetch(
+        "GET",
+        `/produce-service/ordersProduce/orderRequestDistinctDate/${orderID}`
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          // console.log(data);
+          setListDate(data);
+        })
+        .catch((err) => console.error(err));
+    }
+  }, [orderID]);
 
   //   console.log(dayjs(rows[0].ngayGiao).format("YYYY-MM-DD"));
-  console.log("orderDelivery:  ", orderDelivery);
-  console.log("Delivery Detail:  ", rows);
+  // console.log("orderDelivery:  ", orderDelivery);
+  // console.log("Delivery Detail:  ", rows);
+  // console.log("listDate:  ", listDate);
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
       event.defaultMuiPrevented = true;
@@ -107,13 +126,50 @@ const AddOrderDelivery = () => {
       return (rateInRoot * itemQuanlity).toFixed(2);
     }
   };
-  React.useEffect(() => {
-    const getOrderDetailsBySchedule = async () => {
-      try {
-        const result = await getData(
-          `/business-service/orderDetail/BySchedule/${scheduleDate}/${orderID}`
-        );
+  // React.useEffect(() => {
+  //   const getOrderDetailsBySchedule = async () => {
+  //     try {
+  //       const result = await getData(
+  //         `/business-service/orderDetail/BySchedule/${scheduleDate}/${orderID}`
+  //       );
 
+  //       const resultWithIndex = result?.map((item, index) => {
+  //         return {
+  //           orderDeliveryID: "",
+  //           orderDetailID: item.Id,
+  //           orderProduceID: item.scheduleID,
+  //           productID: item.productID,
+  //           id: item.scheduleID,
+  //           quality: item.quality,
+  //           quantity: item.scheduleQty,
+  //           measID: item.measID,
+  //           price: item.price,
+  //           vat: 0,
+  //           index: index + 1,
+  //           nameStr: item.productName,
+  //           measName: item.MeasName,
+  //           measCatId: item.MeasCatId,
+  //           rateInRoot: item.RateInRoot,
+  //           scheduleDate: item.scheduleDate,
+  //         };
+  //       });
+  //       console.log("Mới nè", resultWithIndex);
+  //       setRows(resultWithIndex);
+  //       setOnClick(false);
+  //     } catch (err) {
+  //       console.error("Error fetching data:", err);
+  //     }
+  //   };
+  //   getOrderDetailsBySchedule();
+  // }, [scheduleDate]);
+
+  const getOrderDetailsBySchedule = async () => {
+    try {
+      const result = await getData(
+        `/business-service/orderDetail/BySchedule/${reqDate}/${orderID}`
+      );
+      // console.log("result: ", result);
+      if (result) {
         const resultWithIndex = result?.map((item, index) => {
           return {
             orderDeliveryID: "",
@@ -122,7 +178,7 @@ const AddOrderDelivery = () => {
             productID: item.productID,
             id: item.scheduleID,
             quality: item.quality,
-            quantity: item.scheduleQty,
+            quantity: item.scheduleQty - item.SumOfDelivery,
             measID: item.measID,
             price: item.price,
             vat: 0,
@@ -132,17 +188,33 @@ const AddOrderDelivery = () => {
             measCatId: item.MeasCatId,
             rateInRoot: item.RateInRoot,
             scheduleDate: item.scheduleDate,
+            quantityLeft: item.scheduleQty - item.SumOfDelivery,
           };
         });
-        console.log("Mới nè", resultWithIndex);
+        // console.log("Mới nè", resultWithIndex);
         setRows(resultWithIndex);
-        setOnClick(false);
-      } catch (err) {
-        console.error("Error fetching data:", err);
+        let checkQuantity = false;
+        resultWithIndex.map((item) => {
+          if (item.quantityLeft > 0) {
+            checkQuantity = true;
+          }
+        });
+
+        if (checkQuantity === true) {
+          setOnClick(true);
+        } else {
+          NotifySnackbar(
+            enqueueSnackbar,
+            `Đơn hàng đã xuất đủ lượng hàng!!`,
+            "info"
+          );
+        }
       }
-    };
-    getOrderDetailsBySchedule();
-  }, [scheduleDate]);
+    } catch (err) {
+      console.error("Error fetching data:", err);
+    }
+  };
+
   // React.useEffect(() => {
   //   const getOrderDetailData = async () => {
   //     try {
@@ -207,7 +279,7 @@ const AddOrderDelivery = () => {
     {
       field: "measName",
       headerName: "ĐVT/CL",
-      flex: 6,
+      flex: 4,
       renderCell: (param) => {
         return (
           <Box>
@@ -225,20 +297,26 @@ const AddOrderDelivery = () => {
       editable: true,
     },
     {
-      field: "tonKho",
-      headerName: "Tồn kho",
+      field: "quantityLeft",
+      headerName: "Số cần giao",
       type: "number",
-      flex: 2,
-      renderCell: (param) => {
-        return (
-          <PhysicalStock
-            productID={param.row.productID}
-            measID={param.row.measID}
-            date={currentDate}
-          />
-        );
-      },
+      flex: 3,
     },
+    // {
+    //   field: "tonKho",
+    //   headerName: "Tồn kho",
+    //   type: "number",
+    //   flex: 2,
+    //   renderCell: (param) => {
+    //     return (
+    //       <PhysicalStock
+    //         productID={param.row.productID}
+    //         measID={param.row.measID}
+    //         date={currentDate}
+    //       />
+    //     );
+    //   },
+    // },
     {
       field: "rateInRoot",
       headerName: "SL quy đổi",
@@ -321,7 +399,15 @@ const AddOrderDelivery = () => {
   const handleSaveClick = (id) => () => {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
   };
+  // const handleSaveClick = (id) => () => {
+  //   const rowToSave = rows.find((row) => row.id === id);
 
+  //   // if (rowToSave.quantity > 15) {
+  //   //   alert("Quantity cannot bee greater than stock.");
+  //   //   return;
+  //   // }
+  //   setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
+  // };
   const handleDeleteClick = (id) => () => {
     setRows(rows.filter((row) => row.id !== id));
   };
@@ -338,12 +424,32 @@ const AddOrderDelivery = () => {
     }
   };
 
+  // const processRowUpdate = (newRow) => {
+  //   const updatedRow = { ...newRow, isNew: false };
+  //   setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
+  //   return updatedRow;
+  // };
+
+  /** Check không cho vượt số lượng còn lại phải giao  */
   const processRowUpdate = (newRow) => {
     const updatedRow = { ...newRow, isNew: false };
+
+    if (newRow.quantity < 0) {
+      NotifySnackbar(enqueueSnackbar, "SL xuất phải lớn hơn 0!!!", "error");
+      throw new Error("Quantity cannot be less than 0.");
+    }
+    if (newRow.quantity > newRow.quantityLeft) {
+      NotifySnackbar(
+        enqueueSnackbar,
+        "SL xuất đã vượt quá số lượng cần giao!!!",
+        "error"
+      );
+      throw new Error("Quantity cannot be greater than stock.");
+    }
+
     setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
     return updatedRow;
   };
-
   const handleRowModesModelChange = (newRowModesModel) => {
     setRowModesModel(newRowModesModel);
   };
@@ -352,8 +458,19 @@ const AddOrderDelivery = () => {
     (row) => row.mode === GridRowModes.Edit
   );
 
-  const handleRowClick = () => {
-    setOnClick(true);
+  const handleRowClick = (reqDate) => {
+    setShowList(true);
+    setOnClick(false);
+    setReqDate(reqDate);
+    asyncFetch(
+      "GET",
+      `/business-service/orderDeliverySql/getDeliveryByReqDateOfOrder/${orderID}/${reqDate}`
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        // console.log(data);
+      })
+      .catch((err) => console.error(err));
   };
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -370,7 +487,7 @@ const AddOrderDelivery = () => {
       //update the deliveryAddress because using onchane and setUsestate is too slow
       const updatedOrderDelivery = { ...orderDelivery };
       updatedOrderDelivery.deliveryAddress = deliveryAddress;
-      console.log(updatedOrderDelivery);
+      // console.log(updatedOrderDelivery);
       const postOrderDelivery = async () => {
         try {
           const result = await postData(
@@ -390,7 +507,8 @@ const AddOrderDelivery = () => {
             );
           });
           NotifySnackbar(enqueueSnackbar, "Thêm thành công", "success");
-          router.push("/business/order");
+          // router.push("/business/order");
+          setOnClick(false);
         } catch (err) {
           console.error("Error post ordersProduce :", err);
           NotifySnackbar(enqueueSnackbar, "Có lỗi xảy ra!!", "error");
@@ -414,8 +532,8 @@ const AddOrderDelivery = () => {
         </Typography>
       </Grid>
       <Grid item xs={12} md={3}>
-        <Grid container justifyContent="center" spacing={{ xs: 2, md: 3 }}>
-          <Grid item xs={12}>
+        <Grid container justifyContent="center">
+          {/* <Grid item xs={12}>
             <DatePicker
               sx={{ width: "100%" }}
               label="Ngày dự kiến giao"
@@ -425,19 +543,19 @@ const AddOrderDelivery = () => {
                 setScheduleDate(newScheduleDate);
               }}
             />
-          </Grid>
+          </Grid> */}
           <Grid item xs={12}>
             <TableContainer component={Paper}>
               <Table aria-label="simple table">
                 <TableHead>
                   <TableRow>
                     <TableCell align="left">STT</TableCell>
-                    <TableCell align="left">Ngày dự kiến giao hàng</TableCell>
+                    <TableCell align="left">Đơn cung ứng ngày</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {rows &&
-                    rows?.map((row, index) => (
+                  {listDate &&
+                    listDate.map((row, index) => (
                       <TableRow
                         hover={!row.status}
                         key={index}
@@ -448,11 +566,11 @@ const AddOrderDelivery = () => {
                                 cursor: "pointer",
                               }
                         }
-                        onClick={() => handleRowClick(row.id)}
+                        onClick={() => handleRowClick(row.ReqDate)}
                       >
                         <TableCell align="center">{index + 1}</TableCell>
                         <TableCell align="left">
-                          {dayjs(row.scheduleDate).format("DD/MM/YYYY")}
+                          {dayjs(row.ReqDate).format("DD/MM/YYYY")}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -462,6 +580,7 @@ const AddOrderDelivery = () => {
           </Grid>
         </Grid>
       </Grid>
+
       {onClick ? (
         <Grid item xs={12} md={9}>
           <Grid
@@ -601,15 +720,36 @@ const AddOrderDelivery = () => {
                 >
                   Save
                 </Button>
-                <Link href="/business/order">
-                  <Button variant="outlined">Cancel</Button>
+                <Link href="">
+                  <Button
+                    variant="outlined"
+                    onClick={() => {
+                      setOnClick(false);
+                    }}
+                  >
+                    Cancel
+                  </Button>
                 </Link>
               </Box>
             </Grid>
           </Grid>
         </Grid>
+      ) : showList ? (
+        <Grid item xs={12} md={9}>
+          <OrderDeliveryList reqDate={reqDate} orderID={orderID} />
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ mt: 2 }}
+            onClick={getOrderDetailsBySchedule}
+          >
+            Add new
+          </Button>
+        </Grid>
       ) : (
-        <Grid item xs={12} md={9}></Grid>
+        <Grid item xs={12} md={9}>
+          {" "}
+        </Grid>
       )}
     </Grid>
   );

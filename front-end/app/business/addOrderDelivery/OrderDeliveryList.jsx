@@ -49,7 +49,7 @@ const warehouseID = {
 const getWarehouseIDName = (selectedWarehouseID) => {
   return warehouseID[selectedWarehouseID];
 };
-export default function OrderDelivery() {
+export default function OrderDeliveryList(props) {
   const { enqueueSnackbar } = useSnackbar();
   const date = new Date();
   const currentDate = dayjs(date).format("YYYY-MM-DD");
@@ -60,7 +60,6 @@ export default function OrderDelivery() {
   // const [orderDeliveryDetailList, setOrderDeliveryDetailList] = React.useState(
   //   []
   // );
-  // console.log(selectedOrderDelivery);
 
   const searchParams = useSearchParams();
   let orderID = searchParams.get("id");
@@ -70,7 +69,7 @@ export default function OrderDelivery() {
     const getOrderDelivery = async () => {
       try {
         const response = await getData(
-          `/business-service/orderDeliverySql/${deliveryDate}`
+          `/business-service/orderDeliverySql/getDeliveryByReqDateOfOrder/${props.orderID}/${props.reqDate}`
         );
         const eventListResult = await getData(
           "/common-module/eventList/ORDER DELIVERY DO IT"
@@ -83,63 +82,6 @@ export default function OrderDelivery() {
       }
     };
     getOrderDelivery();
-    // const handleNewDataFromEventSource = (event) => {
-    //   const dataFromEventSource = event.detail;
-    //   console.log("Received new data from eventSource: ", dataFromEventSource);
-    //   // console.log(dataFromEventSource.headers.UserName[0]);
-    //   if (
-    //     dataFromEventSource.headers.RequestType[0] ===
-    //     "SENDMESSAGE_orderDelivery"
-    //   ) {
-    //     setEventSourceData(dataFromEventSource);
-    //     if (dataFromEventSource.headers.Status[0] === "process") {
-    //       setSelectedOrderDelivery((prevState) =>
-    //         prevState?.map((item) => {
-    //           if (item.id === dataFromEventSource.body) {
-    //             item.inProcess = true;
-    //             return item;
-    //           }
-    //           return item;
-    //         })
-    //       );
-    //     } else if (dataFromEventSource.headers.Status[0] === "success") {
-    //       setSelectedOrderDelivery((prevState) =>
-    //         prevState?.map((item) => {
-    //           if (item.id === dataFromEventSource.body) {
-    //             item.inProcess = false;
-    //             item.completed = true;
-    //             return item;
-    //           }
-    //           return item;
-    //         })
-    //       );
-    //     } else if (dataFromEventSource.headers.Status[0] === "cancel") {
-    //       setSelectedOrderDelivery((prevState) =>
-    //         prevState?.map((item) => {
-    //           if (item.id === dataFromEventSource.body) {
-    //             item.inProcess = false;
-    //             item.completed = false;
-    //             item.cancel = true;
-    //             return item;
-    //           }
-    //           return item;
-    //         })
-    //       );
-    //     } else if (dataFromEventSource.headers.Status[0] === "normal") {
-    //       setSelectedOrderDelivery((prevState) =>
-    //         prevState?.map((item) => {
-    //           if (item.id === dataFromEventSource.body) {
-    //             item.inProcess = false;
-    //             item.completed = false;
-    //             item.cancel = false;
-    //             return item;
-    //           }
-    //           return item;
-    //         })
-    //       );
-    //     }
-    //   }
-    // };
     const handleNewDataFromEventSource = (event) => {
       const dataFromEventSource = event.detail;
       console.log("Received new data from eventSource: ", dataFromEventSource);
@@ -147,7 +89,6 @@ export default function OrderDelivery() {
         dataFromEventSource.headers.RequestType[0] === "DELETE_ORDER_DELIVERY"
         // && dataFromEventSource.headers.UserName[0] !== username
       ) {
-        console.log("da vao day");
         setSelectedOrderDelivery((prevState) =>
           prevState.filter(
             (item) =>
@@ -238,47 +179,14 @@ export default function OrderDelivery() {
     return () => {
       window.removeEventListener("newDataEvent", handleNewDataFromEventSource);
     };
-  }, [deliveryDate]);
+  }, [props.reqDate, props.orderID]);
   return (
-    <Grid container spacing={4}>
-      <Grid item xs={4}>
+    <Grid container spacing={3}>
+      <Grid item xs={12}>
         <Typography variant="h5" gutterBottom>
-          Lịch giao hàng
+          Lịch giao hàng theo đơn cung ứng ngày{" "}
+          {dayjs(props.reqDate).format("DD/MM/YYYY")}
         </Typography>
-      </Grid>
-      <Grid item xs={4}>
-        <DatePicker
-          sx={{ width: "100%" }}
-          label="Ngày giao"
-          value={dayjs(deliveryDate)}
-          onChange={(newValue) => {
-            const newDate = newValue.format("YYYY-MM-DD");
-            setDeliveryDate(newDate);
-          }}
-        />
-      </Grid>
-      <Grid item xs={4}>
-        {/* <FormControl sx={{ width: "100%" }} size="small">
-          <InputLabel id="partner-type-label">Xuất từ kho</InputLabel>
-          <Select
-            sx={{ width: "100%" }}
-            labelId="partner-type-label"
-            id="partner-type-select"
-            //   value={orderDelivery?.warehouseID}
-            label="Xuất từ kho"
-            //   onChange={(event) => {
-            //     const updatedOrderDelivery = { ...orderDelivery };
-            //     updatedOrderDelivery.warehouseID = Number(event.target.value);
-            //     setOrderDelivery(updatedOrderDelivery);
-            //   }}
-          >
-            {Object.keys(warehouseID).map((key) => (
-              <MenuItem key={key} value={key}>
-                {getWarehouseIDName(key)}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl> */}
       </Grid>
       <Grid item xs={12}>
         <TableContainer component={Paper}>
@@ -290,8 +198,10 @@ export default function OrderDelivery() {
             >
               <TableRow>
                 <TableCell align="center">STT</TableCell>
-                <TableCell align="right">Khách hàng</TableCell>
-                <TableCell align="right">Địa chỉ giao hàng</TableCell>
+                <TableCell align="left">Khách hàng</TableCell>
+                <TableCell align="left">
+                  Ngày giao và địa chỉ giao hàng
+                </TableCell>
                 <TableCell align="left">Sản phẩm</TableCell>
                 <TableCell align="left">Comm</TableCell>
               </TableRow>
@@ -328,8 +238,14 @@ export default function OrderDelivery() {
                   }
                 >
                   <TableCell align="center">{index + 1}</TableCell>
-                  <TableCell align="right">{row.partnerName}</TableCell>
-                  <TableCell align="right">{row.deliveryAddress}</TableCell>
+                  <TableCell align="left">{row.partnerName}</TableCell>
+                  <TableCell align="left">
+                    <span style={{ fontWeight: "bold" }}>
+                      {dayjs(row.deliveryDate).format("DD/MM/YYYY")}
+                    </span>{" "}
+                    <br />
+                    {row.deliveryAddress}
+                  </TableCell>
                   <TableCell align="left">
                     {row.deliveryDetail?.map((item) => {
                       return (
@@ -388,7 +304,7 @@ export default function OrderDelivery() {
                       <></>
                     ) : (
                       <Box sx={{ display: "flex", flexDirection: "column" }}>
-                        <Link
+                        {/* <Link
                           href={{
                             pathname: "/storage/exportProduct/addExportProduct",
                             query: {
@@ -398,7 +314,7 @@ export default function OrderDelivery() {
                           target="_blank"
                         >
                           Do it
-                        </Link>
+                        </Link> */}
                         {/* <a
                           href={{
                             pathname: "/storage/exportProduct/addExportProduct",
