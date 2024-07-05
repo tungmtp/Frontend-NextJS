@@ -63,7 +63,7 @@ export default function AddExportProduct() {
   });
   const [stockoutDetail, setStockoutDetail] = React.useState();
   const [changePage, setChangePage] = React.useState(false);
-  console.log("selectedOrderDelivery: ", selectedOrderDelivery);
+  // console.log("selectedOrderDelivery: ", selectedOrderDelivery);
   // console.log(
   //   "selectedOrderDeliveryDetail: ",
   //   selectedOrderDelivery[0]?.deliveryDetail
@@ -131,7 +131,7 @@ export default function AddExportProduct() {
   React.useEffect(() => {
     const handleBeforeUnload = (event) => {
       // Custom logic before leaving the page
-      // event.preventDefault();
+      event.preventDefault();
       // event.returnValue = true;
       deleteData(
         `/common-module/eventList/byEventIdAndEventName/ORDER DELIVERY DO IT`,

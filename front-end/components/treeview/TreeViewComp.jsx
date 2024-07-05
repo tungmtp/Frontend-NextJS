@@ -524,7 +524,7 @@ export default function TreeViewComp(PropData) {
           </Tooltip>
           <FormDeleteDialog open={openDeleteDialog} />
         </Box>
-        <div style={{ overflow: "auto", height: "75vh" }}>
+        <div style={{ overflow: "auto", height: "70vh" }}>
           <TreeView
             aria-label="rich object"
             defaultCollapseIcon={<ExpandMoreIcon />}

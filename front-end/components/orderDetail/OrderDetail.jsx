@@ -6,7 +6,7 @@ import SelectNewsky from "../select/SelectNewsky";
 
 export default function OrderDetail(Props) {
   const [selectedOrderDetail, setSelectedOrderDetail] = useState({
-    curency: "",
+    curency: "VND",
     importTax: "",
     measID: "",
     orderID: "",

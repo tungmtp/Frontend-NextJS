@@ -14,8 +14,13 @@ import OrderDetailTable from "@/components/order/OrderDetailTable";
 import CollectMoneyTable from "@/components/order/CollectMoneyTable";
 import OrderPaymentTable from "@/components/order/OrderPaymentTable";
 import { Grid } from "@mui/material";
+import Cookies from "js-cookie";
+import { format } from "date-fns";
 
-const today = new Date().toJSON();
+// const today = new Date().toJSON();
+const date = new Date();
+const today = dayjs(date).format("YYYY-MM-DD");
+const username = Cookies.get("username");
 export default function Order() {
   const [ordersData, setOrdersData] = useState([]);
   const [orderDate, setOrderDate] = useState(today);
@@ -24,7 +29,8 @@ export default function Order() {
   const partnerName = partnerData?.find(
     (item) => item.id === selectedDataGrid?.partnersID
   )?.nameStr;
-
+  // console.log(format(new Date(1719964800000), "yyyy-MM-dd") === orderDate);
+  // console.log(orderDate);
   useEffect(() => {
     const getOrdersData = async () => {
       try {
@@ -51,14 +57,33 @@ export default function Order() {
     const handleNewDataFromEventSource = (event) => {
       const dataFromEventSource = event.detail;
       console.log("Received new data from eventSource: ", dataFromEventSource);
+      if (
+        dataFromEventSource.headers.RequestType[0] === "ADD_ORDER" &&
+        dataFromEventSource.headers.UserName[0] !== username
+      ) {
+        const addOrder = dataFromEventSource.body;
+        const newOrderDate = format(new Date(addOrder.orderDate), "yyyy-MM-dd");
+        console.log("da do day");
+        console.log(orderDate);
+        if (newOrderDate === orderDate) {
+          setOrdersData((prevState) => [
+            ...prevState,
+            {
+              index: prevState.length + 1,
+              id: addOrder.id,
+              partnersID: addOrder.partnersID,
+            },
+          ]);
+        }
+        console.log("ADD ORDER: ", dataFromEventSource);
+      }
     };
     window.addEventListener("newDataEvent", handleNewDataFromEventSource);
-
     return () => {
       window.removeEventListener("newDataEvent", handleNewDataFromEventSource);
     };
   }, [orderDate]);
-
+  useEffect(() => {}, []);
   const columns = [
     { field: "index", headerName: "STT", width: 10 },
     { field: "id", headerName: "id", width: 1 },
