@@ -114,7 +114,29 @@ export default function AddNewOrder(props) {
     }
   };
   const handleOpenConfirm = (event) => {
-    setOpenConfirm(true);
+    if (
+      selectedOrder.partnersID === "" ||
+      selectedOrder.partnersID === undefined ||
+      selectedOrder.partnersID === null
+    ) {
+      NotifySnackbar(
+        enqueueSnackbar,
+        "Chưa nhập trường đối tác !!!",
+        "warning"
+      );
+    } else if (
+      orderDetail.productID == null ||
+      orderDetail.productID == undefined ||
+      orderDetail.productID == ""
+    ) {
+      NotifySnackbar(
+        enqueueSnackbar,
+        "Chưa nhập trường sản phẩm!!!",
+        "warning"
+      );
+    } else {
+      setOpenConfirm(true);
+    }
     // setAddCategory({ isChildOf: selectedSingleNode });
   };
   const handleCloseConfirm = (event) => {
@@ -164,7 +186,7 @@ export default function AddNewOrder(props) {
                   console.error("Error fetching data:", err);
                   NotifySnackbar(
                     enqueueSnackbar,
-                    "Lỗi mạng! Vui lòng kiểm tra đường truyền",
+                    "Có lỗi xảy ra !!!!",
                     "error"
                   );
                 }
