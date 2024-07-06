@@ -31,6 +31,7 @@ export default function ExtractBom() {
     const [daySelected, setDaySelected] = useState("")
     const [defaultDate, setDefaultDate] = useState("")
     const [reqId, setReqId] = useState("")
+    const [firstTimeOfDelay, setFirstTimeOfDelay] = useState(0)
 
     function setNewDateForNextLevel(level, maxDate, timeOfDelay) {
         // console.log("level ", level)
@@ -121,7 +122,7 @@ export default function ExtractBom() {
             },
             { maxDateFix: -Infinity }
         )
-        setMaxDateProduce(today(maxDateFix.getTime(), "VN"))
+        setMaxDateProduce(today(maxDateFix.getTime() + firstTimeOfDelay * 1000 * 60 * 60 * 24, "VN"))
     }
 
     const handleClickOpen = (item) => {
@@ -168,7 +169,16 @@ export default function ExtractBom() {
                         (_, index) => minLevel + index
                     );
 
-                    setMaxDateProduce(today(maxDateDefault.getTime(), "VN"))
+                    asyncGetData(`/produce-service/bom/product/${productId}`)
+                        .then(res => res.json())
+                        .then(data1 => {
+                            console.log("BOM of Extract Product: ", data1);
+                            setFirstTimeOfDelay(data1[0].timeOfDelay);
+                            setMaxDateProduce(today(maxDateDefault.getTime() + data1[0].timeOfDelay * 1000 * 60 * 60 * 24, "VN"))
+                        })
+                        .catch(e => console.log(e))
+
+                    // setMaxDateProduce(today(maxDateDefault.getTime(), "VN"))
 
                     setArrLevel([...levelArray])
 
@@ -185,6 +195,8 @@ export default function ExtractBom() {
             .then(response => response.json())
             .then(data => setProductName(data.nameStr))
             .catch(e => console.log(e));
+
+
     }
 
     useEffect(() => {
@@ -277,7 +289,7 @@ export default function ExtractBom() {
                                     .map((item, index) => (
                                         <TableRow hover key={index}>
                                             <TableCell align="left" sx={{ border: 1 }}><Box sx={{ ml: item.bomLevel - 1, color: item.bomID ? "blue" : "red" }}>{item.productName}</Box></TableCell>
-                                            <TableCell align="left" sx={{ border: 1 }}>{item.MeasName}</TableCell>
+                                            <TableCell align="left" sx={{ border: 1 }}>{item.MeasName + " " + item.timeOfDelay}</TableCell>
                                             <TableCell align="right" sx={{ border: 1 }}>{item.inputQuantity.toFixed(2)}</TableCell>
                                             <TableCell align="left" sx={{ border: 1 }} onDoubleClick={() => handleClickOpen(item)}>{item.reqDate.split("-").reverse().join("-")}</TableCell>
                                             <TableCell align="left" sx={{ border: 1 }}>{item.segmentName}</TableCell>
