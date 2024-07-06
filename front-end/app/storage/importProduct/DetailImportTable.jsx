@@ -68,7 +68,7 @@ export default function DetailImportTable(props) {
           }}
         >
           Created by: {stockIn[0]?.createdBy} on{" "}
-          {dayjs(stockIn[0]?.createdOn).format("DD/MM/YYYY HH:MM:ss")}{" "}
+          {dayjs(stockIn[0]?.createdOn).format("DD/MM/YYYY")}{" "}
         </span>
       </Grid>
       <Grid item xs={12} md={6}>

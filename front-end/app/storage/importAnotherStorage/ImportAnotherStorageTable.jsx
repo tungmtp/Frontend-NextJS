@@ -78,12 +78,12 @@ export default function ImportAnotherStorageTable(props) {
         )}`
       );
       const stockOutListWithstatus = await Promise.all(
-        result.map(async (item) => {
+        result?.map(async (item) => {
           try {
             const response = await getData(
               `/product-service/stockIn/findByRelatedTableAndRelatedID/StockOut/${item.id}`
             );
-
+            // console.log("StockIn: ", response);
             return {
               ...item,
               status: response !== null,
@@ -155,7 +155,7 @@ export default function ImportAnotherStorageTable(props) {
         const result = await getData(
           `/product-service/stockOut/byStockOutID/${id}`
         );
-        console.log(result);
+        // console.log(result);
         const stockInDetailWithStatus = result.map((item) => {
           return {
             ...item,
@@ -168,7 +168,7 @@ export default function ImportAnotherStorageTable(props) {
         const result = await getData(
           `/product-service/stockIn/byStockInID/${response.id}`
         );
-        console.log(result);
+        // console.log(result);
         const stockInDetailWithStatus = result.map((item) => {
           return {
             ...item,

@@ -70,7 +70,7 @@ export default function ExportTable(props) {
 
   return (
     <Grid container spacing={2}>
-      <Grid item xs={12}>
+      {/* <Grid item xs={12}>
         <FormControl sx={{ width: "100%" }} size="small">
           <InputLabel id="partner-type-label">Xuất từ kho</InputLabel>
           <Select
@@ -93,7 +93,7 @@ export default function ExportTable(props) {
             ))}
           </Select>
         </FormControl>
-      </Grid>
+      </Grid> */}
       <Grid item md={6} xs={12}>
         <DatePicker
           sx={{ width: "100%" }}
@@ -118,7 +118,7 @@ export default function ExportTable(props) {
           }}
         />
       </Grid>
-      <Grid item xs={12}>
+      <Grid item xs={12} sx={{ minHeight: "200px" }}>
         <DataGrid
           onRowClick={handleRowClick}
           rows={stockOutList}

@@ -47,6 +47,7 @@ import NewskyLogoLight from "../../img/newskyLogoLight.jpg";
 import { mnu } from "@/components/menu";
 import NotificationBell from "./notificationBell/NotificationBell";
 import { useRouter } from "next/navigation";
+const username = Cookies.get("username");
 const category = {
   NEWSKY: "home",
   "Sản xuất": "produce",
@@ -228,21 +229,20 @@ export default function Topbar(ParentProp) {
           >
             <MenuIcon />
           </IconButton> */}
-          <Link
-            href={"/" + category["NEWSKY"]}
-            sx={{
-              fontSize: 24,
-              color: "white",
-              display: "block",
-              fontWeight: 700,
-            }}
+          <Box
+            sx={{ display: { xs: "none", md: "block" } }}
+            md={{ display: "block" }}
           >
-            <img
-              // style="display: block;-webkit-user-select: none;margin: auto;background-color: hsl(0, 0%, 90%);transition: background-color 300ms;"
-              style={{ width: "12rem" }}
-              src={NewskyLogoLight.src}
-            ></img>
-          </Link>
+            {" "}
+            <Link href={"/" + category["NEWSKY"]}>
+              <img
+                // style="display: block;-webkit-user-select: none;margin: auto;background-color: hsl(0, 0%, 90%);transition: background-color 300ms;"
+                style={{ width: "12rem" }}
+                src={NewskyLogoLight.src}
+              ></img>
+            </Link>
+          </Box>
+
           <Box
             sx={{
               display: "flex",
@@ -298,7 +298,9 @@ export default function Topbar(ParentProp) {
           {/* <Badge badgeContent={4} color="success" style={{ marginRight: 20 }}>
             <NotificationsIcon style={{ color: "white" }} />
           </Badge> */}
+          <Box sx={{ fontStyle: "italic", pr: 2 }}>Hi, {username}</Box>
           <NotificationBell />
+
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>

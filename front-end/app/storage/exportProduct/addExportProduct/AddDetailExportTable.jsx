@@ -30,6 +30,7 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   PostDataMessage,
+  asyncGetData,
   deleteData,
   getData,
   postData,
@@ -40,7 +41,9 @@ import { NotifySnackbar } from "@/components/general/notifySnackbar/NotifySnackb
 import { useSnackbar } from "notistack";
 import { purpose, warehouseID } from "@/components/selectOptions";
 import { measureCategory } from "@/components/selectOptions";
-import PhysicalStock from "@/components/physicalStock/PhysicalStock";
+import PhysicalStock, {
+  getPhysicalStock,
+} from "@/components/physicalStock/PhysicalStock";
 const username = Cookies.get("username");
 export default function AddDetailExportTable(props) {
   const { enqueueSnackbar } = useSnackbar();
@@ -49,14 +52,48 @@ export default function AddDetailExportTable(props) {
   const router = useRouter();
   const date = new Date();
   const currentDate = dayjs(date).format("YYYY-MM-DDTHH:mm:ss");
-  console.log(props.deliveryDetail);
+  // console.log(props.deliveryDetail);
+  // console.log(rows);
   React.useEffect(() => {
     if (props.deliveryDetail) {
-      const resultWithIndex = props.deliveryDetail.map((row, index) => ({
-        ...row,
-        index: index + 1,
-      }));
-      setRows(resultWithIndex);
+      // const resultWithIndex = props.deliveryDetail.map((row, index) => ({
+      //   ...row,
+      //   index: index + 1,
+      // }));
+      const fetchDataWithIndex = async () => {
+        try {
+          const resultWithIndex = await Promise.all(
+            props.deliveryDetail.map(async (row, index) => {
+              try {
+                const response = await getData(
+                  `/product-service/product/physicalStock/${row.productID}/${row.measID}/${props.stockout.slipDate}`
+                );
+                console.log(response);
+                return {
+                  ...row,
+                  index: index + 1,
+                  tonkho: response[0]?.tonkho,
+                };
+              } catch (e) {
+                console.log(e);
+                return {
+                  ...row,
+                  index: index + 1,
+                  tonkho: 0, // Handle the error case
+                };
+              }
+            })
+          );
+          console.log(resultWithIndex);
+          setRows(resultWithIndex);
+        } catch (e) {
+          console.log(e);
+        }
+      };
+
+      fetchDataWithIndex();
+      // console.log(resultWithIndex);
+      // setRows(resultWithIndex);
     }
   }, [props]);
   //   console.log(dayjs(rows[0].ngayGiao).format("YYYY-MM-DD"));
@@ -94,29 +131,23 @@ export default function AddDetailExportTable(props) {
       field: "quantity",
       headerName: "SL xuất",
       type: "number",
-      flex: 1,
+      flex: 2,
       editable: true,
     },
     {
-      field: "inUse",
-      headerName: "In use",
-      type: "number",
-      flex: 1,
-    },
-    {
-      field: "tonKho",
+      field: "tonkho",
       headerName: "Tồn kho",
       type: "number",
-      flex: 1,
-      renderCell: (param) => {
-        return (
-          <PhysicalStock
-            productID={param.row.productID}
-            measID={param.row.measID}
-            date={currentDate}
-          />
-        );
-      },
+      flex: 2,
+      // renderCell: (param) => {
+      //   return (
+      //     <PhysicalStock
+      //       productID={param.row.productID}
+      //       measID={param.row.measID}
+      //       date={currentDate}
+      //     />
+      //   );
+      // },
     },
     {
       field: "actions",
@@ -190,13 +221,31 @@ export default function AddDetailExportTable(props) {
     // }
   };
 
+  // const processRowUpdate = (newRow) => {
+  //   // const updatedRow = { ...newRow, isNew: false };
+  //   const updatedRow = { ...newRow };
+  //   setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
+  //   return updatedRow;
+  // };
   const processRowUpdate = (newRow) => {
-    // const updatedRow = { ...newRow, isNew: false };
-    const updatedRow = { ...newRow };
+    const updatedRow = { ...newRow, isNew: false };
+
+    if (newRow.quantity <= 0) {
+      NotifySnackbar(enqueueSnackbar, "SL xuất phải lớn hơn 0!!!", "error");
+      throw new Error("Quantity cannot be less than 0.");
+    }
+    if (newRow.quantity > newRow.tonkho) {
+      NotifySnackbar(
+        enqueueSnackbar,
+        "SL xuất đã vượt quá số lượng tồn kho!!!",
+        "error"
+      );
+      throw new Error("Quantity cannot be greater than stock.");
+    }
+
     setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
     return updatedRow;
   };
-
   const handleRowModesModelChange = (newRowModesModel) => {
     setRowModesModel(newRowModesModel);
   };
@@ -206,6 +255,12 @@ export default function AddDetailExportTable(props) {
   );
   const handleSubmit = (event) => {
     event.preventDefault();
+    let checkQuantity = false;
+    rows.map((row) => {
+      if (row.quantity > row.tonkho) {
+        checkQuantity = true;
+      }
+    });
 
     if (isAnyRowInEditMode) {
       NotifySnackbar(
@@ -213,9 +268,13 @@ export default function AddDetailExportTable(props) {
         "Vui lòng lưu lại các trường trong bảng!!",
         "warning"
       );
+    } else if (checkQuantity) {
+      NotifySnackbar(
+        enqueueSnackbar,
+        "Không còn đủ hàng để xuất. Vui lòng kiểm tra tồn kho !!!",
+        "error"
+      );
     } else {
-      // console.log("stockout:  ", props.stockout);
-
       const postOrderDelivery = async () => {
         try {
           const result = await postData(

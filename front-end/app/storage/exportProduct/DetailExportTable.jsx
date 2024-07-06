@@ -37,9 +37,7 @@ export default function DetailExportTable(props) {
           }}
         >
           Created by: {props.stockOutDetail[0]?.createdBy} on{" "}
-          {dayjs(props.stockOutDetail[0]?.createdOn).format(
-            "DD/MM/YYYY HH:mm:ss"
-          )}{" "}
+          {dayjs(props.stockOutDetail[0]?.createdOn).format("DD/MM/YYYY")}{" "}
         </span>
       </Grid>
       <Grid item xs={12} md={6}>

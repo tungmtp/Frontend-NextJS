@@ -51,8 +51,8 @@ export default function StockInAnotherStorageDetail(props) {
     warehouseID: 1,
     receiveFrom: 1,
   });
-  console.log(stockIn);
-  // console.log(rows);
+  // console.log(stockIn);
+
   useEffect(() => {
     const updateStockInDetail = { ...stockIn };
     updateStockInDetail.comment = props.stockInDetail[0].Comment;
@@ -68,8 +68,12 @@ export default function StockInAnotherStorageDetail(props) {
       updateStockInDetail.createdBy = username;
       updateStockInDetail.createdOn = currentDate;
       const stockInDetail = props.stockInDetail[0].StockOutDetail;
+
       stockInDetail?.map((item) => {
         item.quantityStockOut = item.quantity;
+        item.relatedID = item.id;
+        item.relatedTable = "StockOutDetail";
+        console.log("stockInDetail: ", props.stockInDetail[0]);
       });
       setRows(stockInDetail);
     } else {
@@ -77,6 +81,7 @@ export default function StockInAnotherStorageDetail(props) {
       updateStockInDetail.createdBy = props.stockInDetail[0].createdBy;
       updateStockInDetail.createdOn = props.stockInDetail[0].createdOn;
       const stockInDetail = props.stockInDetail[0].StockInDetail;
+      // console.log("stockInDetail: ", props.stockInDetail[0]);
       stockInDetail?.map((item) => {
         item.quantityStockOut = "---";
       });

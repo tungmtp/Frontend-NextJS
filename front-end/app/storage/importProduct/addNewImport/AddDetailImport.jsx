@@ -7,6 +7,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { NotifySnackbar } from "@/components/general/notifySnackbar/NotifySnackbar";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
+import { measureCategory } from "@/components/selectOptions";
 export default function AddDetailImport(props) {
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
@@ -157,6 +158,22 @@ export default function AddDetailImport(props) {
           byNameStr="/product-service/Measurement/byNameStr"
           firstCall="/product-service/Measurement/firstCall"
           currentItemLink="/product-service/Measurement/oneForSelect"
+        />
+      </Grid>
+      <Grid item xs={12} md={6} lg={3}>
+        <TextField
+          fullWidth
+          InputProps={{
+            readOnly: true,
+          }}
+          id=""
+          label="Đơn vị gốc"
+          size="small"
+          value={
+            seLectedMeasurement?.measCatId
+              ? measureCategory[seLectedMeasurement.measCatId]
+              : ""
+          }
         />
       </Grid>
       <Grid item xs={12} md={6} lg={3}>

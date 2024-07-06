@@ -109,6 +109,8 @@ export default function AddExportProduct() {
         updateStockout.paymentDate = result[0].paymentDate;
         // updateStockout.slipDate = result[0].deliveryDate;
         updateStockout.warehouseID = result[0].warehouseID;
+        updateStockout.noidung = ` Xuất hàng cho ${result[0].partnerName}`;
+
         setSelectedOrderDelivery(result);
         setStockout(updateStockout);
         setChangePage(true);

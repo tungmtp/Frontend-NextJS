@@ -108,7 +108,7 @@ export default function Segment() {
   };
   const columns = [
     { field: "index", headerName: "STT", width: 10 },
-    { field: "id", headerName: "id", width: 1 },
+    { field: "id", headerName: "id", width: 300 },
 
     {
       field: "segmentName",
@@ -385,7 +385,7 @@ export default function Segment() {
   };
 
   return (
-    <Paper elevation={6} sx={{ paddingTop: 1, paddingLeft: 1, height: "84vh" }}>
+    <Box elevation={6} sx={{ paddingTop: 1, paddingLeft: 1, height: "84vh" }}>
       <Button
         size="small"
         color="primary"
@@ -530,6 +530,6 @@ export default function Segment() {
           )}
         </Box>
       </div>
-    </Paper>
+    </Box>
   );
 }

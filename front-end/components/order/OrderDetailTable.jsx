@@ -236,7 +236,7 @@ export default function OrderDetailTable(props) {
             <MenuItem onClick={handleClose}>Lệnh giao hàng</MenuItem>
           </Link>
           <Divider variant="middle" />
-          <Link
+          {/* <Link
             href={{
               pathname: "/business/deliveryProcess",
               query: {
@@ -248,7 +248,7 @@ export default function OrderDetailTable(props) {
             <MenuItem onClick={handleClose}>Quá trình giao hàng</MenuItem>
           </Link>
           <Divider variant="middle" />
-          <MenuItem onClick={handleClose}>Nhật kí sản xuất</MenuItem>
+          <MenuItem onClick={handleClose}>Nhật kí sản xuất</MenuItem> */}
         </Menu>
       </Box>
       <DataGrid

@@ -86,7 +86,7 @@ const AddOrderDelivery = () => {
     orderID: orderID,
     deliveryDate: currentDate,
     deliveryAddress: "",
-    warehouseID: 1,
+    warehouseID: 2,
     createdBy: username,
     cancel: false,
     completed: false,
@@ -434,7 +434,7 @@ const AddOrderDelivery = () => {
   const processRowUpdate = (newRow) => {
     const updatedRow = { ...newRow, isNew: false };
 
-    if (newRow.quantity < 0) {
+    if (newRow.quantity <= 0) {
       NotifySnackbar(enqueueSnackbar, "SL xuất phải lớn hơn 0!!!", "error");
       throw new Error("Quantity cannot be less than 0.");
     }
@@ -477,11 +477,23 @@ const AddOrderDelivery = () => {
     const formData = new FormData(event.currentTarget);
     const formJson = Object.fromEntries(formData.entries());
     const deliveryAddress = formJson.deliveryAddress;
+    let checkQuantity = false;
+    rows.map((row) => {
+      if (row.quantity <= 0) {
+        checkQuantity = true;
+      }
+    });
     if (isAnyRowInEditMode) {
       NotifySnackbar(
         enqueueSnackbar,
         "Vui lòng lưu lại các trường trong bảng!!",
         "warning"
+      );
+    } else if (checkQuantity) {
+      NotifySnackbar(
+        enqueueSnackbar,
+        "Số lượng xuất phải lớn hơn 0!!!",
+        "error"
       );
     } else {
       //update the deliveryAddress because using onchane and setUsestate is too slow
