@@ -289,7 +289,7 @@ export default function ExtractBom() {
                                     .map((item, index) => (
                                         <TableRow hover key={index}>
                                             <TableCell align="left" sx={{ border: 1 }}><Box sx={{ ml: item.bomLevel - 1, color: item.bomID ? "blue" : "red" }}>{item.productName}</Box></TableCell>
-                                            <TableCell align="left" sx={{ border: 1 }}>{item.MeasName + " " + item.timeOfDelay}</TableCell>
+                                            <TableCell align="left" sx={{ border: 1 }}>{item.MeasName}</TableCell>
                                             <TableCell align="right" sx={{ border: 1 }}>{item.inputQuantity.toFixed(2)}</TableCell>
                                             <TableCell align="left" sx={{ border: 1 }} onDoubleClick={() => handleClickOpen(item)}>{item.reqDate.split("-").reverse().join("-")}</TableCell>
                                             <TableCell align="left" sx={{ border: 1 }}>{item.segmentName}</TableCell>
