@@ -281,7 +281,7 @@ export default function ExtractBom() {
       <Grid item xs={2}>
         <FormControl fullWidth>
           <DatePicker
-            label="Ngày order"
+            label="Ngày dự kiến giao hàng"
             value={dayjs(defaultDate)}
             onChange={(newValue) => {
               const updatedDefaultDate = newValue.format("YYYY-MM-DD");

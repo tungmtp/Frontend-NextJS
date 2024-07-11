@@ -51,7 +51,7 @@ export default function AddDetailExportTable(props) {
   const [rowModesModel, setRowModesModel] = React.useState({});
   const router = useRouter();
   const date = new Date();
-  const currentDate = dayjs(date).format("YYYY-MM-DDTHH:mm:ss");
+  const currentDate = dayjs(date).format("YYYY-MM-DD");
   // console.log(props.deliveryDetail);
   // console.log(rows);
   React.useEffect(() => {
@@ -298,18 +298,22 @@ export default function AddDetailExportTable(props) {
             const result2 = postData("/product-service/stockOutDetail", row);
           });
           NotifySnackbar(enqueueSnackbar, "Thêm thành công", "success");
-          router.push("/business/orderDelivery");
+
           PostDataMessage(
             "/business-service/orderDelivery/sendMessage/orderDeliveryID/success",
             props.orderDeliveryID
           );
-          deleteData(
-            `/common-module/eventList/byEventIdAndEventName/ORDER DELIVERY DO IT`,
-            props.orderDeliveryID
-          );
+
           putData("/business-service/orderDelivery", props.orderDeliveryID, {
             completed: true,
             // inProcess: false,
+          });
+          deleteData(
+            `/common-module/eventList/byEventIdAndEventName/ORDER DELIVERY DO IT`,
+            props.orderDeliveryID
+          ).then(() => {
+            // router.push("/business/orderDelivery");
+            window.close();
           });
         } catch (err) {
           console.error("Error post ordersProduce :", err);
@@ -361,14 +365,16 @@ export default function AddDetailExportTable(props) {
           >
             Save
           </Button>
-          <Link href="/business/orderDelivery">
+          <Link href="">
             <Button
               variant="outlined"
               onClick={() => {
                 deleteData(
                   `/common-module/eventList/byEventIdAndEventName/ORDER DELIVERY DO IT`,
                   props.orderDeliveryID
-                );
+                ).then(() => {
+                  window.close();
+                });
                 // PostDataMessage(
                 //   "/business-service/orderDelivery/sendMessage/orderDeliveryID/normal",
                 //   props.orderDeliveryID
@@ -381,7 +387,6 @@ export default function AddDetailExportTable(props) {
                 //     inProcess: false,
                 //   }
                 // );
-                window.close();
               }}
             >
               Cancel

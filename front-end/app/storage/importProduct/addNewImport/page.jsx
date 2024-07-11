@@ -42,7 +42,7 @@ export default function AddNewImport() {
   const searchParams = useSearchParams();
   let orderDeliveryID = searchParams.get("id");
   const date = new Date();
-  const currentDate = dayjs(date).format("YYYY-MM-DDTHH:mm:ss");
+  const currentDate = dayjs(date).format("YYYY-MM-DD");
   const [stockin, setStockin] = React.useState({
     slipDate: currentDate,
     comment: "",

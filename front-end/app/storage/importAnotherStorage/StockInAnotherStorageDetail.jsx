@@ -35,7 +35,7 @@ const rowss = [
 export default function StockInAnotherStorageDetail(props) {
   const { enqueueSnackbar } = useSnackbar();
   const date = new Date();
-  const currentDate = dayjs(date).format("YYYY-MM-DDTHH:mm:ss");
+  const currentDate = dayjs(date).format("YYYY-MM-DD");
   const [rows, setRows] = useState(rowss);
   const [rowModesModel, setRowModesModel] = useState({});
   const [stockIn, setStockIn] = useState({
@@ -82,9 +82,9 @@ export default function StockInAnotherStorageDetail(props) {
       updateStockInDetail.createdOn = props.stockInDetail[0].createdOn;
       const stockInDetail = props.stockInDetail[0].StockInDetail;
       // console.log("stockInDetail: ", props.stockInDetail[0]);
-      stockInDetail?.map((item) => {
-        item.quantityStockOut = "---";
-      });
+      // stockInDetail?.map((item) => {
+      //   item.quantityStockOut = "---";
+      // });
       setRows(stockInDetail);
     }
   }, [props.stockInDetail]);

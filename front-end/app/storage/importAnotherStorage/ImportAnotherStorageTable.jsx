@@ -48,7 +48,7 @@ export default function ImportAnotherStorageTable(props) {
   const dateMinus = dayjs(date).subtract(7, "day").format("YYYY-MM-DD");
   const [stockOutList, setStockOutList] = useState([]);
   const [filterConditional, setFilterConditional] = useState({
-    warehouseID: 2,
+    warehouseID: 3,
     startDate: dateMinus,
     endDate: currentDate,
   });
@@ -261,7 +261,7 @@ export default function ImportAnotherStorageTable(props) {
               <TableRow>
                 <TableCell align="left">STT</TableCell>
                 <TableCell align="left">Ngày chuyển</TableCell>
-                <TableCell align="left">Kho chuyển/Nội dung</TableCell>
+                <TableCell align="left">Nội dung/Kho chuyển</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

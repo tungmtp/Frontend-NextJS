@@ -82,9 +82,9 @@ export default function OrderDetailTable(props) {
 
   const calculateQualityRate = (itemQuanlity, rateInRoot) => {
     if (rateInRoot == 0) {
-      return itemQuanlity;
+      return itemQuanlity.toFixed(2);
     } else {
-      return rateInRoot * itemQuanlity;
+      return (rateInRoot * itemQuanlity).toFixed(2);
     }
   };
   const columns = [

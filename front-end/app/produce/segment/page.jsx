@@ -76,7 +76,7 @@ export default function Segment() {
           );
 
           setSelectedDataGrid((prevState) => {
-            if (prevState.id === updateSegment.id) {
+            if (prevState?.id === updateSegment.id) {
               return updateSegment;
             }
           });
@@ -89,7 +89,7 @@ export default function Segment() {
             prevState.filter((item) => item.id !== deleteSegmentId)
           );
           setSelectedDataGrid((prevState) => {
-            if (prevState.id === deleteSegmentId) {
+            if (prevState?.id === deleteSegmentId) {
               return null;
             }
           });

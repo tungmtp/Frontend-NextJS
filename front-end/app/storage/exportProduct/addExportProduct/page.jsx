@@ -47,7 +47,7 @@ export default function AddExportProduct() {
   const searchParams = useSearchParams();
   let orderDeliveryID = searchParams.get("id");
   const date = new Date();
-  const currentDate = dayjs(date).format("YYYY-MM-DDTHH:mm:ss");
+  const currentDate = dayjs(date).format("YYYY-MM-DD");
   const [selectedOrderDelivery, setSelectedOrderDelivery] = React.useState([]);
   const [stockout, setStockout] = React.useState({
     slipDate: currentDate,
@@ -63,6 +63,7 @@ export default function AddExportProduct() {
   });
   const [stockoutDetail, setStockoutDetail] = React.useState();
   const [changePage, setChangePage] = React.useState(false);
+  const [checkIventory, setCheckIventory] = React.useState(false);
   // console.log("selectedOrderDelivery: ", selectedOrderDelivery);
   // console.log(
   //   "selectedOrderDeliveryDetail: ",
@@ -128,12 +129,12 @@ export default function AddExportProduct() {
     //   //   inProcess: false,
     //   // });
     // };
-  }, []);
+  }, [checkIventory]);
 
   React.useEffect(() => {
     const handleBeforeUnload = (event) => {
       // Custom logic before leaving the page
-      event.preventDefault();
+      // event.preventDefault();
       // event.returnValue = true;
       deleteData(
         `/common-module/eventList/byEventIdAndEventName/ORDER DELIVERY DO IT`,
@@ -161,6 +162,7 @@ export default function AddExportProduct() {
     const handleNewDataFromEventSource = (event) => {
       const dataFromEventSource = event.detail;
       // console.log("Received new data from eventSource: ", dataFromEventSource);
+      setCheckIventory(!checkIventory);
 
       if (dataFromEventSource.headers.RequestType[0] === "DELETE_EVENT") {
         if (orderDeliveryID === dataFromEventSource.body.eventId) {
@@ -180,7 +182,8 @@ export default function AddExportProduct() {
     <Grid container spacing={4}>
       <Grid item xs={12}>
         <Typography variant="h5">
-          Xuất hàng cho {selectedOrderDelivery[0]?.partnerName} đơn hàng số:
+          Xuất hàng cho {selectedOrderDelivery[0]?.partnerName}:
+          {/* đơn hàng số: */}
         </Typography>
       </Grid>
       <Grid item xs={12} md={6} lg={3}>

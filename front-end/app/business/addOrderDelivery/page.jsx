@@ -603,6 +603,12 @@ const AddOrderDelivery = () => {
             component={"form"}
             onSubmit={handleSubmit}
           >
+            <Grid item xs={12}>
+              <Typography variant="h5" gutterBottom>
+                Lịch giao hàng theo đơn cung ứng ngày{" "}
+                {dayjs(reqDate).format("DD/MM/YYYY")}
+              </Typography>
+            </Grid>
             <Grid item xs={1} sm={4} md={3}>
               <DatePicker
                 sx={{ width: "100%" }}
