@@ -134,8 +134,8 @@ export default function AddExportProduct() {
   React.useEffect(() => {
     const handleBeforeUnload = (event) => {
       // Custom logic before leaving the page
-      // event.preventDefault();
-      // event.returnValue = true;
+      event.preventDefault();
+      event.returnValue = true;
       deleteData(
         `/common-module/eventList/byEventIdAndEventName/ORDER DELIVERY DO IT`,
         orderDeliveryID

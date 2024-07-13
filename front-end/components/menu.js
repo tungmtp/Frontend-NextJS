@@ -94,10 +94,10 @@ export const mnu = {
       title: "(#) Tồn các sản phẩm ở 01 kho (X)",
       link: "/storage/manyProductOneStorage",
     },
-    // {
-    //   title: "(#) Tồn sản phẩm theo mã màu",
-    //   link: "/storage/storeByColor",
-    // },
+    {
+      title: "(#) Tồn sản phẩm theo mã màu",
+      link: "/storage/accessDenied",
+    },
     {
       title: "(#) Tồn sản phẩm theo thuộc tính (X)",
       link: "/storage/stockByAttribute",
